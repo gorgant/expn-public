@@ -1,0 +1,23 @@
+.logo {
+  font-family: HarlowSolid;
+  font-size: 40px
+}
+
+.spacer {
+  // Grow / Shrink / Basis
+  flex: 1 1 auto
+}
+
+.nav-item {
+  margin: 16px;
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: uppercase
+}
+
+.contact {
+  // This makes the padding around the text regular (default is 32px)
+  line-height: 16px;
+  padding: 8px;
+  border: 1px white solid;
+}
