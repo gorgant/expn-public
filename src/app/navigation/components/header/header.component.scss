@@ -1,18 +1,26 @@
+@import "../../../variables";
+
 .logo {
   font-family: HarlowSolid;
-  font-size: 40px
+  font-size: 40px;
 }
 
-.spacer {
-  // Grow / Shrink / Basis
-  flex: 1 1 auto
+.nav-items {
+  list-style: none;
 }
 
+// Removes the hyperlink effects from the nav items (and logo)
+a {
+  text-decoration: none;
+  color: white;
+}
+
+// Target all items except logo
 .nav-item {
-  margin: 16px;
   font-size: 16px;
-  font-weight: 400;
-  text-transform: uppercase
+  font-weight: 500;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .contact {
@@ -20,4 +28,46 @@
   line-height: 16px;
   padding: 8px;
   border: 1px white solid;
+}
+
+.nav-item-active {
+  opacity: 1;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  opacity: 1;
+}
+
+// Hover animations inspired by: https://codepen.io/maheshambure21/pen/QwXaRw
+
+// Configure nav items to properly display the hover animation
+.nav-item {
+  padding-bottom: 8px;
+  position: relative;
+}
+
+// Constuct content that will be activated on hover
+.nav-item:not(.contact):after {
+  transition: all 400ms;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 0%;
+  content: '.';
+  color: transparent;
+  background: white;
+  height: 1px;
+}
+
+// Make underline visibile on hover
+.nav-item:not(.contact):hover:after {
+  width: 100%;
+}
+
+// Keep underline visible if active item
+.nav-item-active.nav-item:not(.contact):after {
+  width: 100%;
 }

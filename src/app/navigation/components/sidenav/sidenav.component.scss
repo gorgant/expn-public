@@ -1,0 +1,10 @@
+@import "../../../variables";
+
+.active-list-item {
+  color: $primary;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.active-list-item p {
+  font-weight: bold !important;
+}

@@ -1,16 +1,36 @@
 <mat-toolbar color="primary">
-  <span class="logo">Explearning</span>
-  <span class="spacer"></span>
-  <div nav-items fxHide.lt-md>
-    <span class="nav-item">About Me</span>
-    <span class="nav-item">Services</span>
-    <span class="nav-item">Blog</span>
-    <span class="nav-item">Podcast</span>
-    <span class="nav-item contact">Contact</span>
+  
+  <!-- Logo -->
+  <div>
+    <a routerLink="/" class="logo">Explearning</a>
   </div>
-  <div class="menu-button" fxHide.gt-sm>
+
+  <!-- Nav Items: Only display if screen is md or greater -->
+  <div class="nav-items-container" fxFlex fxLayoutAlign="flex-end" fxHide.lt-md >
+    <ul fxLayout="row" fxLayoutGap="24px" class="nav-items">
+      <li class="nav-list-item">
+          <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/about">About Me</a>
+      </li>
+      <li class="nav-list-item">
+        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/services">Services</a>
+      </li>
+      <li class="nav-list-item">
+        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/blog">Blog</a>
+      </li>
+      <li class="nav-list-item">
+        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/podcast">Podcast</a>
+      </li>
+      <li class="nav-list-item">
+        <a class="nav-item contact" routerLinkActive="nav-item-active" routerLink="/contact">Contact</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Menue Icon: Only display if screen is sm or less -->
+  <div class="menu-button" fxFlex fxLayoutAlign="flex-end" fxHide.gt-sm>
     <button (click)="onToggleSidenav()" #matButton mat-icon-button>
       <mat-icon>menu</mat-icon>
     </button>
   </div>
+
 </mat-toolbar>

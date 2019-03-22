@@ -1,23 +1,52 @@
 <mat-nav-list>
 
-  <mat-list-item (click)="onToggleSideNav()">
+  
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/home"
+    (click)="onToggleSideNav()">
+    <mat-icon mat-list-icon>home</mat-icon>
+    <p mat-line>Home</p>
+  </mat-list-item>
+
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/about"
+    (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>explore</mat-icon>
     <p mat-line>About Me</p>
   </mat-list-item>
   
-  <mat-list-item (click)="onToggleSideNav()">
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/services"
+    (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>people</mat-icon>
     <p mat-line>Services</p>
   </mat-list-item>
   
-  <mat-list-item (click)="onToggleSideNav()">
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/blog"
+    (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>subscriptions</mat-icon>
     <p mat-line>Blog</p>
   </mat-list-item>
   
-  <mat-list-item (click)="onToggleSideNav()">
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/podcast"
+    (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>headset</mat-icon>
     <p mat-line>Podcast</p>
+  </mat-list-item>
+
+  <mat-list-item 
+    routerLinkActive="active-list-item"
+    routerLink="/contact"
+    (click)="onToggleSideNav()">
+    <mat-icon mat-list-icon>chat_bubble</mat-icon>
+    <p mat-line>Contact</p>
   </mat-list-item>
 
 </mat-nav-list>

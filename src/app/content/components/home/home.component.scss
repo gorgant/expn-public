@@ -17,4 +17,12 @@
 .hero-text-title {
     font-size: 48px;
     font-weight: 300;
+    // text-shadow: 1px 1px 1px black;
+}
+
+@media screen and (max-width: 599px) {
+    .hero-text-title {
+        font-size: 32px;
+        font-weight: 300;
+    }
 }
