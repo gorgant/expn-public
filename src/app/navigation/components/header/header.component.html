@@ -1,9 +1,16 @@
 <mat-toolbar color="primary">
   <span class="logo">Explearning</span>
   <span class="spacer"></span>
-  <span class="nav-item">About Me</span>
-  <span class="nav-item">Services</span>
-  <span class="nav-item">Blog</span>
-  <span class="nav-item">Podcast</span>
-  <span class="nav-item contact">Contact</span>
+  <div nav-items fxHide.lt-md>
+    <span class="nav-item">About Me</span>
+    <span class="nav-item">Services</span>
+    <span class="nav-item">Blog</span>
+    <span class="nav-item">Podcast</span>
+    <span class="nav-item contact">Contact</span>
+  </div>
+  <div class="menu-button" fxHide.gt-sm>
+    <button (click)="onToggleSidenav()" #matButton mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>

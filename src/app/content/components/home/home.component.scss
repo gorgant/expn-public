@@ -1,0 +1,20 @@
+.hero-container {
+    position: relative;
+}
+
+.background-image {
+    max-width: 100%;
+    height: auto;
+}
+
+.hero-text-container {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    color: white;
+}
+
+.hero-text-title {
+    font-size: 48px;
+    font-weight: 300;
+}

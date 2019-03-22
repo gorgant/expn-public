@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { UiService } from 'src/app/shared/services/ui.service';
 
 @Component({
   selector: 'app-header',
@@ -7,9 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  @ViewChild('matButton') matButton;
+
+  constructor(
+    private uiService: UiService
+  ) { }
 
   ngOnInit() {
+  }
+
+  // Open/close side nav
+  onToggleSidenav() {
+    this.uiService.dispatchSideNavClick();
+    // Clears sticky focus bug on menu icon
+    this.matButton._elementRef.nativeElement.blur();
   }
 
 }
