@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
+import { SubscribeComponent } from './components/subscribe/subscribe.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    SubscribeComponent
+  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -16,7 +19,8 @@ import { MaterialModule } from '../material.module';
     CommonModule,
     ReactiveFormsModule,
     MaterialModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    SubscribeComponent
   ]
 })
 export class SharedModule { }

@@ -77,11 +77,40 @@ $primary: mat-color($theme-primary);
 $accent: mat-color($theme-accent);
 $warn: mat-color($theme-warn);
 
-$inactive-item-opacity: 0.8;
-$active-item-opacity: 1;
-
 $font-weight-light: 300;
 $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-bold: 700;
 $font-weight-black: 900;
+
+$logo-font-family: HarlowSolid;
+
+$max-screen-width: 2500px;
+$min-screen-width: 320px;
+$mobile-cutoff-width: 959px;
+
+$mobile-button-width: 100%;
+$desktop-button-width: 200px;
+$mobile-form-width: 100%;
+$desktop-form-width: 300px;
+
+
+$inactive-item-opacity: 0.8;
+$active-item-opacity: 1;
+
+$opacity-high-emphasis: 0.87;
+$opacity-medium-emphasis: 0.60;
+$opacity-light-emphasis: 0.38;
+$opacity-faded-emphasis: 0.3;
+
+// $hex-opacity-high-emphasis: DE;
+// $hex-opacity-medium-emphasis: 99;
+// $hex-opacity-light-emphasis: 61;
+// $hex-opacity-faded-emphasis: 4D;
+
+// From https://stackoverflow.com/a/10939797/6572208
+// Sets the background to the stated color and transparency
+@mixin background-opacity($color, $opacity) {
+    background: $color; /* The Fallback */
+    background: rgba($color, $opacity);
+}

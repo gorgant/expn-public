@@ -1,5 +1,11 @@
 @import "../../../variables";
 
+.home-content {
+  // Otherwise content fits to content in the cap section (the background image doesn't seem to create sizing)
+  width: 100vw;
+  max-width: $max-screen-width;
+}
+
 .hero-background-image {
   background-image: url("src/assets/images/background/home_page_background_mary_daphne_2500.jpg");
   background-color: #cccccc;
@@ -7,9 +13,7 @@
   background-position: top;
   background-repeat: no-repeat;
   background-size: cover;
-  width: 100vw;
-  min-width: 320px;
-  max-width: 2500px;
+  width: 100%;
 }
 
 .hero-content-container {
@@ -35,7 +39,7 @@
   width: 200px;
 }
 
-@media screen and (max-width: 959px) {
+@media screen and (max-width: $mobile-cutoff-width) {
 
   .hero-background-image {
     height: 90vh;
@@ -54,4 +58,34 @@
     width: auto;
     font-size: 16px;
   }
+}
+
+.cap-section-container {
+  padding: 16px;
+  width: 80%;
+  opacity: 0.87;
+}
+
+.cap-item {
+  max-width: 300px;
+  text-align: center;
+}
+
+.cap-title {
+  font-family: $logo-font-family;
+  font-size: 48px;
+  color: $primary;
+  
+}
+
+.cap-body {
+  color: $primary
+}
+
+.cap-icon img {
+  max-height: 150px;
+}
+
+app-subscribe {
+  width: 100%;
 }

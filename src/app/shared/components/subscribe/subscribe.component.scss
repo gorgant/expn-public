@@ -1,0 +1,57 @@
+@import "../../../variables";
+
+.subscribe-container {
+  @include background-opacity($primary, $opacity-medium-emphasis);
+  width: 100%;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  padding-left: 16px;
+  padding-right: 16px;
+
+}
+
+.title {
+  font-size: 32px;
+  color: white;
+}
+
+.description {
+  font-size: 16px;
+  color: white;
+}
+
+.subscribe-form {
+  width: 100%;
+}
+
+mat-form-field {
+  width: $desktop-form-width;
+}
+
+.input-placeholder {
+  color: white;
+}
+
+button {
+  width: $desktop-button-width;
+}
+
+
+.post-submit-message {
+  color: $accent;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .description {
+    text-align: center;
+  }
+
+  mat-form-field {
+    width: $mobile-form-width;
+  }
+
+  button {
+    width: $mobile-button-width;
+  }
+  
+}
