@@ -76,3 +76,12 @@ $theme-warn:    mat-palette($mat-red);
 $primary: mat-color($theme-primary);
 $accent: mat-color($theme-accent);
 $warn: mat-color($theme-warn);
+
+$inactive-item-opacity: 0.8;
+$active-item-opacity: 1;
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+$font-weight-black: 900;

@@ -5,6 +5,7 @@
   font-size: 40px;
 }
 
+// Removes ordered list styles
 .nav-items {
   list-style: none;
 }
@@ -18,9 +19,9 @@ a {
 // Target all items except logo
 .nav-item {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: $font-weight-medium;
   text-transform: uppercase;
-  opacity: 0.8;
+  opacity: $inactive-item-opacity;
 }
 
 .contact {
@@ -31,12 +32,12 @@ a {
 }
 
 .nav-item-active {
-  opacity: 1;
-  font-weight: 500;
+  opacity: $active-item-opacity;
+  font-weight: $font-weight-medium;
 }
 
 .nav-item:hover {
-  opacity: 1;
+  opacity: $active-item-opacity;
 }
 
 // Hover animations inspired by: https://codepen.io/maheshambure21/pen/QwXaRw
