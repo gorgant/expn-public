@@ -15,6 +15,20 @@
   margin-top: 32px;
 }
 
+.item {
+  opacity: $inactive-item-opacity;
+
+}
+
+.item:hover {
+  opacity: $active-item-opacity;
+  .caption {
+    opacity: $opacity-high;
+    color: $accent;
+  }
+  cursor: pointer;
+}
+
 .thumbnail {
   width: 300px;
 }
@@ -23,4 +37,10 @@
   font-size: 22px;
   opacity: $opacity-medium;
   text-align: center
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .item {
+    opacity: $active-item-opacity;
+  }
 }

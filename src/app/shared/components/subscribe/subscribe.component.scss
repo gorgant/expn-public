@@ -28,6 +28,11 @@ mat-form-field {
 
 button {
   width: $desktop-button-width;
+  opacity: $inactive-item-opacity;
+}
+
+button:hover {
+  opacity: $active-item-opacity;
 }
 
 
@@ -47,6 +52,7 @@ button {
 
   button {
     width: $mobile-button-width;
+    opacity: $active-item-opacity;
   }
   
 }

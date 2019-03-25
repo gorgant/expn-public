@@ -46,9 +46,20 @@
 .social-icons {
   margin-top: 16px;
   height: 32px;
+  opacity: $inactive-item-opacity;
+}
+
+.social-icons:hover {
+  opacity: $active-item-opacity;
 }
 
 .copyright {
   font-size: 12px;
   margin-top: 16px;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .social-icons {
+    opacity: $active-item-opacity;
+  }
 }
