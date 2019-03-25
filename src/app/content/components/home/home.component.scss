@@ -9,38 +9,16 @@
   }
 }
 
-.hero-background-image {
-  background-image: url("src/assets/images/background/home_page_background_mary_daphne_2500.jpg");
-  background-color: #cccccc;
-  height: 100vh;
-  background-position: top;
-  background-repeat: no-repeat;
-  background-size: cover;
+app-hero {
   width: 100%;
-
 }
 
-.hero-content-container {
-  margin-top: -20vh;
-  margin-left: 86px;
-  color: white;
+app-feature-icons {
+  width: 100%;
 }
 
-.hero-text {
-  font-size: 48px;
-  font-weight: $font-weight-light;
-}
-
-.hero-button-container {
-  margin-top: 32px;
-}
-
-.hero-button {
-  background-color: $primary;
-  color: white;
-  font-size: 20px;
-  padding: 8px;
-  width: 200px;
+app-subscribe {
+  width: 100%;
 }
 
 .subscribe-container {
@@ -53,53 +31,3 @@
 
 }
 
-@media screen and (max-width: $mobile-cutoff-width) {
-
-  .hero-background-image {
-    height: 90vh;
-  }
-
-  .hero-content-container {
-    margin-left: 0px;
-  }
-
-  .hero-text {
-    text-align: center;
-    font-size: 32px;
-  }
-
-  .hero-button {
-    width: auto;
-    font-size: 16px;
-  }
-}
-
-.cap-section-container {
-  padding: 16px;
-  width: 80%;
-  opacity: 0.87;
-}
-
-.cap-item {
-  max-width: 300px;
-  text-align: center;
-}
-
-.cap-title {
-  font-family: $logo-font-family;
-  font-size: 48px;
-  color: $primary;
-  
-}
-
-.cap-body {
-  color: $primary
-}
-
-.cap-icon img {
-  max-height: 150px;
-}
-
-app-subscribe {
-  width: 100%;
-}

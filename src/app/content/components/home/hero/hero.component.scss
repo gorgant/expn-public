@@ -1,0 +1,59 @@
+@import "../../../../variables";
+
+.hero-background-image {
+  background-image: url("src/assets/images/background/home_page_background_mary_daphne_2500.jpg");
+  background-color: #cccccc;
+  height: 100vh;
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-content-container {
+  margin-top: -20vh;
+  margin-left: 86px;
+  color: white;
+}
+
+.hero-text {
+  font-size: 48px;
+  font-weight: $font-weight-light;
+}
+
+.hero-button-container {
+  margin-top: 32px;
+}
+
+.hero-button {
+  background-color: $primary;
+  color: white;
+  font-size: 20px;
+  padding: 8px;
+  width: 200px;
+}
+
+.hero-button:hover {
+  // opacity: $opacity-medium;
+  background-color: $accent;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+
+  .hero-background-image {
+    height: 90vh;
+  }
+
+  .hero-content-container {
+    margin-left: 0px;
+  }
+
+  .hero-text {
+    text-align: center;
+    font-size: 32px;
+  }
+
+  .hero-button {
+    width: auto;
+    font-size: 16px;
+  }
+}

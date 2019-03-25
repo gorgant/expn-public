@@ -1,0 +1,26 @@
+@import "../../../../variables";
+
+.in-action-container {
+  margin: 32px;
+}
+
+.title {
+  font-family: $logo-font-family;
+  font-size: 48px;
+  color: $primary;
+  text-align: center;
+}
+
+.items {
+  margin-top: 32px;
+}
+
+.thumbnail {
+  width: 300px;
+}
+
+.caption {
+  font-size: 22px;
+  opacity: $opacity-medium;
+  text-align: center
+}

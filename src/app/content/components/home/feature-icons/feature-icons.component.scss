@@ -1,0 +1,27 @@
+@import "../../../../variables";
+
+.cap-section-container {
+  margin: 32px;
+  width: 80%;
+  opacity: 0.87;
+}
+
+.cap-item {
+  max-width: 300px;
+  text-align: center;
+}
+
+.cap-title {
+  font-family: $logo-font-family;
+  font-size: 48px;
+  color: $primary;
+  
+}
+
+.cap-body {
+  color: $primary
+}
+
+.cap-icon img {
+  max-height: 150px;
+}
