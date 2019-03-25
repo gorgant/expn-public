@@ -10,7 +10,14 @@ import { PodcastComponent } from '../components/podcast/podcast.component';
 import { ContactComponent } from '../components/contact/contact.component';
 
 @NgModule({
-  declarations: [HomeComponent, AboutComponent, ServicesComponent, BlogComponent, PodcastComponent, ContactComponent],
+  declarations: [
+    HomeComponent,
+    AboutComponent,
+    ServicesComponent,
+    BlogComponent,
+    PodcastComponent,
+    ContactComponent
+  ],
   imports: [
     SharedModule,
     ContentRoutingModule

@@ -1,9 +1,12 @@
 @import "../../../variables";
 
-.home-content {
-  // Otherwise content fits to content in the cap section (the background image doesn't seem to create sizing)
-  width: 100vw;
-  max-width: $max-screen-width;
+// This is a class added dynamically by the component using @HostBinding, so needs the :host
+:host {
+  &.component-body {
+    // Otherwise content fits to content in the cap section (the background image doesn't seem to create width sizing)
+    width: 100%;
+    max-width: $max-screen-width;
+  }
 }
 
 .hero-background-image {
@@ -14,6 +17,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
+
 }
 
 .hero-content-container {
@@ -37,6 +41,16 @@
   font-size: 20px;
   padding: 8px;
   width: 200px;
+}
+
+.subscribe-container {
+  @include background-opacity($primary, $opacity-medium);
+  width: 100%;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  padding-left: 16px;
+  padding-right: 16px;
+
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {

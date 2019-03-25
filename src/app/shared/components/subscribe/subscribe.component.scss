@@ -1,15 +1,5 @@
 @import "../../../variables";
 
-.subscribe-container {
-  @include background-opacity($primary, $opacity-medium-emphasis);
-  width: 100%;
-  padding-top: 60px;
-  padding-bottom: 60px;
-  padding-left: 16px;
-  padding-right: 16px;
-
-}
-
 .title {
   font-size: 32px;
   color: white;
@@ -32,6 +22,10 @@ mat-form-field {
   color: white;
 }
 
+.email-input {
+  color: $accent;
+}
+
 button {
   width: $desktop-button-width;
 }
@@ -39,6 +33,7 @@ button {
 
 .post-submit-message {
   color: $accent;
+  text-align: center;
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
