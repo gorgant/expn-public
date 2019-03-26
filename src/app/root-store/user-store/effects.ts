@@ -4,10 +4,10 @@ import { Observable, of } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import * as userFeatureActions from './actions';
 import { switchMap, map, catchError, tap, take } from 'rxjs/operators';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserService } from 'src/app/core/services/user.service';
 import { RootStoreState } from '..';
-import { AppUser } from 'src/app/shared/models/app-user.model';
-import { StoreUserDataType } from 'src/app/shared/models/store-user-data-type.model';
+import { AppUser } from 'src/app/core/models/app-user.model';
+import { StoreUserDataType } from 'src/app/core/models/store-user-data-type.model';
 
 @Injectable()
 export class UserStoreEffects {

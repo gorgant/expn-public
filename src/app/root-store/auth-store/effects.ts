@@ -5,10 +5,10 @@ import { Action, Store } from '@ngrx/store';
 import * as authFeatureActions from './actions';
 import * as userFeatureActions from '../user-store/actions';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { RootStoreState } from '..';
-import { StoreUserDataType } from 'src/app/shared/models/store-user-data-type.model';
-import { AuthenticateUserType } from 'src/app/shared/models/authenticate-user-type.model';
+import { StoreUserDataType } from 'src/app/core/models/store-user-data-type.model';
+import { AuthenticateUserType } from 'src/app/core/models/authenticate-user-type.model';
 
 @Injectable()
 export class AuthStoreEffects {
