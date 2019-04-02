@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { UiService } from 'src/app/shared/services/ui.service';
+import { UiService } from 'src/app/core/services/ui.service';
 import { Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { AppRouts } from 'src/app/shared/models/app-routes.model';
+import { AppRouts } from 'src/app/core/models/app-routes.model';
 
 @Component({
   selector: 'app-header',
