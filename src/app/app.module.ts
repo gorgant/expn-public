@@ -12,7 +12,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
-import { RootStoreModule } from './root-store/root-store.module';
+import { RootStoreModule } from './root-store';
 // import { RootStoreModule } from './root-store';
 
 @NgModule({

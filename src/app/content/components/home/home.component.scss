@@ -1,12 +1,10 @@
 @import "../../../variables";
 
-// This is a class added dynamically by the component using @HostBinding, so needs the :host
+// This is a class is applied to the component itself, so needs the :host pseudo-class
+// See: https://blog.angular-university.io/angular-host-context/
 :host {
-  &.component-body {
-    // Otherwise content fits to content in the cap section (the background image doesn't seem to create width sizing)
-    width: 100%;
-    max-width: $max-screen-width;
-  }
+  width: 100%;
+  max-width: $max-screen-width;
 }
 
 app-hero {
