@@ -1,3 +1,8 @@
-<p>
-  blog works!
-</p>
+
+<div class="page-container" fxLayout="column" fxLayoutAlign="center center">
+  <div class="blog-container">
+    <div class="grid-container" gdColumns="repeat(auto-fill, minmax(300px, 1fr))" gdAlignRows="center center" gdGap="10px" fxFill>
+      <app-post-card *ngFor="let post of posts$ | async" [post]="post" fxLayout="column"></app-post-card>
+    </div>
+  </div>
+</div>

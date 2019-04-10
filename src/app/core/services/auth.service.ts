@@ -182,8 +182,10 @@ export class AuthService {
     this.authStatus.next(user.uid);
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     if (returnUrl && returnUrl !== '/') {
+      console.log('Return url detected', returnUrl);
       this.router.navigate([returnUrl]);
     } else {
+      console.log('No return url detected, routing to home', returnUrl);
       this.router.navigate(['']);
     }
   }
@@ -191,6 +193,7 @@ export class AuthService {
   private preLogoutActions(): void {
     this.ngUnsubscribe$.next(); // Send signal to Firebase subscriptions to unsubscribe
     this.ngUnsubscribe$.complete(); // Send signal to Firebase subscriptions to unsubscribe
+    console.log('Triggering ng Unsubscribe');
     // Reinitialize the unsubscribe subject in case page isn't refreshed after logout (which means auth wouldn't reset)
     this.ngUnsubscribe$ = new Subject<void>();
     this.router.navigate(['/login']);

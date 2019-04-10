@@ -4,11 +4,13 @@ import { BlogRoutingModule } from './blog-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { BlogComponent } from '../components/blog/blog.component';
 import { PostComponent } from '../components/post/post.component';
+import { PostCardComponent } from '../components/post-card/post-card.component';
 
 @NgModule({
   declarations: [
     BlogComponent,
-    PostComponent
+    PostComponent,
+    PostCardComponent
   ],
   imports: [
     SharedModule,
