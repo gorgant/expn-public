@@ -8,7 +8,7 @@
           </div>
           <ul class="subtopics">
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/home">Home Page</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home Page</a>
             </li>
           </ul>
         </div>
@@ -18,7 +18,7 @@
           </div>
           <ul class="subtopics">
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/about">About Me</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.ABOUT_ME">About Me</a>
             </li>
           </ul>
         </div>
@@ -28,13 +28,13 @@
           </div>
           <ul class="subtopics">
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/services">Web Courses</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.SERVICES">Web Courses</a>
             </li>
-            <li routerLink="/services">
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/services">Remote Coach</a>
+            <li>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.SERVICES">Remote Coach</a>
             </li>
-            <li routerLink="/services">
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/services">Webinars</a>
+            <li>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.SERVICES">Webinars</a>
             </li>
           </ul>
         </div>
@@ -44,13 +44,13 @@
           </div>
           <ul class="subtopics">
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/blog">Blog</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.BLOG">Blog</a>
             </li>
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/podcast">Podcast</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PODCAST">Podcast</a>
             </li>
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/blog">YouTube</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.BLOG">YouTube</a>
             </li>
           </ul>
         </div>
@@ -60,7 +60,7 @@
           </div>
           <ul class="subtopics">
             <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/contact">Contact Me</a>
+              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact Me</a>
             </li>
           </ul>
         </div>
@@ -75,16 +75,16 @@
           Check us out on social media!
         </div>
         <div fxLayout="row" fxLayoutGap="16px">
-          <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/channel/UCMnAKOzuvMSuBSoPUL3dXlw">
+          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.YOUTUBE">
             <img class="social-icons" src="assets/icons/social-media/youtube_icon.svg" alt="YouTube Channel Icon">
           </a>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/explearning/">
+          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.INSTAGRAM">
             <img class="social-icons" src="assets/icons/social-media/instagram_icon.svg" alt="Instagram Icon">
           </a>
-          <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/ExplearningCo">
+          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.TWITTER">
             <img class="social-icons" src="assets/icons/social-media/twitter_icon.svg" alt="Twitter Icon">
           </a>
-          <a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/explearning.co/">
+          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.FACEBOOK">
             <img class="social-icons" src="assets/icons/social-media/facebook_icon.svg" alt="Facebook Icon">
           </a>
         </div>

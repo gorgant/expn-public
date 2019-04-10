@@ -3,7 +3,7 @@ import { UiService } from 'src/app/core/services/ui.service';
 import { Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { AppRouts } from 'src/app/core/models/app-routes.model';
+import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-header',
@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
 
   @ViewChild('matButton') matButton;
   activeUrl$: Observable<string>;
-  appRoutes = AppRouts;
+  appRoutes = AppRoutes;
 
   constructor(
     private uiService: UiService,

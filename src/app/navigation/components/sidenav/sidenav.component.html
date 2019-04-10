@@ -3,7 +3,7 @@
   
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/home"
+    [routerLink]="appRoutes.HOME"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>home</mat-icon>
     <p mat-line>Home</p>
@@ -11,7 +11,7 @@
 
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/about"
+    [routerLink]="appRoutes.ABOUT_ME"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>explore</mat-icon>
     <p mat-line>About Me</p>
@@ -19,7 +19,7 @@
   
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/services"
+    [routerLink]="appRoutes.SERVICES"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>people</mat-icon>
     <p mat-line>Services</p>
@@ -27,7 +27,7 @@
   
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/blog"
+    [routerLink]="appRoutes.BLOG"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>subscriptions</mat-icon>
     <p mat-line>Blog</p>
@@ -35,7 +35,7 @@
   
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/podcast"
+    [routerLink]="appRoutes.PODCAST"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>headset</mat-icon>
     <p mat-line>Podcast</p>
@@ -43,7 +43,7 @@
 
   <mat-list-item 
     routerLinkActive="active-list-item"
-    routerLink="/contact"
+    [routerLink]="appRoutes.CONTACT"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>chat_bubble</mat-icon>
     <p mat-line>Contact</p>

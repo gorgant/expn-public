@@ -2,29 +2,29 @@
   
   <!-- Logo -->
   <div>
-    <a routerLink="/" class="logo">Explearning</a>
+    <a [routerLink]="appRoutes.HOME" class="logo">Explearning</a>
   </div>
 
   <!-- Nav Items: Only display if screen is md or greater -->
   <div class="nav-items-container" fxFlex fxLayoutAlign="flex-end" fxHide fxShow.gt-sm="true" >
     <ul fxLayout="row" fxLayoutGap="24px" class="nav-items">
       <li class="nav-list-item">
-          <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/home">Home</a>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home</a>
       </li>
       <li class="nav-list-item">
-          <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/about">About Me</a>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.ABOUT_ME">About Me</a>
       </li>
       <li class="nav-list-item">
-        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/services">Services</a>
+        <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.SERVICES">Services</a>
       </li>
       <li class="nav-list-item">
-        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/blog">Blog</a>
+        <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.BLOG">Blog</a>
       </li>
       <li class="nav-list-item">
-        <a class="nav-item" routerLinkActive="nav-item-active" routerLink="/podcast">Podcast</a>
+        <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PODCAST">Podcast</a>
       </li>
       <li class="nav-list-item">
-        <a class="nav-item contact" routerLinkActive="nav-item-active" routerLink="/contact">Contact</a>
+        <a class="nav-item contact" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact</a>
       </li>
     </ul>
   </div>

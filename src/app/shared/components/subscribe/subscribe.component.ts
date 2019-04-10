@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/validation-messages.model';
+import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/forms/validation-messages.model';
 
 @Component({
   selector: 'app-subscribe',

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AuthData } from '../models/auth-data.model';
+import { AuthData } from '../models/auth/auth-data.model';
 import { UiService } from 'src/app/core/services/ui.service';
-import { AppUser } from 'src/app/core/models/app-user.model';
+import { AppUser } from 'src/app/core/models/user/app-user.model';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { from, Observable, Subject, throwError } from 'rxjs';
