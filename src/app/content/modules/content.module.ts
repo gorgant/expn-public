@@ -5,7 +5,6 @@ import { HomeComponent } from '../components/home/home.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AboutComponent } from '../components/about/about.component';
 import { ServicesComponent } from '../components/services/services.component';
-import { BlogComponent } from '../components/blog/blog.component';
 import { PodcastComponent } from '../components/podcast/podcast.component';
 import { ContactComponent } from '../components/contact/contact.component';
 import { HeroComponent } from '../components/home/hero/hero.component';
@@ -17,7 +16,6 @@ import { InActionComponent } from '../components/home/in-action/in-action.compon
     HomeComponent,
     AboutComponent,
     ServicesComponent,
-    BlogComponent,
     PodcastComponent,
     ContactComponent,
     HeroComponent,
