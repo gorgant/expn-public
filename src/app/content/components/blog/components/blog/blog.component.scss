@@ -1,0 +1,19 @@
+@import '../../../../../variables';
+
+// This is a class is applied to the component itself, so needs the :host pseudo-class
+// See: https://blog.angular-university.io/angular-host-context/
+:host {
+  width: 100%;
+  max-width: $max-screen-width;
+}
+
+app-page-hero {
+  width: 100%;
+}
+
+.blog-container {
+  width: 100%;
+  padding: 16px;
+  max-width: 1000px;
+}
+

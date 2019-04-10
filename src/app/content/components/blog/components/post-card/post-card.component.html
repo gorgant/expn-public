@@ -1,4 +1,4 @@
-<mat-card fxLayout="column" fxLayoutAlign="end start">
+<!-- <mat-card fxLayout="column" fxLayoutAlign="end start">
   <mat-card-content (click)="onSelectPost()" >
     <div *ngIf="post.heroImageProps">
       <img class="post-image" [src]="post.heroImageProps.src" [srcset]="post.heroImageProps.srcset" [sizes]="post.heroImageProps.sizes" [width]="post.heroImageProps.width" [alt]="post.title">
@@ -8,4 +8,13 @@
       <p><small>Modified by {{ post.author }} &bull; {{ post.modifiedDate | date }}</small></p>
     </div>
   </mat-card-content>
-</mat-card>
+</mat-card> -->
+
+<div [routerLink]="['.', post.id]" class="item" fxLayout="column" fxLayoutAlign="center center">
+  <div class="thumbnail">
+    <img class="post-image" [src]="post.heroImageProps.src" [srcset]="post.heroImageProps.srcset" [sizes]="post.heroImageProps.sizes" [width]="post.heroImageProps.width" [alt]="post.title">
+  </div>
+  <div class="caption">
+      {{ post.title }}
+  </div>
+</div>

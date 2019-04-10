@@ -1,0 +1,27 @@
+@import '../../../variables';
+
+.hero-background-image {
+  width: 100%;
+  background-color: #cccccc;
+  height: 90vh;
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-text-container {
+  margin-top: -20vh;
+  margin-left: 86px;
+  color: white;
+}
+
+.hero-title {
+  font-size: 60px;
+  font-weight: $font-weight-light;
+  max-width: 500px;
+}
+
+.hero-subtitle {
+  font-size: 24px;
+  font-weight: $font-weight-light;
+}

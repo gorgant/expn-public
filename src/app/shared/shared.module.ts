@@ -4,10 +4,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
+import { PageHeroComponent } from './components/page-hero/page-hero.component';
 
 @NgModule({
   declarations: [
-    SubscribeComponent
+    SubscribeComponent,
+    PageHeroComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import { SubscribeComponent } from './components/subscribe/subscribe.component';
     ReactiveFormsModule,
     MaterialModule,
     FlexLayoutModule,
-    SubscribeComponent
+    SubscribeComponent,
+    PageHeroComponent
   ]
 })
 export class SharedModule { }

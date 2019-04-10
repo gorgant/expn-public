@@ -1,18 +1,35 @@
-mat-card {
-  height: 100%;
+@import "../../../../../variables";
+
+.item {
+  opacity: $inactive-item-opacity;
+  width: 300px;
+}
+
+.item:hover {
+  opacity: $active-item-opacity;
+  .caption {
+    opacity: $opacity-high;
+    // color: $accent;
+  }
+  cursor: pointer;
+}
+
+.thumbnail {
+  width: 300px;
 }
 
 .post-image {
-  width: 100%;
+  max-width: 100%;
 }
 
-mat-card-content {
-  height: 100%;
+.caption {
+  font-size: 22px;
+  opacity: $opacity-medium;
+  text-align: center
 }
 
-mat-card-actions {
-  width: 100%;
-  margin: 0px;
-  padding: 0px;
-  margin-bottom: 0px !important; // Clears a default bottom margin setting
+@media screen and (max-width: $mobile-cutoff-width) {
+  .item {
+    opacity: $active-item-opacity;
+  }
 }
