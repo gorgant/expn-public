@@ -5,11 +5,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
 import { PageHeroComponent } from './components/page-hero/page-hero.component';
+import { EInActionComponent } from './components/e-in-action/e-in-action.component';
 
 @NgModule({
   declarations: [
     SubscribeComponent,
-    PageHeroComponent
+    PageHeroComponent,
+    EInActionComponent
   ],
   imports: [
     CommonModule,

@@ -4,6 +4,8 @@ import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/ro
 import { Observable } from 'rxjs';
 import { Post } from 'src/app/core/models/posts/post.model';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
+import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 
 @Component({
   selector: 'app-blog',
@@ -16,11 +18,19 @@ export class BlogComponent implements OnInit {
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
 
+  heroData: PageHeroData;
+
   constructor(
     private store$: Store<RootStoreState.State>
   ) { }
 
   ngOnInit() {
+
+    this.heroData = {
+      pageTitle: 'Explearning in Action',
+      pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
+      imageUrl: ImagePaths.BLOG
+    };
 
     this.posts$ = this.store$.select(PostStoreSelectors.selectAllPosts)
       .pipe(

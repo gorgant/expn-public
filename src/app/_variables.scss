@@ -115,3 +115,9 @@ $opacity-faded: 0.3;
     background: $color; /* The Fallback */
     background: rgba($color, $opacity);
 }
+
+@mixin hero-content-positioning() {
+    margin-top: -20vh;
+    margin-left: 86px;
+}
+

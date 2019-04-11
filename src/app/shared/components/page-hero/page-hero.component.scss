@@ -1,27 +1,79 @@
 @import '../../../variables';
 
 .hero-background-image {
-  width: 100%;
+  background-image: url("src/assets/images/background/home_page_background_mary_daphne@2000.jpg");
   background-color: #cccccc;
   height: 90vh;
   background-position: top;
   background-repeat: no-repeat;
   background-size: cover;
+  padding: 16px;
+}
+
+.hero-content-container {
+  margin-top: -20vh;
+  margin-left: 86px;
 }
 
 .hero-text-container {
-  margin-top: -20vh;
-  margin-left: 86px;
   color: white;
 }
 
 .hero-title {
   font-size: 60px;
   font-weight: $font-weight-light;
-  max-width: 500px;
+  position: relative;
+  max-width: 600px;
 }
 
 .hero-subtitle {
   font-size: 24px;
   font-weight: $font-weight-light;
+  position: absolute;
+  width: 100%;
+  margin-top: 16px;
+}
+
+:host ::ng-deep .hero-button-container {
+  margin-top: 32px;
+}
+
+:host ::ng-deep .hero-button {
+  background-color: $primary;
+  color: white;
+  font-size: 20px;
+  padding: 8px;
+  width: 200px;
+}
+
+:host ::ng-deep .hero-button:hover {
+  background-color: $accent;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+
+  .hero-background-image {
+    height: 90vh;
+  }
+
+  .hero-content-container {
+    margin-left: 0px;
+  }
+
+  .hero-text-container {
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: 42px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  :host ::ng-deep .hero-button {
+    width: auto;
+    font-size: 16px;
+  }
 }

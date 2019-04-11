@@ -1,6 +1,9 @@
 <div class="home-content" fxLayout="column" fxLayoutAlign="center center">
   
-  <app-hero></app-hero>
+  <app-page-hero [heroData]="heroData">
+    <button [routerLink]="appRoutes.SERVICES" mat-raised-button class="hero-button">Remote Coach</button>
+    <button [routerLink]="appRoutes.SERVICES" mat-raised-button class="hero-button">Web Courses</button>
+  </app-page-hero>
 
   <app-feature-icons fxLayout="row" fxLayoutAlign="center center"></app-feature-icons>
 
