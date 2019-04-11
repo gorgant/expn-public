@@ -1,0 +1,19 @@
+@import "../../../variables";
+
+.item {
+  width: 300px;
+}
+
+.thumbnail {
+  width: 300px;
+}
+
+.post-image {
+  max-width: 100%;
+}
+
+.caption {
+  font-size: 22px;
+  opacity: $opacity-medium;
+  text-align: center
+}

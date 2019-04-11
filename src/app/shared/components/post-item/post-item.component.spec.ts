@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EInActionComponent } from './e-in-action.component';
+import { PostItemComponent } from './post-item.component';
 
-describe('EInActionComponent', () => {
-  let component: EInActionComponent;
-  let fixture: ComponentFixture<EInActionComponent>;
+describe('PostCardComponent', () => {
+  let component: PostItemComponent;
+  let fixture: ComponentFixture<PostItemComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EInActionComponent ]
+      declarations: [ PostItemComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EInActionComponent);
+    fixture = TestBed.createComponent(PostItemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

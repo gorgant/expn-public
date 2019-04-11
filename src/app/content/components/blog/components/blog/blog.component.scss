@@ -11,9 +11,7 @@ app-page-hero {
   width: 100%;
 }
 
-.blog-container {
-  width: 100%;
-  padding: 16px;
-  max-width: 1000px;
+.collection-container {
+  @include collection-container-bounds;
 }
 

@@ -5,16 +5,22 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
 import { PageHeroComponent } from './components/page-hero/page-hero.component';
-import { EInActionComponent } from './components/e-in-action/e-in-action.component';
+import { PostCollectionComponent } from './components/post-collection/post-collection.component';
+import { PostItemComponent } from './components/post-item/post-item.component';
+import { RouterModule } from '@angular/router';
+import { MatElevationDirective } from './directives/mat-elevation.directive';
 
 @NgModule({
   declarations: [
     SubscribeComponent,
     PageHeroComponent,
-    EInActionComponent
+    PostCollectionComponent,
+    PostItemComponent,
+    MatElevationDirective
   ],
   imports: [
     CommonModule,
+    RouterModule,
     ReactiveFormsModule,
     MaterialModule,
     FlexLayoutModule,
@@ -25,7 +31,10 @@ import { EInActionComponent } from './components/e-in-action/e-in-action.compone
     MaterialModule,
     FlexLayoutModule,
     SubscribeComponent,
-    PageHeroComponent
+    PageHeroComponent,
+    PostCollectionComponent,
+    PostItemComponent,
+    MatElevationDirective
   ]
 })
 export class SharedModule { }

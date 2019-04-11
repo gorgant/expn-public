@@ -121,3 +121,10 @@ $opacity-faded: 0.3;
     margin-left: 86px;
 }
 
+@mixin collection-container-bounds {
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+

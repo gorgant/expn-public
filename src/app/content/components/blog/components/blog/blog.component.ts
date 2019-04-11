@@ -26,24 +26,33 @@ export class BlogComponent implements OnInit {
 
   ngOnInit() {
 
+    this.initializeHeroData();
+
+    this.initializePosts();
+
+  }
+
+  private initializeHeroData() {
     this.heroData = {
       pageTitle: 'Explearning in Action',
       pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
       imageUrl: ImagePaths.BLOG
     };
+  }
 
+  private initializePosts() {
     this.posts$ = this.store$.select(PostStoreSelectors.selectAllPosts)
-      .pipe(
-        withLatestFrom(
-          this.store$.select(PostStoreSelectors.selectPostsLoaded)
-        ),
-        map(([posts, postsLoaded]) => {
-          if (!postsLoaded) {
-            this.store$.dispatch(new PostStoreActions.AllPostsRequested());
-          }
-          return posts;
-        })
-      );
+    .pipe(
+      withLatestFrom(
+        this.store$.select(PostStoreSelectors.selectPostsLoaded)
+      ),
+      map(([posts, postsLoaded]) => {
+        if (!postsLoaded) {
+          this.store$.dispatch(new PostStoreActions.AllPostsRequested());
+        }
+        return posts;
+      })
+    );
 
     this.error$ = this.store$.select(
       PostStoreSelectors.selectPostError
@@ -52,7 +61,6 @@ export class BlogComponent implements OnInit {
     this.isLoading$ = this.store$.select(
       PostStoreSelectors.selectPostIsLoading
     );
-
   }
 
 }

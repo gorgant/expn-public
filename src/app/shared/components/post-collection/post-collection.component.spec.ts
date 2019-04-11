@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PostCardComponent } from './post-card.component';
+import { PostCollectionComponent } from './post-collection.component';
 
-describe('PostCardComponent', () => {
-  let component: PostCardComponent;
-  let fixture: ComponentFixture<PostCardComponent>;
+describe('EInActionComponent', () => {
+  let component: PostCollectionComponent;
+  let fixture: ComponentFixture<PostCollectionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PostCardComponent ]
+      declarations: [ PostCollectionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PostCardComponent);
+    fixture = TestBed.createComponent(PostCollectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
