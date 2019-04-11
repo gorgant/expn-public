@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 
@@ -11,10 +11,12 @@ export class PageHeroComponent implements OnInit {
 
   @Input() heroData: PageHeroData;
 
-  // TODO: Set these with input? or slot or ngcontent
+  @ViewChild('contentStartTag') ContentStartTag: ElementRef;
+
   imageUrl: string;
   pageTitle: string;
   pageSubtitle: string;
+  actionMessage: string;
 
   stylesObject: {};
 
@@ -26,8 +28,13 @@ export class PageHeroComponent implements OnInit {
     this.pageTitle = this.heroData.pageTitle;
     this.pageSubtitle = this.heroData.pageSubtitle;
     this.imageUrl = this.heroData.imageUrl;
+    this.actionMessage = this.heroData.actionMessage;
 
     this.configureBackgroundStyleObject();
+  }
+
+  scrollToTextStart() {
+    this.ContentStartTag.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private configureBackgroundStyleObject() {

@@ -36,7 +36,8 @@ export class BlogComponent implements OnInit {
     this.heroData = {
       pageTitle: 'Explearning in Action',
       pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
-      imageUrl: ImagePaths.BLOG
+      imageUrl: ImagePaths.BLOG,
+      actionMessage: 'View Collection'
     };
   }
 
@@ -47,6 +48,7 @@ export class BlogComponent implements OnInit {
         this.store$.select(PostStoreSelectors.selectPostsLoaded)
       ),
       map(([posts, postsLoaded]) => {
+        // Check if posts are loaded, if not fetch from server
         if (!postsLoaded) {
           this.store$.dispatch(new PostStoreActions.AllPostsRequested());
         }
