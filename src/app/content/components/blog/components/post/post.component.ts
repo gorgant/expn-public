@@ -1,29 +1,32 @@
-import { Component, OnInit, SecurityContext } from '@angular/core';
+import { Component, OnInit, SecurityContext, OnDestroy } from '@angular/core';
 import { Post } from 'src/app/core/models/posts/post.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { withLatestFrom, map, take } from 'rxjs/operators';
+import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.scss']
 })
-export class PostComponent implements OnInit {
+export class PostComponent implements OnInit, OnDestroy {
 
   postId: string;
   post$: Observable<Post>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
+  postLoaded: boolean;
+  postSubscription: Subscription;
 
   heroData: PageHeroData;
 
   sanitizedPostBody: SafeHtml;
   videoHtml: SafeHtml;
+
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -45,7 +48,7 @@ export class PostComponent implements OnInit {
     if (idParam) {
       this.postId = idParam;
       this.getPost();
-      this.initializePostContent();
+      this.initializeHeroAndPostContent();
     }
   }
 
@@ -58,10 +61,11 @@ export class PostComponent implements OnInit {
       ),
       map(([post, postsLoaded]) => {
         // Check if posts are loaded, if not fetch from server
-        if (!postsLoaded) {
+        if (!postsLoaded && !this.postLoaded) {
+          console.log('No post in store, fetching from server', this.postId);
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
-        this.initializeHeroData(post);
+        this.postLoaded = true; // Prevents loading from firing more than needed
         return post;
       })
     );
@@ -76,17 +80,27 @@ export class PostComponent implements OnInit {
   }
 
   // If post data available, patch values into form
-  private initializePostContent() {
-    this.post$
-    .pipe(take(1))
-    .subscribe(post => {
-      if (post) {
-        this.sanitizedPostBody = this.sanitizer.sanitize(SecurityContext.HTML, post.content);
-        if (post.videoUrl) {
-          this.configureVideoUrl(post.videoUrl);
+  private initializeHeroAndPostContent() {
+    this.postSubscription = this.post$
+      // .pipe(
+      //   takeWhile((post, ) => {
+      //     console.log('Taking for now');
+      //     if (post) {
+      //       return false;
+      //     }
+      //     return true;
+      //   })
+      // )
+      .subscribe(post => {
+        console.log('post subscription firing');
+        if (post) {
+          this.initializeHeroData(post);
+          this.sanitizedPostBody = this.sanitizer.sanitize(SecurityContext.HTML, post.content);
+          if (post.videoUrl) {
+            this.configureVideoUrl(post.videoUrl);
+          }
         }
-      }
-    });
+      });
   }
 
   private configureVideoUrl(videoUrl: string) {
@@ -99,11 +113,19 @@ export class PostComponent implements OnInit {
   }
 
   private initializeHeroData(post: Post) {
+    console.log('Initializing hero data with this post', post);
     this.heroData = {
       pageTitle: post.title,
       imageUrl: post.heroImageProps.src,
-      actionMessage: 'Read More'
+      actionMessage: 'Read More',
+      isPost: true
     };
+  }
+
+  ngOnDestroy() {
+    if (this.postSubscription) {
+      this.postSubscription.unsubscribe();
+    }
   }
 
 }

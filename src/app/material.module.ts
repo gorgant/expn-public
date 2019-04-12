@@ -17,7 +17,8 @@ import {
   MatTableModule,
   MatSortModule,
   MatPaginatorModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatTooltipModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
@@ -42,7 +43,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   exports: [
     MatButtonModule,
@@ -62,7 +64,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ]
 })
 export class MaterialModule { }

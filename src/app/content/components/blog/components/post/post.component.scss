@@ -1,7 +1,11 @@
 @import "../../../../../variables";
 
+:host {
+  width: 100%;
+}
+
 .blog-container {
-  width: 100vw;
+  width: 100%;
   max-width: 2000px;
 }
 
@@ -66,7 +70,6 @@ app-page-hero {
   
   // Blockquote styling
   // Courtesy of https://codepen.io/cliftwalker/pen/XJaEXY
-  @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic);
   blockquote{
     font-size: 1.4em;
     width:60%;

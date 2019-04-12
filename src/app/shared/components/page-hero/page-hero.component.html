@@ -1,5 +1,6 @@
-<!-- <div class="hero-background-image" [style.backgroundImage]="stylesObject" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
-  <div class="hero-content-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
+<div class="hero-background-image" [style.backgroundImage]="stylesObject" fxLayout="column" fxLayoutAlign="center center" [fxLayoutAlign.gt-sm]="heroBackgroundImageAlignValue">
+  
+  <div class="hero-content-container" [ngClass]="{'post-hero-content-container': isPost}" [fxFlex]="heroContentContainerMobileFlexValue" fxLayout="column" fxLayoutAlign="end center" [fxFlex.gt-sm]="heroContentContainerFlexValue" [fxLayoutAlign.gt-sm]="heroContentContainerAlignValue">
     <div class="hero-text-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
       <div class="hero-title" >
         <span>{{ pageTitle }}</span>
@@ -10,24 +11,8 @@
       <ng-content select=".hero-button"></ng-content>
     </div>
   </div>
-  <div *ngIf="actionMessage" class="hero-action-message">
-    {{ actionMessage }}
-  </div>
-</div> -->
-
-<div class="hero-background-image" [style.backgroundImage]="stylesObject" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
-  <div class="hero-content-container" fxFlex="60" fxLayout="column" fxLayoutAlign="end center" fxFlex.gt-sm="50" fxLayoutAlign.gt-sm="end start">
-    <div class="hero-text-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
-      <div class="hero-title" >
-        <span>{{ pageTitle }}</span>
-        <div *ngIf="pageSubtitle" class="hero-subtitle">{{ pageSubtitle }}</div>
-      </div>
-    </div>
-    <div class="hero-button-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxLayoutGap.gt-sm="64px" >
-      <ng-content select=".hero-button"></ng-content>
-    </div>
-  </div>
-  <div class="hero-action-container" fxFlex="40" fxLayout="column" fxLayoutAlign="end center" fxFlex.gt-sm="50">
+  
+  <div class="hero-action-container" [fxFlex]="heroActionContainerMobileFlexValue" fxLayout="column" fxLayoutAlign="end center" [fxFlex.gt-sm]="heroActionContainerFlexValue">
     <div class="hero-actions" fxLayout="column" fxLayoutAlign="end center">
       <div class="hero-action-message" (click)=scrollToTextStart()> {{ actionMessage }}</div>
       <mat-icon class="hero-down-icon">keyboard_arrow_down</mat-icon>

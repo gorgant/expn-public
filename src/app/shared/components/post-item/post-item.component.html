@@ -2,7 +2,7 @@
   <div class="thumbnail">
     <img appMatElevation class="post-image" [src]="post.heroImageProps.src" [srcset]="post.heroImageProps.srcset" [sizes]="post.heroImageProps.sizes" [width]="post.heroImageProps.width" [alt]="post.title">
   </div>
-  <div class="caption">
+  <div class="caption" [matTooltip]="post.title" matTooltipPosition="above" matTooltipShowDelay="500">
       {{ post.title }}
   </div>
 </div>

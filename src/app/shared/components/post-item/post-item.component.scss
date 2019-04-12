@@ -4,6 +4,10 @@
   width: 300px;
 }
 
+.item:hover {
+  cursor: pointer;
+}
+
 .thumbnail {
   width: 300px;
 }
@@ -15,5 +19,8 @@
 .caption {
   font-size: 22px;
   opacity: $opacity-medium;
-  text-align: center
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  @include line-clamp(2);
 }

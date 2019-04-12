@@ -3,4 +3,5 @@ export interface PageHeroData {
   pageTitle: string;
   pageSubtitle?: string;
   actionMessage?: string;
+  isPost?: boolean;
 }
