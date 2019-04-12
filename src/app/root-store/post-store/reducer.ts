@@ -41,6 +41,25 @@ export function featureReducer(state = initialState, action: Actions): State {
       );
     }
 
+    case ActionTypes.FEATURED_POSTS_REQUESTED: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null
+      };
+    }
+
+    case ActionTypes.FEATURED_POSTS_LOADED: {
+      return featureAdapter.addAll(
+        action.payload.posts, {
+          ...state,
+          isLoading: false,
+          error: null,
+          featuredPostsLoaded: true,
+        }
+      );
+    }
+
     case ActionTypes.POST_LOAD_FAILURE: {
       return {
         ...state,

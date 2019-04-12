@@ -6,6 +6,7 @@ import { Post } from 'src/app/core/models/posts/post.model';
 export const getError = (state: State): any => state.error;
 export const getIsLoading = (state: State): boolean => state.isLoading;
 export const getPostsLoaded = (state: State): boolean => state.postsLoaded;
+export const getFeaturedPostsLoaded = (state: State): boolean => state.featuredPostsLoaded;
 
 export const selectPostState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('posts');
@@ -13,6 +14,11 @@ export const selectPostState: MemoizedSelector<object, State>
 export const selectAllPosts: (state: object) => Post[] = createSelector(
   selectPostState,
   fromPosts.selectAll
+);
+
+export const selectFeaturedPosts = createSelector(
+  selectAllPosts,
+  posts => posts.filter(post => post.featured)
 );
 
 export const selectPostById: (postId: string) => MemoizedSelector<object, Post>
@@ -31,3 +37,6 @@ export const selectPostIsLoading: MemoizedSelector<object, boolean>
 
 export const selectPostsLoaded: MemoizedSelector<object, boolean>
 = createSelector(selectPostState, getPostsLoaded);
+
+export const selectFeaturedPostsLoaded: MemoizedSelector<object, boolean>
+= createSelector(selectPostState, getFeaturedPostsLoaded);

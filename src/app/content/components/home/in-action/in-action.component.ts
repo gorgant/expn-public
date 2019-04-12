@@ -25,18 +25,20 @@ export class InActionComponent implements OnInit {
   }
 
   private initializePosts() {
-    this.posts$ = this.store$.select(PostStoreSelectors.selectAllPosts)
-    .pipe(
-      withLatestFrom(
-        this.store$.select(PostStoreSelectors.selectPostsLoaded)
-      ),
-      map(([posts, postsLoaded]) => {
-        if (!postsLoaded) {
-          this.store$.dispatch(new PostStoreActions.AllPostsRequested());
-        }
-        return posts;
-      })
-    );
+    this.posts$ = this.store$.select(PostStoreSelectors.selectFeaturedPosts)
+      .pipe(
+        withLatestFrom(
+          this.store$.select(PostStoreSelectors.selectPostsLoaded),
+          this.store$.select(PostStoreSelectors.selectFeaturedPostsLoaded)
+        ),
+        map(([posts, postsLoaded, featuredPostsLoaded]) => {
+          if (!postsLoaded && !featuredPostsLoaded) {
+            console.log('No featured posts loaded, loading those now');
+            this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
+          }
+          return posts;
+        })
+      );
 
     this.error$ = this.store$.select(
       PostStoreSelectors.selectPostError

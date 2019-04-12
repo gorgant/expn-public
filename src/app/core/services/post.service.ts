@@ -34,6 +34,22 @@ export class PostService {
       );
   }
 
+  fetchFeaturedPosts(): Observable<Post[]> {
+    const featuredPostCollection = this.getFeaturedPostsCollection();
+    return featuredPostCollection.valueChanges()
+      .pipe(
+        takeUntil(this.authService.unsubTrigger$),
+        map(posts => {
+          console.log('Fetched featured posts', posts);
+          return posts;
+        }),
+        catchError(error => {
+          this.uiService.showSnackBar(error, null, 5000);
+          return throwError(error);
+        })
+      );
+  }
+
   fetchSinglePost(postId: string): Observable<Post> {
     const postDoc = this.getPostDoc(postId);
     return postDoc.valueChanges()
@@ -49,6 +65,10 @@ export class PostService {
 
   private getPostsCollection(): AngularFirestoreCollection<Post> {
     return this.afs.collection<Post>('posts', ref => ref.orderBy('publishedDate', 'desc'));
+  }
+
+  private getFeaturedPostsCollection(): AngularFirestoreCollection<Post> {
+    return this.afs.collection<Post>('posts', ref => ref.where('featured', '==', true));
   }
 
   private getPostDoc(postId: string): AngularFirestoreDocument<Post> {

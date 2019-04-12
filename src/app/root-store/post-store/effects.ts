@@ -44,4 +44,20 @@ export class PostStoreEffects {
         )
     )
   );
+
+  @Effect()
+  featuredPostsRequestedEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<postFeatureActions.FeaturedPostsRequested>(
+      postFeatureActions.ActionTypes.FEATURED_POSTS_REQUESTED
+    ),
+    switchMap(action =>
+      this.postService.fetchFeaturedPosts()
+        .pipe(
+          map(posts => new postFeatureActions.FeaturedPostsLoaded({ posts })),
+          catchError(error => {
+            return of(new postFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

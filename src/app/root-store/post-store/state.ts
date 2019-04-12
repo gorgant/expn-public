@@ -6,12 +6,12 @@ export const featureAdapter: EntityAdapter<Post>
     {
       selectId: (post: Post) => post.id,
 
-      // // Sort by published date
-      // sortComparer: (a: Post, b: Post): number => {
-      //   const publishedDateA = a.publishedDate;
-      //   const publishedDateB = b.publishedDate;
-      //   return publishedDateA.toString().localeCompare(publishedDateB.toString(), undefined, {numeric: true});
-      // }
+      // Sort by published date
+      sortComparer: (a: Post, b: Post): number => {
+        const publishedDateA = a.publishedDate;
+        const publishedDateB = b.publishedDate;
+        return publishedDateA.toString().localeCompare(publishedDateB.toString(), undefined, {numeric: true});
+      }
     }
   );
 
@@ -19,6 +19,7 @@ export interface State extends EntityState<Post> {
   isLoading?: boolean;
   error?: any;
   postsLoaded?: boolean;
+  featuredPostsLoaded?: boolean;
 }
 
 export const initialState: State = featureAdapter.getInitialState(
@@ -26,5 +27,6 @@ export const initialState: State = featureAdapter.getInitialState(
     isLoading: false,
     error: null,
     postsLoaded: false,
+    featuredPostsLoaded: false,
   }
 );
