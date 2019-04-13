@@ -1,0 +1,100 @@
+@import '../../../../../../variables';
+
+:host {
+  width: 100%;
+}
+
+.product-diagram {
+  @include background-opacity($primary, $opacity-minimal);
+  padding: 16px;
+  width: 100%;
+
+  font-size: 22px;
+  
+}
+
+.diagram-title {
+  color: $primary;
+  font-size: 1.5em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.diagram-item {
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.diagram-item-timer {
+  width: 70%;
+}
+
+// When changing size, change dimensions as well: https://stackoverflow.com/a/51824041/6572208
+.item-icon {
+  color: $primary;
+  font-size: 4.5em;
+  width: 17%;
+  height: auto;
+  margin-left: 5%;
+  margin-right: 8%;
+}
+
+.item-title {
+  font-size: 1em;
+  font-weight: $font-weight-medium;
+}
+
+.item-description {
+  font-size: 1em;
+}
+
+.item-description-timer {
+  margin-left: 16px;
+}
+
+.diagram-spacer {
+  width: 100%;
+}
+
+.spacer-line {
+  color: $primary;
+  background-color: $primary;
+}
+
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  
+  .diagram-title {
+    font-size: 1.2em;
+  }
+
+  .diagram-item-timer {
+    width: 100%;
+  }
+
+  // When changing size, change dimensions as well: https://stackoverflow.com/a/51824041/6572208
+  .item-icon {
+    color: $primary;
+    font-size: 3.6em;
+    text-align: center;
+    width: 50%;
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
+  .item-title {
+    font-size: 0.8em;
+    text-align: center;
+  }
+
+  .item-description {
+    font-size: 0.8em;
+    text-align: center;
+  }
+
+  .item-description-timer {
+    margin-left: 0px;
+  }
+
+}

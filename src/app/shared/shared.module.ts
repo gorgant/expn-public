@@ -9,6 +9,7 @@ import { PostCollectionComponent } from './components/post-collection/post-colle
 import { PostItemComponent } from './components/post-item/post-item.component';
 import { RouterModule } from '@angular/router';
 import { MatElevationDirective } from './directives/mat-elevation.directive';
+import { BuyNowBoxComponent } from './components/buy-now-box/buy-now-box.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { MatElevationDirective } from './directives/mat-elevation.directive';
     PageHeroComponent,
     PostCollectionComponent,
     PostItemComponent,
-    MatElevationDirective
+    MatElevationDirective,
+    BuyNowBoxComponent
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,8 @@ import { MatElevationDirective } from './directives/mat-elevation.directive';
     PageHeroComponent,
     PostCollectionComponent,
     PostItemComponent,
-    MatElevationDirective
+    MatElevationDirective,
+    BuyNowBoxComponent
   ]
 })
 export class SharedModule { }

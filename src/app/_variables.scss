@@ -94,6 +94,11 @@ $desktop-button-width: 200px;
 $mobile-form-width: 100%;
 $desktop-form-width: 300px;
 
+$text-block-font-weight: $font-weight-regular;
+$text-block-font-size: 22px;
+$text-block-mobile-font-size: 16px;
+$text-block-max-width: 670px;
+
 
 $inactive-item-opacity: 0.8;
 $active-item-opacity: 1;
@@ -103,6 +108,7 @@ $opacity-high: 0.87;
 $opacity-medium: 0.60;
 $opacity-light: 0.38;
 $opacity-faded: 0.3;
+$opacity-minimal: 0.1;
 
 // $hex-opacity-high-emphasis: DE;
 // $hex-opacity-medium-emphasis: 99;

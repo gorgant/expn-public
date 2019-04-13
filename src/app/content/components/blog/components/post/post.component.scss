@@ -44,7 +44,7 @@ app-page-hero {
     padding-left: 16px;
     padding-right: 16px;
     width: 100%;
-    max-width: 600px;
+    max-width: $text-block-max-width;
   }
   
   h3 {
@@ -52,8 +52,8 @@ app-page-hero {
   }
   
   p {
-    font-size: 22px;
-    font-weight: 300;
+    font-size: $text-block-font-size;
+    font-weight: $text-block-font-weight;
   }
   
   figcaption {
@@ -105,4 +105,11 @@ app-page-hero {
     font-weight: bold;
     margin-top:1em;
   }
+
+  @media screen and (max-width: $mobile-cutoff-width) {
+    p {
+      font-size: $text-block-mobile-font-size;
+    }
+  }
 }
+

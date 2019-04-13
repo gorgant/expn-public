@@ -37,6 +37,12 @@ export class PageHeroComponent implements OnInit {
 
   ngOnInit() {
 
+    this.initializeInputData();
+
+    this.configureBackgroundStyleObject();
+  }
+
+  private initializeInputData() {
     this.pageTitle = this.heroData.pageTitle;
     this.pageSubtitle = this.heroData.pageSubtitle;
     this.actionMessage = this.heroData.actionMessage;
@@ -47,8 +53,6 @@ export class PageHeroComponent implements OnInit {
       this.initalizeNonPostConfig();
     }
 
-
-    this.configureBackgroundStyleObject();
   }
 
   private initalizePostConfig() {
