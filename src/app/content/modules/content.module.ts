@@ -4,7 +4,6 @@ import { ContentRoutingModule } from './content-routing.module';
 import { HomeComponent } from '../components/home/home.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AboutComponent } from '../components/about/about.component';
-import { ServicesComponent } from '../components/services/services.component';
 import { PodcastComponent } from '../components/podcast/podcast.component';
 import { ContactComponent } from '../components/contact/contact.component';
 import { FeatureIconsComponent } from '../components/home/feature-icons/feature-icons.component';
@@ -14,7 +13,6 @@ import { InActionComponent } from '../components/home/in-action/in-action.compon
   declarations: [
     HomeComponent,
     AboutComponent,
-    ServicesComponent,
     PodcastComponent,
     ContactComponent,
     FeatureIconsComponent,
