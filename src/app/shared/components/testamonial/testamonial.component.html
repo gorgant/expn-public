@@ -1,0 +1,9 @@
+<div class="testamonial-container" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center start">
+  <app-avatar-portrait [imagePath]="testamonialData.imageUrl"></app-avatar-portrait>
+  <div class="testamonial-content">
+      <div class="speech-bubble">
+        <div class="bubble-text">{{ testamonialData.testamonialText }}</div>
+        <div class="bubble-author">- {{ testamonialData.author }}</div>
+      </div>
+    </div>
+</div>

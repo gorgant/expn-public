@@ -1,0 +1,9 @@
+@import '../../../variables';
+
+.intro-avatar {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  margin-right: 16px;
+  border: 4px solid $primary;
+}

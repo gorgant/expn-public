@@ -169,3 +169,29 @@ $opacity-minimal: 0.1;
         border-color: black transparent transparent transparent;
         }
 }
+
+@mixin textBlockBullets() {
+    ul {
+        list-style: none;
+        padding: 0px;
+        margin: 1em 0;
+    }
+      
+    ul li {
+        list-style-type: none;
+        background-image: url('/assets/icons/text/bullet_icon.png');
+        background-size: 16px;
+        background-repeat: no-repeat;
+        background-position: 0px 8px;
+        padding-left: 40px;
+        margin: 1em;
+    }
+
+    @media screen and (max-width: $mobile-cutoff-width) {
+        ul li {
+            background-size: 12px;
+            background-position: 0px 6px;
+            padding-left: 30px;
+        }
+    }
+}

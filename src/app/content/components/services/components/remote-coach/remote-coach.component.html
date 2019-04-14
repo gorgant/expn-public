@@ -19,7 +19,7 @@
     
     <div class="body-container" fxLayout="column" fxLayoutAlign="start center">
       <div class="body-intro" fxLayout="row" fxLayoutAlign="center center">
-        <img class="intro-avatar" [src]="imagePaths.MD_AVATAR" alt="Mary Daphne Explearning Avatar">
+        <app-avatar-portrait [imagePath]="imagePaths.MD_AVATAR"></app-avatar-portrait>
         <div class="intro-text">
           Hi, I'm Mary Daphne, co-founder of Explearning. With an Ed.M from Columbia University, I've been teaching and coaching communications for over ten years.
         </div>
@@ -64,6 +64,10 @@
         <p>This is your chance to get professional, personalized feedback and quality communications instruction, all from the convenience of your home.</p>
         <p>You need to bring your A Game. We're here to help.</p>
         <p>Ready to get started?</p>
+      </div>
+      <app-buy-now-box [buyNowData]="buyNowData"></app-buy-now-box>
+      <div class="testamonial-section">
+        <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
       </div>
       <app-buy-now-box [buyNowData]="buyNowData"></app-buy-now-box>
     </div>

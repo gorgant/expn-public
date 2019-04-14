@@ -34,14 +34,6 @@ app-page-hero {
   margin-bottom: 16px;
 }
 
-.intro-avatar {
-  width: 108px;
-  height: 108px;
-  border-radius: 50%;
-  margin-right: 16px;
-  border: 4px solid $primary;
-}
-
 .intro-text {
   font-weight: $font-weight-medium;
 }
@@ -51,6 +43,20 @@ app-page-hero {
   max-width: $text-block-max-width;
   font-size: $text-block-font-size;
   font-weight: $text-block-font-weight;
+}
+
+.body-text {
+  @include textBlockBullets()
+}
+
+app-buy-now-box {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.testamonial-section {
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
@@ -70,4 +76,5 @@ app-page-hero {
   .body-container {
     font-size: $text-block-mobile-font-size;
   }
+
 }
