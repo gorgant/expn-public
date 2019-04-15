@@ -49,6 +49,11 @@ export function featureReducer(state = initialState, action: Actions): State {
         isLoading: false,
         error: action.payload.error
       };
+    case ActionTypes.SET_PRODUCT_DATA:
+      return {
+        ...state,
+        productData: action.payload.productData
+      };
 
     default: {
       return state;

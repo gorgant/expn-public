@@ -65,11 +65,11 @@
         <p>You need to bring your A Game. We're here to help.</p>
         <p>Ready to get started?</p>
       </div>
-      <app-buy-now-box [buyNowData]="buyNowData"></app-buy-now-box>
+      <app-buy-now-box [buyNowData]="buyNowData" [productData]="productData"></app-buy-now-box>
       <div class="testamonial-section">
         <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
       </div>
-      <app-buy-now-box [buyNowData]="buyNowData"></app-buy-now-box>
+      <app-buy-now-box [buyNowData]="buyNowData" [productData]="productData"></app-buy-now-box>
     </div>
   </div>
 </div>

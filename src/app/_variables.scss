@@ -91,6 +91,10 @@ $mobile-cutoff-width: 959px;
 
 $mobile-button-width: 100%;
 $desktop-button-width: 200px;
+$desktop-buy-button-width: 400px;
+$mobile-buy-button-height: 3em;
+$desktop-buy-button-height: 2em;
+
 $mobile-form-width: 100%;
 $desktop-form-width: 300px;
 
@@ -109,6 +113,8 @@ $opacity-medium: 0.60;
 $opacity-light: 0.38;
 $opacity-faded: 0.3;
 $opacity-minimal: 0.1;
+
+$form-border-color: #EEEEEE;
 
 // $hex-opacity-high-emphasis: DE;
 // $hex-opacity-medium-emphasis: 99;

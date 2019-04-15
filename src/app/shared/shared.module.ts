@@ -12,6 +12,7 @@ import { MatElevationDirective } from './directives/mat-elevation.directive';
 import { BuyNowBoxComponent } from './components/buy-now-box/buy-now-box.component';
 import { TestamonialComponent } from './components/testamonial/testamonial.component';
 import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-portrait.component';
+import { CheckOutComponent } from './components/check-out/check-out.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
     MatElevationDirective,
     BuyNowBoxComponent,
     TestamonialComponent,
-    AvatarPortraitComponent
+    AvatarPortraitComponent,
+    CheckOutComponent
   ],
   imports: [
     CommonModule,
@@ -43,7 +45,8 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
     MatElevationDirective,
     BuyNowBoxComponent,
     TestamonialComponent,
-    AvatarPortraitComponent
+    AvatarPortraitComponent,
+    CheckOutComponent
   ]
 })
 export class SharedModule { }

@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
 import { AppUser } from 'src/app/core/models/user/app-user.model';
 import { StoreUserDataType } from 'src/app/core/models/user/store-user-data-type.model';
+import { ProductData } from 'src/app/core/models/products/product-data.model';
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',
@@ -12,6 +13,7 @@ export enum ActionTypes {
   UPDATE_PROFILE_IMAGE_REQUESTED = '[User] Update Profile Image Requested',
   UPDATE_PROFILE_IMAGE_COMPLETE = '[User] Update Profile Image Complete',
   USER_DATA_LOAD_ERROR = '[User] Load Failure',
+  SET_PRODUCT_DATA = '[User] Product Data Set'
 }
 
 export class UserDataRequested implements Action {
@@ -61,6 +63,11 @@ export class LoadErrorDetected implements Action {
   constructor(public payload: { error: string }) {}
 }
 
+export class SetProductData implements Action {
+  readonly type = ActionTypes.SET_PRODUCT_DATA;
+  constructor(public payload: {productData: ProductData}) {}
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
@@ -70,5 +77,6 @@ UpdatePasswordRequested |
 UpdatePasswordComplete |
 UpdateProfileImageRequested |
 UpdateProfileImageComplete |
-LoadErrorDetected
+LoadErrorDetected |
+SetProductData
 ;

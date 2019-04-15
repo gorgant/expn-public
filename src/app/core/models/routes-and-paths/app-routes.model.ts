@@ -5,5 +5,6 @@ export enum AppRoutes {
   REMOTE_COACH = '/services/remote-coach',
   BLOG = '/blog',
   PODCAST = '/podcast',
-  CONTACT = '/contact'
+  CONTACT = '/contact',
+  CHECKOUT = '/services/checkout'
 }

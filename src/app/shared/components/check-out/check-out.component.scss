@@ -1,0 +1,160 @@
+@import "../../../variables";
+
+.checkout-container {
+  font-size: 16px;
+  margin-top: 64px;
+}
+
+.checkout-content {
+  max-width: 525px;
+  border: 2px solid $form-border-color;
+}
+
+.product-summary {
+  width: 100%;
+
+  .summary-header {
+    @include background-opacity($primary, $opacity-minimal);
+    font-size: 1em;
+    font-weight: $font-weight-medium;
+    padding: 16px;
+    border-bottom: 2px solid $form-border-color;
+  }
+
+  .summary-details {
+    margin-top: 16px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .product-name {
+    font-size: 1.4em;
+    font-weight: $font-weight-medium;
+  }
+
+  .product-price, .product-description {
+    font-size: 1em;
+  }
+
+  mat-divider {
+    color: $form-border-color;
+    width: 100%;
+  }
+}
+
+
+.purchase-data-form-container {
+  margin-top: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
+  width: 100%;
+}
+
+.purchase-data-form {
+  width: 100%;
+}
+
+.billing-details-group {
+  width: 100%;
+}
+
+mat-form-field {
+  width: $desktop-form-width;
+}
+
+.credit-card-details-group {
+  @include background-opacity($primary, $opacity-minimal);
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  border: 1px solid $form-border-color;
+
+  .card-details-title {
+    font-size: 1.4em;
+    margin-bottom: 16px;
+  }
+
+  .card-month, .card-year {
+    width: 40px;
+    text-align: center;
+  }
+  
+  .card-cvc {
+    width: 56px;
+    text-align: center;
+  }
+
+  .buy-button {
+    width: $desktop-buy-button-width;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-size: 1.3em;
+    font-weight: $font-weight-regular;
+    height: 2em;
+  }
+
+  .processing-hint {
+    font-size: 0.75em;
+    opacity: $opacity-medium;
+    text-align: center;
+  }
+}
+
+.md-avatar {
+  width: 100%;
+  max-width: 300px;
+
+  .md-blurb {
+    opacity: $opacity-medium;
+    text-align: center;
+  }
+}
+
+
+.checkout-disclaimer {
+  margin-top: 32px;
+  margin-bottom: 32px;
+  font-size: 0.75em;
+  opacity: $opacity-medium;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .checkout-container {
+    margin-top: 0px;
+  }
+  
+  .product-summary {
+    .summary-header {
+      text-align: center;
+    }
+
+    .summary-details {
+      width: 100%;
+    }
+  
+    .product-name {
+      width: 100%;
+    }
+  
+    .product-price, .product-description {
+      width: 100%;
+    }
+  }
+
+  mat-form-field {
+    width: $mobile-form-width;
+  }
+
+  .credit-card-details-group {
+    .buy-button {
+      width: 100%;
+      font-size: 1em;
+      font-weight: $font-weight-medium;
+      height: $mobile-buy-button-height;
+    }
+
+    .card-expiration-container {
+      width: 100%;
+    }
+  }
+}
