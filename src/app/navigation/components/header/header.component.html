@@ -6,7 +6,7 @@
   </div>
 
   <!-- Nav Items: Only display if screen is md or greater -->
-  <div class="nav-items-container" fxFlex fxLayoutAlign="flex-end" fxHide fxShow.gt-sm="true" >
+  <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT" class="nav-items-container" fxFlex fxLayoutAlign="flex-end" fxHide fxShow.gt-sm="true" >
     <ul fxLayout="row" fxLayoutGap="24px" class="nav-items">
       <li class="nav-list-item">
           <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home</a>
@@ -30,7 +30,7 @@
   </div>
 
   <!-- Menue Icon: Only display if screen is sm or less -->
-  <div class="menu-button" fxFlex fxLayoutAlign="flex-end" fxHide.gt-sm>
+  <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT " class="menu-button" fxFlex fxLayoutAlign="flex-end" fxHide.gt-sm>
     <button (click)="onToggleSidenav()" #matButton mat-icon-button>
       <mat-icon>menu</mat-icon>
     </button>

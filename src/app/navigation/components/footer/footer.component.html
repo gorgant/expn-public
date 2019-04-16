@@ -1,5 +1,5 @@
 <div class="footer-container" fxLayout="column" fxLayoutAlign="center center">
-    <div class="footer-content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="32px" fxLayout.gt-md="row" fxLayoutAlign.gt-md="center start" fxFlexFill.gt-md fxLayoutGap.gt-md="64px">
+    <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT" class="footer-content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="32px" fxLayout.gt-md="row" fxLayoutAlign.gt-md="center start" fxFlexFill.gt-md fxLayoutGap.gt-md="64px">
       
       <div class="site-map" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="16px" fxFlex="40">
         <div class="home" fxLayout="column">
@@ -92,7 +92,7 @@
   
     </div>
     <div class="copyright">
-      <span>&copy; Explearning, LLC, All Rights Reserved 2019</span>
+      <span>&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</span>
     </div>
   </div>
 
