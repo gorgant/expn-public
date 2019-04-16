@@ -1,0 +1,51 @@
+@import "../../../../variables";
+
+.product-summary {
+  width: 100%;
+}
+
+.summary-header {
+  @include background-opacity($primary, $opacity-minimal);
+  font-size: 1em;
+  font-weight: $font-weight-medium;
+  padding: 16px;
+  border-bottom: 2px solid $form-border-color;
+}
+
+.summary-details {
+  margin-top: 16px;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.product-name {
+  font-size: 1.4em;
+  font-weight: $font-weight-medium;
+}
+
+.product-price, .product-description {
+  font-size: 1em;
+}
+
+mat-divider {
+  color: $form-border-color;
+  width: 100%;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .summary-header {
+    text-align: center;
+  }
+
+  .summary-details {
+    width: 100%;
+  }
+
+  .product-name {
+    width: 100%;
+  }
+
+  .product-price, .product-description {
+    width: 100%;
+  }
+}

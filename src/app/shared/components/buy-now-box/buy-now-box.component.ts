@@ -31,7 +31,6 @@ export class BuyNowBoxComponent implements OnInit {
   ngOnInit() {
 
     this.initializeInputData();
-    console.log('Buy now initialized with this product data', this.productData);
   }
 
   onBuyNow() {

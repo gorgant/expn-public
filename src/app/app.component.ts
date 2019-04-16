@@ -5,6 +5,8 @@ import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreActions, UserStoreActions } from './root-store';
 import { withLatestFrom } from 'rxjs/operators';
+import { ProductStrings } from './core/models/products/product-strings.model';
+import { ProductData } from './core/models/products/product-data.model';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +27,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.configureSideNav();
     this.configureAuthDetection();
+    this.checkForOfflineProductData();
   }
 
   // Handles sideNav clicks
@@ -67,5 +70,13 @@ export class AppComponent implements OnInit {
         this.store$.dispatch(new AuthStoreActions.SetUnauthenticated());
       }
     });
+  }
+
+  private checkForOfflineProductData() {
+    const offlineProductData = localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA);
+    if (offlineProductData) {
+      const productData: ProductData = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));
+      this.store$.dispatch(new UserStoreActions.SetProductData({productData}));
+    }
   }
 }

@@ -13,6 +13,8 @@ import { BuyNowBoxComponent } from './components/buy-now-box/buy-now-box.compone
 import { TestamonialComponent } from './components/testamonial/testamonial.component';
 import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-portrait.component';
 import { CheckOutComponent } from './components/check-out/check-out.component';
+import { PurchaseDataFormComponent } from './components/check-out/purchase-data-form/purchase-data-form.component';
+import { ProductSummaryComponent } from './components/check-out/product-summary/product-summary.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { CheckOutComponent } from './components/check-out/check-out.component';
     BuyNowBoxComponent,
     TestamonialComponent,
     AvatarPortraitComponent,
-    CheckOutComponent
+    CheckOutComponent,
+    PurchaseDataFormComponent,
+    ProductSummaryComponent
   ],
   imports: [
     CommonModule,
