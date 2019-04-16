@@ -19,7 +19,7 @@
       </mat-error>
     </mat-form-field>
     <mat-form-field class="email">
-      <input matInput formControlName="email" type="text" placeholder="Email">
+      <input matInput formControlName="email" type="email" placeholder="Email">
       <mat-error *ngFor="let validation of billingValidationMessages.email">
         <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
       </mat-error>
@@ -78,26 +78,18 @@
     <div class="card-expiration-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
       <mat-form-field class="card-month">
         <input matInput formControlName="cardMonth" type="phone" placeholder="MM">
-        <mat-error *ngFor="let validation of creditCardValidationMessages.cardMonth">
-          <mat-error *ngIf="cardMonth.hasError(validation.type) && cardMonth.invalid && (cardMonth.dirty || cardMonth.touched)">{{ validation.message }}</mat-error>
-        </mat-error>
       </mat-form-field>
       <div class="month-year-spacer">/</div>
       <mat-form-field class="card-year">
         <input matInput formControlName="cardYear" type="phone" placeholder="YY">
-        <mat-error *ngFor="let validation of creditCardValidationMessages.cardYear">
-          <mat-error *ngIf="cardYear.hasError(validation.type) && cardYear.invalid && (cardYear.dirty || cardYear.touched)">{{ validation.message }}</mat-error>
-        </mat-error>
       </mat-form-field>
       <mat-form-field class="card-cvc">
         <input matInput formControlName="cardCvc" type="phone" placeholder="CVC">
-        <mat-error *ngFor="let validation of creditCardValidationMessages.cardCvc">
-          <mat-error *ngIf="cardCvc.hasError(validation.type) && cardCvc.invalid && (cardCvc.dirty || cardCvc.touched)">{{ validation.message }}</mat-error>
-        </mat-error>
       </mat-form-field>
     </div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
-      <button class="buy-button" mat-raised-button [disabled]="purchaseDataForm.invalid" color="primary" type="submit">Get {{ productData.name }}</button>
+      <button *ngIf="purchaseDataForm.invalid" class="buy-button" mat-raised-button [disabled]="purchaseDataForm.invalid" color="primary" type="submit">Complete Form to Proceed</button>
+      <button *ngIf="purchaseDataForm.valid" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ productData.title }}</button>
       <div class="processing-hint">It can take up to 30 seconds to process your order, so please be patient.</div>
     </div>
   </div>

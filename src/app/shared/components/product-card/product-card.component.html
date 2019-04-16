@@ -1,0 +1,17 @@
+<div appMatElevation class="product-card" fxLayout="column" fxLayout.gt-sm="row">
+  <div class="card-image" fxFlex="30" fxLayout="column" fxLayoutAlign="center center" fxFlexOrder.gt-sm="2">
+    <img [src]="imagePaths.MD_AVATAR" alt="Remote Coach">
+  </div>
+  <div class="card-text-container" fxFlex="70" fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="16px" fxFlexOrder.gt-sm="1">
+    <div class="card-title">{{ productData.title }}</div>
+    <div class="card-subtitle">{{ productData.mdBlurb }}</div>
+    <div class="card-description">
+      <ul class="description-highlights">
+        <li *ngFor="let highlight of productData.highlights">{{ highlight }}</li>
+      </ul>
+    </div>
+    <div class="card-action">
+      <button class="action-button" mat-raised-button color="primary" (click)="onClick()">Learn More</button>
+    </div>
+  </div>
+</div>

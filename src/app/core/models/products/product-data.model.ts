@@ -1,7 +1,8 @@
 export interface ProductData {
-  header: string;
-  name: string;
+  checkoutHeader: string;
+  title: string;
   price: number;
   description: string;
+  highlights: string[];
   mdBlurb: string;
 }

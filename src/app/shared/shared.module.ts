@@ -15,6 +15,7 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
 import { CheckOutComponent } from './components/check-out/check-out.component';
 import { PurchaseDataFormComponent } from './components/check-out/purchase-data-form/purchase-data-form.component';
 import { ProductSummaryComponent } from './components/check-out/product-summary/product-summary.component';
+import { ProductCardComponent } from './components/product-card/product-card.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ProductSummaryComponent } from './components/check-out/product-summary/
     AvatarPortraitComponent,
     CheckOutComponent,
     PurchaseDataFormComponent,
-    ProductSummaryComponent
+    ProductSummaryComponent,
+    ProductCardComponent
   ],
   imports: [
     CommonModule,
@@ -50,7 +52,8 @@ import { ProductSummaryComponent } from './components/check-out/product-summary/
     BuyNowBoxComponent,
     TestamonialComponent,
     AvatarPortraitComponent,
-    CheckOutComponent
+    CheckOutComponent,
+    ProductCardComponent
   ]
 })
 export class SharedModule { }
