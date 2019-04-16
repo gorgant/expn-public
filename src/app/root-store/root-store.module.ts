@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule, RouterStateSerializer, NavigationActionTiming } from '@ngrx/router-store';
 import { CustomSerializer } from '../core/utils/router-state-serializer';
+import { UiStoreModule } from './ui-store';
 
 @NgModule({
   declarations: [],
@@ -18,6 +19,7 @@ import { CustomSerializer } from '../core/utils/router-state-serializer';
     AuthStoreModule,
     UserStoreModule,
     PostsStoreModule,
+    UiStoreModule,
     StoreModule.forRoot({}, {metaReducers}),
     EffectsModule.forRoot([]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],

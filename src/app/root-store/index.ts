@@ -4,5 +4,6 @@ import * as RootStoreState from './state';
 export * from './auth-store';
 export * from './user-store';
 export * from './post-store';
+export * from './ui-store';
 
 export { RootStoreState, RootStoreModule };

@@ -5,6 +5,10 @@ import {
   CREDIT_CARD_VALIDATION_MESSAGES
 } from 'src/app/core/models/forms-and-components/validation-messages.model';
 import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Store } from '@ngrx/store';
+import { RootStoreState, UiStoreSelectors } from 'src/app/root-store';
+import { Observable } from 'rxjs';
+import { Country } from 'src/app/core/models/forms-and-components/country.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -15,16 +19,39 @@ export class PurchaseDataFormComponent implements OnInit {
 
   @Input() productData: ProductData;
 
+  countryList$: Observable<Country[]>;
+
   purchaseDataForm: FormGroup;
   billingValidationMessages = BILLING_VALIDATION_MESSAGES;
   creditCardValidationMessages = CREDIT_CARD_VALIDATION_MESSAGES;
 
   constructor(
     private fb: FormBuilder,
+    private store$: Store<RootStoreState.State>
   ) { }
 
   ngOnInit() {
     this.initializeForm();
+
+    // Categories store already initialized in nav bar component
+    this.countryList$ = this.store$.select(
+      UiStoreSelectors.selectCountryList
+    );
+  }
+
+  // This fires when the Country select field is changed, allowing access to the category object
+  // Without this, when saving the form, the category name will not populate on the form
+  setCountry(countryCode: string) {
+    this.store$.select(UiStoreSelectors.selectCountryByCode(countryCode))
+      .subscribe(country => {
+        this.purchaseDataForm.patchValue({
+          country: country.name
+        });
+      });
+  }
+
+  onSubmit() {
+    console.log('Purchase Data', this.purchaseDataForm.value);
   }
 
   private initializeForm() {
@@ -50,9 +77,6 @@ export class PurchaseDataFormComponent implements OnInit {
     });
   }
 
-  onSubmit() {
-    console.log('Purchase Data', this.purchaseDataForm.value);
-  }
 
   // These getters are used for easy access in the HTML template
   get billingDetailsGroup() { return this.purchaseDataForm.get('billingDetailsGroup'); }

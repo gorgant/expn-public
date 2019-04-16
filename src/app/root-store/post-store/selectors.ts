@@ -3,10 +3,10 @@ import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/s
 import * as fromPosts from './reducer';
 import { Post } from 'src/app/core/models/posts/post.model';
 
-export const getError = (state: State): any => state.error;
-export const getIsLoading = (state: State): boolean => state.isLoading;
-export const getPostsLoaded = (state: State): boolean => state.postsLoaded;
-export const getFeaturedPostsLoaded = (state: State): boolean => state.featuredPostsLoaded;
+const getError = (state: State): any => state.error;
+const getIsLoading = (state: State): boolean => state.isLoading;
+const getPostsLoaded = (state: State): boolean => state.postsLoaded;
+const getFeaturedPostsLoaded = (state: State): boolean => state.featuredPostsLoaded;
 
 export const selectPostState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('posts');

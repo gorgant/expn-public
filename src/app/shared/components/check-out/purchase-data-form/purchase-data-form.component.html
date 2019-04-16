@@ -61,10 +61,21 @@
       </mat-error>
     </mat-form-field>
     <mat-form-field class="country">
-      <input matInput formControlName="country" type="text" placeholder="Country">
+      <!-- <input matInput formControlName="country" type="text" placeholder="Country">
+      <mat-error *ngFor="let validation of billingValidationMessages.country">
+        <mat-error *ngIf="country.hasError(validation.type) && country.invalid && (country.dirty || country.touched)">{{ validation.message }}</mat-error>
+      </mat-error> -->
+      <select formControlName="country" id="countryList" (change)="setCountry($event.target.value)">
+        <option *ngFor="let country of countryList$ | async" [value]="country.code">{{ country.name }}</option>
+      </select>
       <mat-error *ngFor="let validation of billingValidationMessages.country">
         <mat-error *ngIf="country.hasError(validation.type) && country.invalid && (country.dirty || country.touched)">{{ validation.message }}</mat-error>
       </mat-error>
+      <!-- <div *ngIf="categoryId.invalid && (categoryId.dirty || categoryId.touched)" class="alert alert-danger">
+        <div *ngIf="categoryId.errors['required']">
+          Category is required.
+        </div>
+      </div> -->
     </mat-form-field>
   </div>
   <div class="credit-card-details-group" formGroupName="creditCardDetailsGroup" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
