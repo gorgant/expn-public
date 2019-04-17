@@ -16,10 +16,11 @@ export function featureReducer(state = initialState, action: Actions): State {
         isOnline: false
       };
 
-    case ActionTypes.COUNTRY_LIST_LOADED:
+    case ActionTypes.GEOGRAPHIC_DATA_LOADED:
       return {
         ...state,
-        countryList: action.payload.countryList
+        geographicDataLoaded: true,
+        geographicData: action.payload.geographicData
       };
 
     case ActionTypes.UI_DATA_LOAD_ERROR:

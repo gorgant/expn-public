@@ -35,10 +35,13 @@ export const BILLING_VALIDATION_MESSAGES = {
   state: [
     { type: 'required', message: 'State/Province is required.'},
   ],
+  usStateCode: [
+    { type: 'required', message: 'State is required.'},
+  ],
   postalCode: [
     { type: 'required', message: 'Zip/Postal Code is required.'},
   ],
-  country: [
+  countryCode: [
     { type: 'required', message: 'Country is required.'},
   ],
 };

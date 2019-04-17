@@ -1,12 +1,12 @@
 import { Action } from '@ngrx/store';
-import { Country } from 'src/app/core/models/forms-and-components/country.model';
+import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
 
 
 export enum ActionTypes {
   APP_ONLINE = '[Connection] App is Online',
   APP_OFFLINE = '[Connection] App is Offline',
-  COUNTRY_LIST_REQUESTED = '[UI] Country List Requested',
-  COUNTRY_LIST_LOADED = '[UI] Country List Set',
+  GEOGRAPHIC_DATA_REQUESTED = '[UI] Geographic Data Requested',
+  GEOGRAPHIC_DATA_LOADED = '[UI] Geographic Data Loaded',
   UI_DATA_LOAD_ERROR = '[UI] Load Failure'
 }
 
@@ -18,14 +18,14 @@ export class AppOffline implements Action {
   readonly type = ActionTypes.APP_OFFLINE;
 }
 
-export class CountryListRequested implements Action {
-  readonly type = ActionTypes.COUNTRY_LIST_REQUESTED;
+export class GeographicDataRequested implements Action {
+  readonly type = ActionTypes.GEOGRAPHIC_DATA_REQUESTED;
 }
 
-export class CountryListLoaded implements Action {
-  readonly type = ActionTypes.COUNTRY_LIST_LOADED;
+export class GeographicDataLoaded implements Action {
+  readonly type = ActionTypes.GEOGRAPHIC_DATA_LOADED;
 
-  constructor(public payload: { countryList: Country[] }) {}
+  constructor(public payload: { geographicData: GeographicData }) {}
 }
 
 export class LoadErrorDetected implements Action {
@@ -36,7 +36,7 @@ export class LoadErrorDetected implements Action {
 export type Actions =
   AppOnline |
   AppOffline |
-  CountryListRequested |
-  CountryListLoaded |
+  GeographicDataRequested |
+  GeographicDataLoaded |
   LoadErrorDetected
   ;

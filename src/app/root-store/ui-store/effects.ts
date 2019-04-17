@@ -15,13 +15,13 @@ export class UiStoreEffects {
 
   @Effect()
   countryListRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<uiFeatureActions.CountryListRequested>(
-      uiFeatureActions.ActionTypes.COUNTRY_LIST_REQUESTED
+    ofType<uiFeatureActions.GeographicDataRequested>(
+      uiFeatureActions.ActionTypes.GEOGRAPHIC_DATA_REQUESTED
     ),
     switchMap(action =>
-      this.uiService.fetchCountryList()
+      this.uiService.fetchGeographicData()
         .pipe(
-          map(countryList => new uiFeatureActions.CountryListLoaded({ countryList })),
+          map(geographicData => new uiFeatureActions.GeographicDataLoaded({ geographicData })),
           catchError(error => {
             return of(new uiFeatureActions.LoadErrorDetected({ error }));
           })
