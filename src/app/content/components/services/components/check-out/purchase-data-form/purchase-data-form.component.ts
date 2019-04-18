@@ -10,6 +10,10 @@ import { RootStoreState, UiStoreSelectors, UiStoreActions } from 'src/app/root-s
 import { Observable } from 'rxjs';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
+import { BillingDetails } from 'src/app/core/models/products/billing-details.model';
+import { CreditCardDetails } from 'src/app/core/models/products/credit-card-details.model';
+import { Invoice } from 'src/app/core/models/products/invoice.model';
+import { now } from 'moment';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -96,7 +100,41 @@ export class PurchaseDataFormComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('Purchase Data', this.purchaseDataForm.value);
+    const billingDetails: BillingDetails = {
+      firstName: this.firstName.value,
+      lastName: this.lastName.value,
+      email: this.email.value,
+      phone: this.phone.value,
+      billingOne: this.billingOne.value,
+      billingTwo: this.billingTwo.value,
+      city: this.city.value,
+      state: this.state.value,
+      usStateCode: this.usStateCode.value,
+      postalCode: this.postalCode.value,
+      country: this.country.value,
+      countryCode: this.countryCode.value,
+    };
+
+    const creditCardDetails: CreditCardDetails = {
+      cardName: `${this.firstName.value} ${this.lastName.value}`,
+      cardNumber: this.cardNumber.value,
+      cardMonth: this.cardMonth.value,
+      cardYear: this.cardYear.value,
+      cardCvc: this.cardCvc.value,
+    };
+
+    const invoice: Invoice = {
+      invoiceId: 'TEMP INVOICE ID',
+      productName: this.productData.title,
+      productId: 'TEMP PRDOUCT ID',
+      purchaseDate: now(),
+      purchasePrice: this.productData.price,
+      customerId: 'TEMP CUSTOMER ID',
+      billingDetails,
+      creditCardDetails,
+    };
+
+    console.log('Purchase Data', invoice);
   }
 
   private initializeForm() {

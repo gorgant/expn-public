@@ -9,13 +9,8 @@ import { PostCollectionComponent } from './components/post-collection/post-colle
 import { PostItemComponent } from './components/post-item/post-item.component';
 import { RouterModule } from '@angular/router';
 import { MatElevationDirective } from './directives/mat-elevation.directive';
-import { BuyNowBoxComponent } from './components/buy-now-box/buy-now-box.component';
 import { TestamonialComponent } from './components/testamonial/testamonial.component';
 import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-portrait.component';
-import { CheckOutComponent } from './components/check-out/check-out.component';
-import { PurchaseDataFormComponent } from './components/check-out/purchase-data-form/purchase-data-form.component';
-import { ProductSummaryComponent } from './components/check-out/product-summary/product-summary.component';
-import { ProductCardComponent } from './components/product-card/product-card.component';
 
 @NgModule({
   declarations: [
@@ -24,13 +19,8 @@ import { ProductCardComponent } from './components/product-card/product-card.com
     PostCollectionComponent,
     PostItemComponent,
     MatElevationDirective,
-    BuyNowBoxComponent,
     TestamonialComponent,
     AvatarPortraitComponent,
-    CheckOutComponent,
-    PurchaseDataFormComponent,
-    ProductSummaryComponent,
-    ProductCardComponent
   ],
   imports: [
     CommonModule,
@@ -49,11 +39,8 @@ import { ProductCardComponent } from './components/product-card/product-card.com
     PostCollectionComponent,
     PostItemComponent,
     MatElevationDirective,
-    BuyNowBoxComponent,
     TestamonialComponent,
     AvatarPortraitComponent,
-    CheckOutComponent,
-    ProductCardComponent
   ]
 })
 export class SharedModule { }

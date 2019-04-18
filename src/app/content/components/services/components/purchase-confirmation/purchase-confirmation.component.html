@@ -1,0 +1,7 @@
+<div *ngIf="(productData$ | async) as productData" class="receipt-container" >
+  <div class="receipt-header">Purchase Confirmation</div>
+  <div class="receipt-summary">
+    <div class="product">Product: {{ productData.name }}</div>
+    <div class="purchase-date">Purchase Date</div>
+  </div>
+</div>
