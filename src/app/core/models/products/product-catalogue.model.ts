@@ -1,6 +1,6 @@
-import { ProductData } from './product-data.model';
-import { REMOTE_COACH_PRODUCT } from './remote-coach-product.model';
+import { Product } from './product.model';
+import { PRODUCT_REMOTE_COACH } from './remote-coach-product.model';
 
-export const PRODUCT_CATALOGUE: ProductData[] = [
-  REMOTE_COACH_PRODUCT
+export const PRODUCT_CATALOGUE: Product[] = [
+  PRODUCT_REMOTE_COACH
 ];

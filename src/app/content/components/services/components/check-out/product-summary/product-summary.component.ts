@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 
 @Component({
   selector: 'app-product-summary',
@@ -8,7 +8,7 @@ import { ProductData } from 'src/app/core/models/products/product-data.model';
 })
 export class ProductSummaryComponent implements OnInit {
 
-  @Input() productData: ProductData;
+  @Input() productData: Product;
 
   constructor() { }
 

@@ -1,6 +1,6 @@
 <div [routerLink]="[appRoutes.BLOG, post.id]" class="item" fxLayout="column" fxLayoutAlign="center center">
   <div class="thumbnail">
-    <img appMatElevation class="post-image" [src]="post.heroImageProps.src" [srcset]="post.heroImageProps.srcset" [sizes]="post.heroImageProps.sizes" [alt]="post.title">
+    <img appMatElevation class="post-image" [src]="post.imageProps.src" [srcset]="post.imageProps.srcset" [sizes]="post.imageProps.sizes" [alt]="post.title">
   </div>
   <div class="caption" [matTooltip]="post.title" matTooltipPosition="above" matTooltipShowDelay="500">
       {{ post.title }}

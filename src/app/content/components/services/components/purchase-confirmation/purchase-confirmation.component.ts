@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 
 @Component({
   selector: 'app-purchase-confirmation',
@@ -11,7 +11,7 @@ import { ProductData } from 'src/app/core/models/products/product-data.model';
 })
 export class PurchaseConfirmationComponent implements OnInit {
 
-  productData$: Observable<ProductData>;
+  productData$: Observable<Product>;
 
   constructor(
     private store$: Store<RootStoreState.State>

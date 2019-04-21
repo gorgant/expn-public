@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors } from 'src/app/root-store';
@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 })
 export class CheckOutComponent implements OnInit {
 
-  productData$: Observable<ProductData>;
+  productData$: Observable<Product>;
 
   imagePaths = ImagePaths;
 

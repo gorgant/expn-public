@@ -3,7 +3,7 @@ import { BuyNowBoxData } from 'src/app/core/models/forms-and-components/buy-now-
 import { IconPaths } from 'src/app/core/models/routes-and-paths/icon-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions } from 'src/app/root-store';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
@@ -15,7 +15,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 export class BuyNowBoxComponent implements OnInit {
 
   @Input() buyNowData: BuyNowBoxData;
-  @Input() productData: ProductData;
+  @Input() productData: Product;
 
   iconPaths = IconPaths;
 

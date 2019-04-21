@@ -1,6 +1,6 @@
 import { HeroImageProps } from './hero-image-props.model';
 
-export class Post {
+export interface Post {
   title: string;
   author: string;
   authorId: string;
@@ -8,7 +8,7 @@ export class Post {
   modifiedDate: number;
   published?: boolean;
   publishedDate?: number;
-  heroImageProps?: HeroImageProps;
+  imageProps?: HeroImageProps;
   id?: string;
   imagesUpdated?: Date;
   imageSizes?: number[];

@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreActions, UserStoreActions } from './root-store';
 import { withLatestFrom } from 'rxjs/operators';
 import { ProductStrings } from './core/models/products/product-strings.model';
-import { ProductData } from './core/models/products/product-data.model';
+import { Product } from './core/models/products/product.model';
 
 @Component({
   selector: 'app-root',
@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
   private checkForOfflineProductData() {
     const offlineProductData = localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA);
     if (offlineProductData) {
-      const productData: ProductData = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));
+      const productData: Product = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));
       this.store$.dispatch(new UserStoreActions.SetProductData({productData}));
     }
   }

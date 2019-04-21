@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
@@ -12,7 +12,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 export class ProductCardComponent implements OnInit {
 
   imagePaths = ImagePaths;
-  @Input() productData: ProductData;
+  @Input() productData: Product;
 
   constructor(
     private router: Router,

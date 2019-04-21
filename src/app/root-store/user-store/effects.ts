@@ -8,7 +8,7 @@ import { UserService } from 'src/app/core/services/user.service';
 import { RootStoreState } from '..';
 import { AppUser } from 'src/app/core/models/user/app-user.model';
 import { StoreUserDataType } from 'src/app/core/models/user/store-user-data-type.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 import { ProductStrings } from 'src/app/core/models/products/product-strings.model';
 
 @Injectable()
@@ -97,7 +97,7 @@ export class UserStoreEffects {
   );
 
   @Effect({dispatch: false})
-  setProductInLocalStorage$: Observable<Action | ProductData> = this.actions$.pipe(
+  setProductInLocalStorage$: Observable<Action | Product> = this.actions$.pipe(
     ofType<userFeatureActions.SetProductData>(
       userFeatureActions.ActionTypes.SET_PRODUCT_DATA
     ),

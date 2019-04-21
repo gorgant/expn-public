@@ -4,8 +4,8 @@ import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.mod
 import { BuyNowBoxData } from 'src/app/core/models/forms-and-components/buy-now-box-data.model';
 import { TestamonialData } from 'src/app/core/models/forms-and-components/testamonial-data.model';
 import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
-import { REMOTE_COACH_PRODUCT } from 'src/app/core/models/products/remote-coach-product.model';
+import { Product } from 'src/app/core/models/products/product.model';
+import { PRODUCT_REMOTE_COACH } from 'src/app/core/models/products/remote-coach-product.model';
 
 @Component({
   selector: 'app-remote-coach',
@@ -17,7 +17,7 @@ export class RemoteCoachComponent implements OnInit {
   heroData: PageHeroData;
   buyNowData: BuyNowBoxData;
   testamonialData: TestamonialData[];
-  productData: ProductData;
+  productData: Product;
   imagePaths = ImagePaths;
 
   constructor( ) { }
@@ -51,7 +51,7 @@ export class RemoteCoachComponent implements OnInit {
   }
 
   private initializeProductData() {
-    this.productData = REMOTE_COACH_PRODUCT;
+    this.productData = PRODUCT_REMOTE_COACH;
   }
 
 }

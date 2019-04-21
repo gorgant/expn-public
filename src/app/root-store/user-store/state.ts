@@ -1,5 +1,5 @@
 import { AppUser } from 'src/app/core/models/user/app-user.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 
 export interface State {
   user: AppUser | null;
@@ -7,7 +7,7 @@ export interface State {
   profileImageLoading: boolean;
   error?: any;
   userLoaded: boolean;
-  productData: ProductData;
+  productData: Product;
 }
 
 export const initialState: State = {

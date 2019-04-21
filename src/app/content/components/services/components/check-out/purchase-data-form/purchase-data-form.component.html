@@ -102,7 +102,7 @@
     </div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
       <button *ngIf="purchaseDataForm.invalid" class="buy-button" mat-raised-button [disabled]="purchaseDataForm.invalid" color="primary" type="submit">Complete Form to Proceed</button>
-      <button *ngIf="purchaseDataForm.valid" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ productData.title }}</button>
+      <button *ngIf="purchaseDataForm.valid" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ productData.name }}</button>
       <div class="processing-hint">It can take up to 30 seconds to process your order, so please be patient.</div>
     </div>
   </div>

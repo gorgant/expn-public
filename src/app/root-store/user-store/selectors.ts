@@ -1,14 +1,14 @@
 import { State } from './state';
 import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
 import { AppUser } from 'src/app/core/models/user/app-user.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 
 const getError = (state: State): any => state.error;
 const getUserIsLoading = (state: State): boolean => state.isLoading;
 const getProfileImageIsLoading = (state: State): boolean => state.profileImageLoading;
 const getUserLoaded = (state: State): boolean => state.userLoaded;
 const getUser = (state: State): AppUser => state.user;
-const getProductData = (state: State): ProductData => state.productData;
+const getProductData = (state: State): Product => state.productData;
 
 export const selectUserState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('user');
@@ -27,5 +27,5 @@ export const selectProfileImageIsLoading: MemoizedSelector<object, boolean>
 export const selectUserLoaded: MemoizedSelector<object, boolean>
 = createSelector(selectUserState, getUserLoaded);
 
-export const selectProductData: MemoizedSelector<object, ProductData>
+export const selectProductData: MemoizedSelector<object, Product>
 = createSelector(selectUserState, getProductData);

@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 import { AppUser } from 'src/app/core/models/user/app-user.model';
 import { StoreUserDataType } from 'src/app/core/models/user/store-user-data-type.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',
@@ -65,7 +65,7 @@ export class LoadErrorDetected implements Action {
 
 export class SetProductData implements Action {
   readonly type = ActionTypes.SET_PRODUCT_DATA;
-  constructor(public payload: {productData: ProductData}) {}
+  constructor(public payload: {productData: Product}) {}
 }
 
 export type Actions =

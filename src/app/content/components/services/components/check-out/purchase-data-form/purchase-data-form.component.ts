@@ -4,7 +4,7 @@ import {
   BILLING_VALIDATION_MESSAGES,
   CREDIT_CARD_VALIDATION_MESSAGES
 } from 'src/app/core/models/forms-and-components/validation-messages.model';
-import { ProductData } from 'src/app/core/models/products/product-data.model';
+import { Product } from 'src/app/core/models/products/product.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UiStoreSelectors, UiStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
@@ -22,7 +22,7 @@ import { now } from 'moment';
 })
 export class PurchaseDataFormComponent implements OnInit {
 
-  @Input() productData: ProductData;
+  @Input() productData: Product;
 
   geographicData$: Observable<GeographicData>;
   geographicDataLoaded: boolean;
@@ -40,21 +40,7 @@ export class PurchaseDataFormComponent implements OnInit {
   ngOnInit() {
     this.initializeForm();
 
-    // Categories store already initialized in nav bar component
-    this.geographicData$ = this.store$.select(UiStoreSelectors.selectGeographicData)
-      .pipe(
-        withLatestFrom(
-          this.store$.select(UiStoreSelectors.selectGeographicDataLoaded)
-        ),
-        map(([geographicData, geoStoreLoaded]) => {
-          if (!geoStoreLoaded && !this.geographicDataLoaded) {
-            console.log('No geo data loaded, fetching from server');
-            this.store$.dispatch(new UiStoreActions.GeographicDataRequested());
-          }
-          this.geographicDataLoaded = true; // Prevents loading from firing more than needed
-          return geographicData;
-        })
-      );
+    this.initializeGeographicData();
   }
 
   // This fires when the select field is changed, allowing access to the object
@@ -125,7 +111,7 @@ export class PurchaseDataFormComponent implements OnInit {
 
     const invoice: Invoice = {
       invoiceId: 'TEMP INVOICE ID',
-      productName: this.productData.title,
+      productName: this.productData.name,
       productId: 'TEMP PRDOUCT ID',
       purchaseDate: now(),
       purchasePrice: this.productData.price,
@@ -160,6 +146,23 @@ export class PurchaseDataFormComponent implements OnInit {
         cardCvc: ['', [Validators.required]],
       })
     });
+  }
+
+  private initializeGeographicData() {
+    this.geographicData$ = this.store$.select(UiStoreSelectors.selectGeographicData)
+    .pipe(
+      withLatestFrom(
+        this.store$.select(UiStoreSelectors.selectGeographicDataLoaded)
+      ),
+      map(([geographicData, geoStoreLoaded]) => {
+        if (!geoStoreLoaded && !this.geographicDataLoaded) {
+          console.log('No geo data loaded, fetching from server');
+          this.store$.dispatch(new UiStoreActions.GeographicDataRequested());
+        }
+        this.geographicDataLoaded = true; // Prevents loading from firing more than needed
+        return geographicData;
+      })
+    );
   }
 
 
