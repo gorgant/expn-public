@@ -1,4 +1,4 @@
-import { HeroImageProps } from './hero-image-props.model';
+import { ImageProps } from '../images/image-props.model';
 
 export interface Post {
   title: string;
@@ -8,7 +8,7 @@ export interface Post {
   modifiedDate: number;
   published?: boolean;
   publishedDate?: number;
-  imageProps?: HeroImageProps;
+  imageProps?: ImageProps;
   id?: string;
   imagesUpdated?: Date;
   imageSizes?: number[];
@@ -16,3 +16,4 @@ export interface Post {
   videoUrl?: string;
   featured?: boolean;
 }
+

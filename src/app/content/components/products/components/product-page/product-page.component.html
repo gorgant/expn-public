@@ -1,0 +1,17 @@
+
+<div class="page-container" fxLayout="column" fxLayoutAlign="center center">
+  <app-page-hero [heroData]="heroData"></app-page-hero>
+  <div class="content-container" fxLayout="column" fxLayoutAlign="center center">
+    
+    <!-- [DYNAMICALLY ADD PRODUCT SPECIFIC CONTENT COMPONENT HERE BASED ON ID USING NG CONTENT] -->
+    <app-remote-coach></app-remote-coach>
+
+    <div class="buy-now-container">
+      <app-buy-now-box [buyNowData]="buyNowData" [productData]="productData$ | async"></app-buy-now-box>
+      <div class="testamonial-section">
+        <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
+      </div>
+      <app-buy-now-box [buyNowData]="buyNowData" [productData]="productData$ | async"></app-buy-now-box>
+    </div>
+  </div>
+</div>

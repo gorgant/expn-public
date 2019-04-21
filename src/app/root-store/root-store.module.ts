@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthStoreModule } from './auth-store/auth-store.module';
 import { UserStoreModule } from './user-store/user-store.module';
-import { PostsStoreModule } from './post-store';
+import { PostStoreModule } from './post-store';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { metaReducers } from './meta-reducers';
@@ -11,6 +11,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule, RouterStateSerializer, NavigationActionTiming } from '@ngrx/router-store';
 import { CustomSerializer } from '../core/utils/router-state-serializer';
 import { UiStoreModule } from './ui-store';
+import { ProductStoreModule } from './product-store';
 
 @NgModule({
   declarations: [],
@@ -18,7 +19,8 @@ import { UiStoreModule } from './ui-store';
     CommonModule,
     AuthStoreModule,
     UserStoreModule,
-    PostsStoreModule,
+    PostStoreModule,
+    ProductStoreModule,
     UiStoreModule,
     StoreModule.forRoot({}, {metaReducers}),
     EffectsModule.forRoot([]),

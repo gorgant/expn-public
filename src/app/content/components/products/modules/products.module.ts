@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
-import { ServicesRoutingModule } from './services-routing.module';
-import { ServicesComponent } from '../components/services/services.component';
+import { ProductsRoutingModule } from './products-routing.module';
+import { ProductListComponent } from '../components/product-list/product-list.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { RemoteCoachComponent } from '../components/remote-coach/remote-coach.component';
 import { RcProductDiagramComponent } from '../components/remote-coach/rc-product-diagram/rc-product-diagram.component';
@@ -11,10 +11,11 @@ import { CheckOutComponent } from '../components/check-out/check-out.component';
 import { PurchaseDataFormComponent } from '../components/check-out/purchase-data-form/purchase-data-form.component';
 import { ProductSummaryComponent } from '../components/check-out/product-summary/product-summary.component';
 import { ProductCardComponent } from '../components/product-card/product-card.component';
+import { ProductPageComponent } from '../components/product-page/product-page.component';
 
 @NgModule({
   declarations: [
-    ServicesComponent,
+    ProductListComponent,
     RemoteCoachComponent,
     RcProductDiagramComponent,
     PurchaseConfirmationComponent,
@@ -22,11 +23,12 @@ import { ProductCardComponent } from '../components/product-card/product-card.co
     CheckOutComponent,
     ProductSummaryComponent,
     PurchaseDataFormComponent,
-    ProductCardComponent
+    ProductCardComponent,
+    ProductPageComponent
   ],
   imports: [
     SharedModule,
-    ServicesRoutingModule
+    ProductsRoutingModule
   ]
 })
-export class ServicesModule { }
+export class ProductsModule { }

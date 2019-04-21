@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ServicesComponent } from '../components/services/services.component';
-import { RemoteCoachComponent } from '../components/remote-coach/remote-coach.component';
-import { CheckOutComponent } from 'src/app/content/components/services/components/check-out/check-out.component';
+import { ProductListComponent } from '../components/product-list/product-list.component';
+import { CheckOutComponent } from 'src/app/content/components/products/components/check-out/check-out.component';
 import { PurchaseConfirmationComponent } from '../components/purchase-confirmation/purchase-confirmation.component';
+import { ProductPageComponent } from '../components/product-page/product-page.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ServicesComponent
+    component: ProductListComponent
   },
+  // {
+  //   path: 'remote-coach',
+  //   component: RemoteCoachComponent
+  // },
+
   {
-    path: 'remote-coach',
-    component: RemoteCoachComponent
+    path: ':id',
+    component: ProductPageComponent
   },
   {
     path: 'checkout',
@@ -28,4 +33,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ServicesRoutingModule { }
+export class ProductsRoutingModule { }

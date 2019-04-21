@@ -3,8 +3,8 @@ import * as PostStoreSelectors from './selectors';
 import * as PostStoreState from './state';
 
 export {
-  PostsStoreModule
-} from './posts-store.module';
+  PostStoreModule
+} from './post-store.module';
 
 export {
   PostStoreActions,

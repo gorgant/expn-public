@@ -1,8 +1,8 @@
 export enum AppRoutes {
   HOME = '/home',
   ABOUT_ME = '/about',
-  SERVICES = '/services',
-  REMOTE_COACH = '/services/remote-coach',
+  PRODUCTS = '/products',
+  REMOTE_COACH = '/products/remote-coach',
   BLOG = '/blog',
   PODCAST = '/podcast',
   CONTACT = '/contact',

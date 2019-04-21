@@ -1,26 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { BuyNowBoxData } from 'src/app/core/models/forms-and-components/buy-now-box-data.model';
 import { TestamonialData } from 'src/app/core/models/forms-and-components/testamonial-data.model';
-import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
+import { Observable } from 'rxjs';
 import { Product } from 'src/app/core/models/products/product.model';
-import { PRODUCT_REMOTE_COACH } from 'src/app/core/models/products/remote-coach-product.model';
+import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from 'src/app/root-store';
+import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
 
 @Component({
-  selector: 'app-remote-coach',
-  templateUrl: './remote-coach.component.html',
-  styleUrls: ['./remote-coach.component.scss']
+  selector: 'app-product-page',
+  templateUrl: './product-page.component.html',
+  styleUrls: ['./product-page.component.scss']
 })
-export class RemoteCoachComponent implements OnInit {
+export class ProductPageComponent implements OnInit {
 
   heroData: PageHeroData;
   buyNowData: BuyNowBoxData;
   testamonialData: TestamonialData[];
-  productData: Product;
+  productData$: Observable<Product>;
   imagePaths = ImagePaths;
 
-  constructor( ) { }
+  constructor(
+  ) { }
 
   ngOnInit() {
     this.initializeHeroData();
@@ -38,6 +41,10 @@ export class RemoteCoachComponent implements OnInit {
     };
   }
 
+  private initializeProductData() {
+    // TODO: Fetch product data via url param
+  }
+
   private initializeBuyNowData() {
     this.buyNowData = {
       title: 'Remote Coach',
@@ -48,10 +55,6 @@ export class RemoteCoachComponent implements OnInit {
 
   private initializeTestamonialData() {
     this.testamonialData = testamonialsList;
-  }
-
-  private initializeProductData() {
-    this.productData = PRODUCT_REMOTE_COACH;
   }
 
 }

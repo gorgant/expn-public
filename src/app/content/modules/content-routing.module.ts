@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from '../components/home/home.component';
 import { AboutComponent } from '../components/about/about.component';
-import { ServicesComponent } from '../components/services/components/services/services.component';
 import { PodcastComponent } from '../components/podcast/podcast.component';
 import { ContactComponent } from '../components/contact/contact.component';
 
@@ -16,8 +15,8 @@ const routes: Routes = [
     component: AboutComponent
   },
   {
-    path: 'services',
-    loadChildren: '../components/services/modules/services.module#ServicesModule'
+    path: 'products',
+    loadChildren: '../components/products/modules/products.module#ProductsModule'
   },
   {
     path: 'blog',
