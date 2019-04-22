@@ -23,7 +23,7 @@ export class PurchaseConfirmationComponent implements OnInit {
 
   private initializeProductData() {
     this.productData$ = this.store$.select(
-      UserStoreSelectors.selectProductData
+      UserStoreSelectors.selectCartData
     );
   }
 

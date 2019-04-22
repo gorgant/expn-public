@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { BuyNowBoxData } from 'src/app/core/models/forms-and-components/buy-now-box-data.model';
+import { BuyNowBoxData } from 'src/app/core/models/products/buy-now-box-data.model';
 import { IconPaths } from 'src/app/core/models/routes-and-paths/icon-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions } from 'src/app/root-store';
@@ -15,7 +15,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 export class BuyNowBoxComponent implements OnInit {
 
   @Input() buyNowData: BuyNowBoxData;
-  @Input() productData: Product;
+  @Input() product: Product;
 
   iconPaths = IconPaths;
 
@@ -30,18 +30,11 @@ export class BuyNowBoxComponent implements OnInit {
 
   ngOnInit() {
 
-    this.initializeInputData();
   }
 
   onBuyNow() {
-    this.store$.dispatch(new UserStoreActions.SetProductData({productData: this.productData}));
+    this.store$.dispatch(new UserStoreActions.SetCartData({productData: this.product}));
     this.router.navigate([AppRoutes.CHECKOUT]);
-  }
-
-  private initializeInputData() {
-    this.title = this.buyNowData.title;
-    this.subtitle = this.buyNowData.subtitle;
-    this.buttonText = this.buyNowData.buttonText;
   }
 
 }

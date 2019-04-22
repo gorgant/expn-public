@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
@@ -11,8 +10,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 })
 export class ProductCardComponent implements OnInit {
 
-  imagePaths = ImagePaths;
-  @Input() productData: Product;
+  @Input() product: Product;
 
   constructor(
     private router: Router,
@@ -22,7 +20,7 @@ export class ProductCardComponent implements OnInit {
   }
 
   onClick() {
-    this.router.navigate([AppRoutes.REMOTE_COACH]);
+    this.router.navigate([AppRoutes.PRODUCT_INDIVIDUAL, this.product.id]);
   }
 
 }

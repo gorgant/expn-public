@@ -1,9 +1,9 @@
 <div class="product-summary">
-  <div class="summary-header">{{ productData.checkoutHeader }}</div>
+  <div class="summary-header">{{ product.checkoutData.header }}</div>
   <div class="summary-details" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayoutAlign.gt-sm="center start">
-    <div class="product-name">{{ productData.name }}</div>
-    <div class="product-price">${{ productData.price | number: '1.2' }}</div>
-    <div class="product-description">{{ productData.description }}</div>
+    <div class="product-name">{{ product.name }}</div>
+    <div class="product-price">${{ product.price | number: '1.2' }}</div>
+    <div class="product-description">{{ product.checkoutData.description }}</div>
     <mat-divider ></mat-divider>
   </div>
 </div>

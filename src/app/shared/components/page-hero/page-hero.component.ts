@@ -64,11 +64,11 @@ export class PageHeroComponent implements OnInit {
     this.heroContentContainerMobileFlexValue = '70';
     this.heroActionContainerMobileFlexValue = '30';
 
-    this.imageUrl = ImagePaths.POST_HERO;
+    this.imageUrl = ImagePaths.POST_HERO; // Fixed post image
   }
 
   private initalizeNonPostConfig() {
-    this.imageUrl = this.heroData.imageUrl;
+    this.imageUrl = this.heroData.imageProps.src;
   }
 
   scrollToTextStart() {

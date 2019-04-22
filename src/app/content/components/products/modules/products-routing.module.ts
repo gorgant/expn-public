@@ -10,13 +10,8 @@ const routes: Routes = [
     path: '',
     component: ProductListComponent
   },
-  // {
-  //   path: 'remote-coach',
-  //   component: RemoteCoachComponent
-  // },
-
   {
-    path: ':id',
+    path: 'product/:id',
     component: ProductPageComponent
   },
   {

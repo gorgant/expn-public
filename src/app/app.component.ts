@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
     const offlineProductData = localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA);
     if (offlineProductData) {
       const productData: Product = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));
-      this.store$.dispatch(new UserStoreActions.SetProductData({productData}));
+      this.store$.dispatch(new UserStoreActions.SetCartData({productData}));
     }
   }
 }

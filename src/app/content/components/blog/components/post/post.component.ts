@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
+import { withLatestFrom, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-post',
@@ -60,7 +60,7 @@ export class PostComponent implements OnInit, OnDestroy {
         this.store$.select(PostStoreSelectors.selectPostsLoaded)
       ),
       map(([post, postsLoaded]) => {
-        // Check if posts are loaded, if not fetch from server
+        // Check if items are loaded, if not fetch from server
         if (!postsLoaded && !this.postLoaded) {
           console.log('No post in store, fetching from server', this.postId);
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
@@ -82,15 +82,6 @@ export class PostComponent implements OnInit, OnDestroy {
   // If post data available, patch values into form
   private initializeHeroAndPostContent() {
     this.postSubscription = this.post$
-      // .pipe(
-      //   takeWhile((post, ) => {
-      //     console.log('Taking for now');
-      //     if (post) {
-      //       return false;
-      //     }
-      //     return true;
-      //   })
-      // )
       .subscribe(post => {
         console.log('post subscription firing');
         if (post) {
@@ -116,7 +107,8 @@ export class PostComponent implements OnInit, OnDestroy {
     console.log('Initializing hero data with this post', post);
     this.heroData = {
       pageTitle: post.title,
-      imageUrl: post.imageProps.src,
+      pageSubtitle: null,
+      imageProps: post.imageProps,
       actionMessage: 'Read More',
       isPost: true
     };

@@ -6,6 +6,7 @@ import { Post } from 'src/app/core/models/posts/post.model';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { ImageProps } from 'src/app/core/models/images/image-props.model';
 
 @Component({
   selector: 'app-blog',
@@ -33,10 +34,17 @@ export class BlogComponent implements OnInit {
   }
 
   private initializeHeroData() {
+    const blogImageProps: ImageProps = {
+      src: ImagePaths.BLOG,
+      sizes: null,
+      srcset: null,
+      width: null,
+    };
+
     this.heroData = {
       pageTitle: 'Explearning in Action',
       pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
-      imageUrl: ImagePaths.BLOG,
+      imageProps: blogImageProps,
       actionMessage: 'View Collection'
     };
   }

@@ -22,7 +22,7 @@ import { now } from 'moment';
 })
 export class PurchaseDataFormComponent implements OnInit {
 
-  @Input() productData: Product;
+  @Input() product: Product;
 
   geographicData$: Observable<GeographicData>;
   geographicDataLoaded: boolean;
@@ -111,10 +111,10 @@ export class PurchaseDataFormComponent implements OnInit {
 
     const invoice: Invoice = {
       invoiceId: 'TEMP INVOICE ID',
-      productName: this.productData.name,
+      productName: this.product.name,
       productId: 'TEMP PRDOUCT ID',
       purchaseDate: now(),
-      purchasePrice: this.productData.price,
+      purchasePrice: this.product.price,
       customerId: 'TEMP CUSTOMER ID',
       billingDetails,
       creditCardDetails,

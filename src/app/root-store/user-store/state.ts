@@ -7,7 +7,7 @@ export interface State {
   profileImageLoading: boolean;
   error?: any;
   userLoaded: boolean;
-  productData: Product;
+  cartItem: Product;
 }
 
 export const initialState: State = {
@@ -16,5 +16,5 @@ export const initialState: State = {
   profileImageLoading: false,
   error: null,
   userLoaded: false,
-  productData: null,
+  cartItem: null,
 };

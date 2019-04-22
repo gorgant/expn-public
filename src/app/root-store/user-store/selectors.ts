@@ -8,7 +8,7 @@ const getUserIsLoading = (state: State): boolean => state.isLoading;
 const getProfileImageIsLoading = (state: State): boolean => state.profileImageLoading;
 const getUserLoaded = (state: State): boolean => state.userLoaded;
 const getUser = (state: State): AppUser => state.user;
-const getProductData = (state: State): Product => state.productData;
+const getCartData = (state: State): Product => state.cartItem;
 
 export const selectUserState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('user');
@@ -16,6 +16,11 @@ export const selectUserState: MemoizedSelector<object, State>
 export const selectAppUser: MemoizedSelector<object, AppUser> = createSelector(
   selectUserState,
   getUser
+);
+
+export const selectUserError: MemoizedSelector<object, any> = createSelector(
+  selectUserState,
+  getError
 );
 
 export const selectUserIsLoading: MemoizedSelector<object, boolean>
@@ -27,5 +32,5 @@ export const selectProfileImageIsLoading: MemoizedSelector<object, boolean>
 export const selectUserLoaded: MemoizedSelector<object, boolean>
 = createSelector(selectUserState, getUserLoaded);
 
-export const selectProductData: MemoizedSelector<object, Product>
-= createSelector(selectUserState, getProductData);
+export const selectCartData: MemoizedSelector<object, Product>
+= createSelector(selectUserState, getCartData);

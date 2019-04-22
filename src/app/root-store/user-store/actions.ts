@@ -13,7 +13,7 @@ export enum ActionTypes {
   UPDATE_PROFILE_IMAGE_REQUESTED = '[User] Update Profile Image Requested',
   UPDATE_PROFILE_IMAGE_COMPLETE = '[User] Update Profile Image Complete',
   USER_DATA_LOAD_ERROR = '[User] Load Failure',
-  SET_PRODUCT_DATA = '[User] Product Data Set'
+  SET_CART_DATA = '[User] Cart Data Set'
 }
 
 export class UserDataRequested implements Action {
@@ -63,8 +63,8 @@ export class LoadErrorDetected implements Action {
   constructor(public payload: { error: string }) {}
 }
 
-export class SetProductData implements Action {
-  readonly type = ActionTypes.SET_PRODUCT_DATA;
+export class SetCartData implements Action {
+  readonly type = ActionTypes.SET_CART_DATA;
   constructor(public payload: {productData: Product}) {}
 }
 
@@ -78,5 +78,5 @@ UpdatePasswordComplete |
 UpdateProfileImageRequested |
 UpdateProfileImageComplete |
 LoadErrorDetected |
-SetProductData
+SetCartData
 ;

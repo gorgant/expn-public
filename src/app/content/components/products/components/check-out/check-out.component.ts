@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 })
 export class CheckOutComponent implements OnInit {
 
-  productData$: Observable<Product>;
+  product$: Observable<Product>;
 
   imagePaths = ImagePaths;
 
@@ -25,8 +25,8 @@ export class CheckOutComponent implements OnInit {
   }
 
   private initializeProductData() {
-    this.productData$ = this.store$.select(
-      UserStoreSelectors.selectProductData
+    this.product$ = this.store$.select(
+      UserStoreSelectors.selectCartData
     );
   }
 }

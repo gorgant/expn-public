@@ -5,6 +5,10 @@
   max-width: $max-screen-width;
 }
 
+.page-container {
+  padding-bottom: 40px;
+}
+
 app-page-hero {
   width: 100%;
   margin-bottom: 16px;

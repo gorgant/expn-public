@@ -8,8 +8,11 @@
   @include background-opacity($primary, $opacity-minimal);
   padding: 16px;
   width: 100%;
+  max-width: $text-block-max-width;
 
   font-size: 22px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .content-container {

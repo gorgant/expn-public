@@ -98,8 +98,8 @@ export class UserStoreEffects {
 
   @Effect({dispatch: false})
   setProductInLocalStorage$: Observable<Action | Product> = this.actions$.pipe(
-    ofType<userFeatureActions.SetProductData>(
-      userFeatureActions.ActionTypes.SET_PRODUCT_DATA
+    ofType<userFeatureActions.SetCartData>(
+      userFeatureActions.ActionTypes.SET_CART_DATA
     ),
     map(action => action.payload.productData),
     tap(productData => {

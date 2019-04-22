@@ -1,7 +1,9 @@
+import { ImageProps } from '../images/image-props.model';
+
 export interface PageHeroData {
-  imageUrl: string;
   pageTitle: string;
-  pageSubtitle?: string;
+  pageSubtitle: string;
+  imageProps?: ImageProps;
   actionMessage?: string;
   isPost?: boolean;
 }
