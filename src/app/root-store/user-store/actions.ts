@@ -1,6 +1,5 @@
 import { Action } from '@ngrx/store';
-import { AppUser } from 'src/app/core/models/user/app-user.model';
-import { StoreUserDataType } from 'src/app/core/models/user/store-user-data-type.model';
+import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
 
 export enum ActionTypes {
@@ -25,37 +24,17 @@ export class UserDataRequested implements Action {
 export class UserDataLoaded implements Action {
   readonly type = ActionTypes.USER_DATA_LOADED;
 
-  constructor(public payload: { userData: AppUser }) {}
+  constructor(public payload: { userData: AnonymousUser }) {}
 }
 
 export class StoreUserDataRequested implements Action {
   readonly type = ActionTypes.STORE_USER_DATA_REQUESTED;
 
-  constructor(public payload: { userData: AppUser, userId: string, requestType?: StoreUserDataType}) {}
+  constructor(public payload: { userData: AnonymousUser}) {}
 }
 
 export class StoreUserDataComplete implements Action {
   readonly type = ActionTypes.STORE_USER_DATA_COMPLETE;
-}
-
-export class UpdatePasswordRequested implements Action {
-  readonly type = ActionTypes.UPDATE_PASSWORD_REQUESTED;
-
-  constructor(public payload: { currentPw: string, newPw: string }) {}
-}
-
-export class UpdatePasswordComplete implements Action {
-  readonly type = ActionTypes.UPDATE_PASSWORD_COMPLETE;
-}
-
-export class UpdateProfileImageRequested implements Action {
-  readonly type = ActionTypes.UPDATE_PROFILE_IMAGE_REQUESTED;
-
-  constructor(public payload: { imageFile: Blob, user: AppUser }) {}
-}
-
-export class UpdateProfileImageComplete implements Action {
-  readonly type = ActionTypes.UPDATE_PROFILE_IMAGE_COMPLETE;
 }
 
 export class LoadErrorDetected implements Action {
@@ -73,10 +52,6 @@ UserDataRequested |
 UserDataLoaded |
 StoreUserDataRequested |
 StoreUserDataComplete |
-UpdatePasswordRequested |
-UpdatePasswordComplete |
-UpdateProfileImageRequested |
-UpdateProfileImageComplete |
 LoadErrorDetected |
 SetCartData
 ;

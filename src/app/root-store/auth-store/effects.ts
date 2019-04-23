@@ -7,8 +7,6 @@ import * as userFeatureActions from '../user-store/actions';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { RootStoreState } from '..';
-import { StoreUserDataType } from 'src/app/core/models/user/store-user-data-type.model';
-import { AuthenticateUserType } from 'src/app/core/models/auth/authenticate-user-type.model';
 
 @Injectable()
 export class AuthStoreEffects {
@@ -19,138 +17,42 @@ export class AuthStoreEffects {
   ) { }
 
   @Effect()
-  registerUserRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<authFeatureActions.RegisterUserRequested>(
-      authFeatureActions.ActionTypes.REGISTER_USER_REQUESTED
-    ),
-    switchMap(action =>
-      this.authService.registerUser(action.payload.authData)
-        .pipe(
-          // Store registered user data in the database (not just the user records)
-          tap(response => {
-            this.store$.dispatch(
-              new userFeatureActions.StoreUserDataRequested(
-                {userData: response.userData, userId: response.userId, requestType: StoreUserDataType.REGISTER_USER}
-              )
-            );
-          }),
-          map(response => new authFeatureActions.RegisterUserComplete()),
-          catchError(error => {
-            return of(new authFeatureActions.LoadErrorDetected({ error }));
-          })
-        )
-    )
-  );
-
-  @Effect()
   authenticationRequestedEffect$: Observable<Action> = this.actions$.pipe(
     ofType<authFeatureActions.AuthenticationRequested>(
       authFeatureActions.ActionTypes.AUTHENTICATION_REQUESTED
     ),
     switchMap(action => {
-
-      // If email auth, retrieve additional user data from FB
-      if (action.payload.requestType === AuthenticateUserType.EMAIL_AUTH) {
-        return this.authService.loginWithEmail(action.payload.authData)
-          .pipe(
-            // Load user data into the store
-            tap(fbUser =>
-              // If email login, payload is a firebaseUser, but all we need is the uid
-              this.store$.dispatch(new userFeatureActions.UserDataRequested({userId: fbUser.uid}))
-            ),
-            map(fbUser => new authFeatureActions.AuthenticationComplete()),
-            catchError(error => {
-              return of(new authFeatureActions.LoadErrorDetected({ error }));
-            })
-          );
-      }
-
-      // If Google login, treat like user registration
-      if (action.payload.requestType === AuthenticateUserType.GOOGLE_AUTH) {
-        return this.authService.loginWithGoogle()
-          .pipe(
-            tap(appUser => {
-              // Store (or overwrite) user data
-              // User data fetched in User Store after the storing process is complete
-              this.store$.dispatch(
-                new userFeatureActions.StoreUserDataRequested(
-                  {userData: appUser, userId: appUser.id, requestType: StoreUserDataType.GOOGLE_LOGIN}
-                )
-              );
-            }),
-            map(fbUser => new authFeatureActions.AuthenticationComplete()),
-            catchError(error => {
-              return of(new authFeatureActions.LoadErrorDetected({ error }));
-            })
-          );
-      }
-
-    })
-  );
-
-  @Effect()
-  updateEmailRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<authFeatureActions.UpdateEmailRequested>(
-      authFeatureActions.ActionTypes.UPDATE_EMAIL_REQUESTED
-    ),
-    switchMap(action =>
-      this.authService.updateEmail(
-        action.payload.appUser,
-        action.payload.password,
-        action.payload.newEmail
-        )
+      return this.authService.authenticateAnonymousUser()
         .pipe(
-          // Update email in the main database (separate from the User database)
-          tap(response => {
-            return this.store$.dispatch(
-              new userFeatureActions.StoreUserDataRequested(
-                {userData: response.userData, userId: response.userId, requestType: StoreUserDataType.EMAIL_UPDATE}
-              )
-            );
+          // Load user data into the store
+          tap(userData => {
+
+            // Add or update user info in database (will trigger a subsequent user store update request in User Store)
+            return this.store$.dispatch(new userFeatureActions.StoreUserDataRequested({userData}));
+
+            // const userData: AnonymousUser = {
+            //   id: userCreds.user.uid,
+            //   lastAuthenticated: now()
+            // };
+            // const isNewUser = userCreds.additionalUserInfo.isNewUser;
+            // switch (isNewUser) {
+            //   case true:
+            //     // This is a new user, so add new user to database
+            //     this.store$.dispatch(new userFeatureActions.StoreUserDataRequested({userData}));
+            //     // Now return the completed user data action (instead of fetching identical doc from database)
+            //     return this.store$.dispatch(new userFeatureActions.UserDataLoaded({userData}));
+            //   case false:
+            //     // User exists so fetch user data from the database directly
+            //     return this.store$.dispatch(new userFeatureActions.UserDataRequested({userId: userData.id}));
+            //   default:
+            //     return this.store$.dispatch(new userFeatureActions.UserDataRequested({userId: userData.id}));
+            // }
           }),
-          map(response => new authFeatureActions.UpdateEmailComplete()),
+          map(userCreds => new authFeatureActions.AuthenticationComplete()),
           catchError(error => {
             return of(new authFeatureActions.LoadErrorDetected({ error }));
           })
-        )
-    )
-  );
-
-  @Effect()
-  updatePasswordRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<authFeatureActions.UpdatePasswordRequested>(
-      authFeatureActions.ActionTypes.UPDATE_PASSWORD_REQUESTED
-    ),
-    switchMap(action =>
-      this.authService.updatePassword(
-        action.payload.appUser,
-        action.payload.oldPassword,
-        action.payload.newPassword
-        )
-        .pipe(
-          map(response => new authFeatureActions.UpdatePasswordComplete()),
-          catchError(error => {
-            return of(new authFeatureActions.LoadErrorDetected({ error }));
-          })
-        )
-    )
-  );
-
-  @Effect()
-  resetPasswordRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<authFeatureActions.ResetPasswordRequested>(
-      authFeatureActions.ActionTypes.RESET_PASSWORD_REQUESTED
-    ),
-    switchMap(action =>
-      this.authService.sendResetPasswordEmail(
-        action.payload.email
-        )
-        .pipe(
-          map(response => new authFeatureActions.ResetPasswordComplete()),
-          catchError(error => {
-            return of(new authFeatureActions.LoadErrorDetected({ error }));
-          })
-        )
-    )
+        );
+    })
   );
 }

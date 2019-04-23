@@ -6,14 +6,19 @@ import {
 } from 'src/app/core/models/forms-and-components/validation-messages.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { Store } from '@ngrx/store';
-import { RootStoreState, UiStoreSelectors, UiStoreActions } from 'src/app/root-store';
+import {
+  RootStoreState,
+  UiStoreSelectors,
+  UiStoreActions,
+} from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
-import { BillingDetails } from 'src/app/core/models/products/billing-details.model';
-import { CreditCardDetails } from 'src/app/core/models/products/credit-card-details.model';
-import { Invoice } from 'src/app/core/models/products/invoice.model';
+import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
+import { CreditCardDetails } from 'src/app/core/models/billing/credit-card-details.model';
 import { now } from 'moment';
+import { Invoice } from 'src/app/core/models/billing/invoice.model';
+import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -23,6 +28,7 @@ import { now } from 'moment';
 export class PurchaseDataFormComponent implements OnInit {
 
   @Input() product: Product;
+  @Input() anonymousUser: AnonymousUser;
 
   geographicData$: Observable<GeographicData>;
   geographicDataLoaded: boolean;
@@ -34,7 +40,7 @@ export class PurchaseDataFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
   ) { }
 
   ngOnInit() {
@@ -110,12 +116,11 @@ export class PurchaseDataFormComponent implements OnInit {
     };
 
     const invoice: Invoice = {
-      invoiceId: 'TEMP INVOICE ID',
+      anonymousUID: this.anonymousUser.id,
       productName: this.product.name,
-      productId: 'TEMP PRDOUCT ID',
+      productId: this.product.id,
       purchaseDate: now(),
       purchasePrice: this.product.price,
-      customerId: 'TEMP CUSTOMER ID',
       billingDetails,
       creditCardDetails,
     };
