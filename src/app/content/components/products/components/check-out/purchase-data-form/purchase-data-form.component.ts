@@ -10,6 +10,8 @@ import {
   RootStoreState,
   UiStoreSelectors,
   UiStoreActions,
+  BillingStoreActions,
+  BillingStoreSelectors,
 } from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import { withLatestFrom, map, take } from 'rxjs/operators';
@@ -28,10 +30,49 @@ import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 export class PurchaseDataFormComponent implements OnInit {
 
   @Input() product: Product;
-  @Input() anonymousUser: AnonymousUser;
+  // @Input() anonymousUser: AnonymousUser;
+
+  // This asynchronously fires only once item is present
+  @Input()
+  set anonymousUser(user: AnonymousUser) {
+    this._anonymousUser =  user;
+    // Set item once is available
+    if (user && !this.userLoaded) {
+      this.loadExistingInvoiceData();
+      this.userLoaded = true;
+    }
+  }
+  // tslint:disable-next-line:variable-name
+  private _anonymousUser: AnonymousUser;
+  // tslint:disable-next-line:adjacent-overload-signatures
+  get anonymousUser(): AnonymousUser {
+    return this._anonymousUser;
+  }
+  private userLoaded: boolean;
+
+  // // This asynchronously loads the timer logic only once timer is present
+  // // Not sure why this is necessary here while not in the timer-card-item component
+  // @Input()
+  // set timer(timer: Timer) {
+  //   this._timer = timer;
+  //   // Set timer type once timer is available
+  //   if (timer && !this.timerLoaded) {
+  //     this.setTimerType();
+  //     this.timerLoaded = true; // This prevents additional tickers from firing when edit dialogue is closed
+  //   }
+  //   // If timer is deleted on separate client, navigate away from the timer details
+  //   if (!timer && this.timerLoaded) {
+  //     this.exitTimerDetails();
+  //   }
+  // }
+  // private _timer: Timer;
+  // get timer(): Timer { return this._timer; }
+
+  invoiceData$: Observable<Invoice>;
+  invoiceDataRequested: boolean;
 
   geographicData$: Observable<GeographicData>;
-  geographicDataLoaded: boolean;
+  geographicDataRequested: boolean;
 
   purchaseDataForm: FormGroup;
   billingValidationMessages = BILLING_VALIDATION_MESSAGES;
@@ -115,7 +156,7 @@ export class PurchaseDataFormComponent implements OnInit {
       cardCvc: this.cardCvc.value,
     };
 
-    const invoice: Invoice = {
+    const invoiceNoId: Invoice = {
       anonymousUID: this.anonymousUser.id,
       productName: this.product.name,
       productId: this.product.id,
@@ -123,9 +164,11 @@ export class PurchaseDataFormComponent implements OnInit {
       purchasePrice: this.product.price,
       billingDetails,
       creditCardDetails,
+      lastModified: now()
     };
 
-    console.log('Purchase Data', invoice);
+    console.log('Purchase Data', invoiceNoId);
+    this.store$.dispatch(new BillingStoreActions.CreateNewInvoiceRequested({invoiceNoId}));
   }
 
   private initializeForm() {
@@ -153,6 +196,33 @@ export class PurchaseDataFormComponent implements OnInit {
     });
   }
 
+  private loadExistingInvoiceData() {
+    // TODO: Patch in invoice data if exists
+    this.invoiceData$ = this.store$.select(BillingStoreSelectors.selectInvoice)
+      .pipe(
+        withLatestFrom(this.store$.select(BillingStoreSelectors.selectInvoiceLoaded)),
+        map(([invoice, invoiceLoaded]) => {
+          if (!invoiceLoaded && !this.invoiceDataRequested) {
+            this.store$.dispatch(new BillingStoreActions.LoadLatestInvoiceRequested({userId: this.anonymousUser.id}));
+          }
+          this.invoiceDataRequested = true;
+          return invoice;
+        })
+      );
+
+    this.invoiceData$
+    // .pipe(take(1))
+    .subscribe(invoice => {
+      // If invoice exists, patch invoice values
+      if (invoice) {
+        this.billingDetailsGroup.patchValue(invoice.billingDetails);
+        this.creditCardDetailsGroup.patchValue(invoice.creditCardDetails);
+      } else {
+        console.log('No invoice exists for user');
+      }
+    });
+  }
+
   private initializeGeographicData() {
     this.geographicData$ = this.store$.select(UiStoreSelectors.selectGeographicData)
     .pipe(
@@ -160,11 +230,11 @@ export class PurchaseDataFormComponent implements OnInit {
         this.store$.select(UiStoreSelectors.selectGeographicDataLoaded)
       ),
       map(([geographicData, geoStoreLoaded]) => {
-        if (!geoStoreLoaded && !this.geographicDataLoaded) {
+        if (!geoStoreLoaded && !this.geographicDataRequested) {
           console.log('No geo data loaded, fetching from server');
           this.store$.dispatch(new UiStoreActions.GeographicDataRequested());
         }
-        this.geographicDataLoaded = true; // Prevents loading from firing more than needed
+        this.geographicDataRequested = true; // Prevents loading from firing more than needed
         return geographicData;
       })
     );

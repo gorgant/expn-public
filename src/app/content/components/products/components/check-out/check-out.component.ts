@@ -6,6 +6,7 @@ import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/ro
 import { Observable } from 'rxjs';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { Invoice } from 'src/app/core/models/billing/invoice.model';
 
 @Component({
   selector: 'app-check-out',
@@ -17,6 +18,7 @@ export class CheckOutComponent implements OnInit {
   product$: Observable<Product>;
   anonymousUser$: Observable<AnonymousUser>;
   userAuthenticationRequested: boolean;
+  invoice$: Observable<Invoice>;
 
   imagePaths = ImagePaths;
 
@@ -50,5 +52,9 @@ export class CheckOutComponent implements OnInit {
     this.product$ = this.store$.select(
       UserStoreSelectors.selectCartData
     );
+  }
+
+  private initializeInvoiceData() {
+    // TODO: create billing store and select invoice (if exists)
   }
 }
