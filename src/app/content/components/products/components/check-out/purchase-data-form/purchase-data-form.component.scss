@@ -20,6 +20,10 @@ mat-form-field {
   border: 1px solid $form-border-color;
 }
 
+.credit-card-error {
+  border: 2px solid $warn;
+}
+
 .card-details-title {
   font-size: 1.4em;
   margin-bottom: 16px;
@@ -47,6 +51,11 @@ mat-form-field {
 .processing-hint {
   font-size: 0.75em;
   opacity: $opacity-medium;
+  text-align: center;
+}
+
+.payment-failed {
+  color: $warn;
   text-align: center;
 }
 

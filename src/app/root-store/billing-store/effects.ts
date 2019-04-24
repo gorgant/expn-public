@@ -49,22 +49,39 @@ export class BillingStoreEffects {
     )
   );
 
+  // @Effect()
+  // updateInvoiceRequestedEffect$: Observable<Action> = this.actions$.pipe(
+  //   ofType<billingFeatureActions.UpdateInvoiceRequested>(
+  //     billingFeatureActions.ActionTypes.UPDATE_INVOICE_REQUESTED
+  //   ),
+  //   switchMap(action =>
+  //     this.billingService.updateInvoice(action.payload.invoice)
+  //     .pipe(
+  //       // Load updated invoice into store
+  //       tap(invoice => new billingFeatureActions.LoadLatestInvoiceComplete({invoice})),
+  //       // Then dispatch primary completion action
+  //       map(invoice => new billingFeatureActions.UpdateInvoiceComplete({invoice})),
+  //       catchError(error => {
+  //         return of(new billingFeatureActions.LoadErrorDetected({ error }));
+  //       })
+  //     )
+  //   )
+  // );
+
   @Effect()
-  updateInvoiceRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<billingFeatureActions.UpdateInvoiceRequested>(
-      billingFeatureActions.ActionTypes.UPDATE_INVOICE_REQUESTED
+  processPaymentRequestedEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<billingFeatureActions.ProcessPaymentRequested>(
+      billingFeatureActions.ActionTypes.PROCESS_PAYMENT_REQUESTED
     ),
     switchMap(action =>
-      this.billingService.updateInvoice(action.payload.invoice)
-      .pipe(
-        // Load updated invoice into store
-        tap(invoice => new billingFeatureActions.LoadLatestInvoiceComplete({invoice})),
-        // Then dispatch primary completion action
-        map(invoice => new billingFeatureActions.UpdateInvoiceComplete({invoice})),
-        catchError(error => {
-          return of(new billingFeatureActions.LoadErrorDetected({ error }));
-        })
-      )
+      this.billingService.processPayment(action.payload.invoice)
+        .pipe(
+          map(paymentResponse => new billingFeatureActions.ProcessPaymentComplete({paymentResponse})),
+          catchError(error => {
+            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+
     )
   );
 

@@ -78,14 +78,13 @@
         <mat-error *ngIf="postalCode.hasError(validation.type) && postalCode.invalid && (postalCode.dirty || postalCode.touched)">{{ validation.message }}</mat-error>
       </mat-error>
     </mat-form-field>
-   
   </div>
-  <div class="credit-card-details-group" formGroupName="creditCardDetailsGroup" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
+
+  <div *ngIf="!(paymentProcessing$ | async)" class="credit-card-details-group" [ngClass]="{'credit-card-error': (paymentResponse$ | async) === paymentResponseTypes.REJECTED}" formGroupName="creditCardDetailsGroup" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
     <div class="card-details-title">Enter Your Billing Information - SECURE</div>
     <mat-form-field class="card-Name">
-      <input matInput formControlName="cardName" type="text" placeholder="Card Name" [value]="firstName.value + ' ' + lastName.value">
+      <input matInput formControlName="cardName" type="text" placeholder="Card Name" [value]="cardName.value ? cardName.value : firstName.value + ' ' + lastName.value">
     </mat-form-field>
-    <div>{{ cardName.value }}</div>
     <mat-form-field class="card-number">
       <input matInput formControlName="cardNumber" type="phone" placeholder="Card Number">
       <mat-error *ngFor="let validation of creditCardValidationMessages.cardNumber">
@@ -105,9 +104,19 @@
       </mat-form-field>
     </div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
-      <button *ngIf="purchaseDataForm.invalid" class="buy-button" mat-raised-button [disabled]="purchaseDataForm.invalid" color="primary" type="submit">Complete Form to Proceed</button>
-      <button *ngIf="purchaseDataForm.valid" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ product.name }}</button>
+      <button *ngIf="purchaseDataForm.invalid || !invoiceInitialized" class="buy-button" mat-raised-button [disabled]="purchaseDataForm.invalid || !invoiceInitialized" color="primary" type="submit">Complete Form to Proceed</button>
+      <button *ngIf="purchaseDataForm.valid && invoiceInitialized" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ product.name }}</button>
       <div class="processing-hint">It can take up to 30 seconds to process your order, so please be patient.</div>
     </div>
   </div>
+
+  <div *ngIf="(paymentProcessing$ | async)" class="payment-processing-container" fxLayout="column" fxLayoutAlign="center center">
+    <div class="payment-processing-text">Payment Processing -- Please Be Patient</div>
+    <mat-progress-spinner color="accent" mode="indeterminate"></mat-progress-spinner>
+  </div>
+  
+  <div *ngIf="(paymentResponse$ | async) === paymentResponseTypes.REJECTED">
+    <div class="payment-failed">Payment failed. No charge was applied to your card. Please confirm your billing information and try again.</div>
+  </div>
+
 </form>

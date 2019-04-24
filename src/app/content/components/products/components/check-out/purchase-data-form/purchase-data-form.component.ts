@@ -13,9 +13,10 @@ import {
   BillingStoreActions,
   UserStoreActions,
   UserStoreSelectors,
+  BillingStoreSelectors,
 } from 'src/app/root-store';
-import { Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { withLatestFrom, map, take } from 'rxjs/operators';
+import { Observable, Subscription, BehaviorSubject, Subject } from 'rxjs';
+import { withLatestFrom, map, take, takeUntil } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
 import { CreditCardDetails } from 'src/app/core/models/billing/credit-card-details.model';
@@ -23,6 +24,7 @@ import { now } from 'moment';
 import { Invoice } from 'src/app/core/models/billing/invoice.model';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -62,7 +64,6 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   }
   private userLoaded: boolean;
   private formInitialized$ = new BehaviorSubject<boolean>(false);
-  private formValuesPatched: boolean;
 
   private autoSaveTicker: NodeJS.Timer; // Add "types": ["node"] to tsconfig.app.json to remove TS error from NodeJS.Timer function
   private autoSaveSubscription: Subscription;
@@ -75,10 +76,16 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   creditCardValidationMessages = CREDIT_CARD_VALIDATION_MESSAGES;
   private nonUsStateCodeValue = 'non-us';
 
+  invoiceInitialized: boolean;
   private invoiceId: string;
-  private invoiceInitialized: boolean;
   private initInvoiceTimeout: NodeJS.Timer; // Add "types": ["node"] to tsconfig.app.json to remove TS error from NodeJS.Timer function
   private invoiceSubmitted: boolean;
+  private previousPaymentAttempts: Invoice[] = [];
+  private paymentRejectionRegistered$: Subject<void>;
+
+  paymentProcessing$: Observable<boolean>;
+  paymentResponse$: Observable<PaymentResponseMsg>;
+  paymentResponseTypes = PaymentResponseMsg;
 
   constructor(
     private fb: FormBuilder,
@@ -91,12 +98,75 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
     this.initializeGeographicData();
 
+    this.initializePaymentStatus();
+
+    // Clear out any previous billing data in the state
+    this.store$.dispatch(new BillingStoreActions.PurgeBillingState());
+
   }
 
   onSubmit() {
     this.invoiceSubmitted = true;
-    this.updateUserBillingAndCCDetails();
-    // TODO: dispatch process invoice action and update user details
+    this.processPayment();
+  }
+
+  private processPayment() {
+
+    // Populates the previous invoice attempts from the store if the payment fails
+    this.paymentRejectionRegistered$ = new Subject();
+    this.store$.select(BillingStoreSelectors.selectPaymentResponseMsg)
+      .pipe(
+        takeUntil(this.paymentRejectionRegistered$),
+        withLatestFrom(this.store$.select(BillingStoreSelectors.selectInvoice))
+      )
+      .subscribe(([paymentMsg, processedInvoice]) => {
+        console.log('Monitoring payment response msg');
+        if (paymentMsg === PaymentResponseMsg.REJECTED) {
+          console.log('Rejection detected, invoking logic');
+          this.invoiceSubmitted = false;
+          this.previousPaymentAttempts = processedInvoice.previousPaymentAttempts;
+          this.paymentRejectionRegistered$.next();
+          this.paymentRejectionRegistered$.complete();
+        }
+      });
+
+    const billingDetails: BillingDetails = {
+      firstName: this.firstName.value,
+      lastName: this.lastName.value,
+      email: this.email.value,
+      phone: this.phone.value,
+      billingOne: this.billingOne.value,
+      billingTwo: this.billingTwo.value,
+      city: this.city.value,
+      state: this.state.value,
+      usStateCode: this.usStateCode.value,
+      postalCode: this.postalCode.value,
+      country: this.country.value,
+      countryCode: this.countryCode.value,
+    };
+
+    const creditCardDetails: CreditCardDetails = {
+      cardName: this.cardName.value,
+      cardNumber: this.cardNumber.value,
+      cardMonth: this.cardMonth.value,
+      cardYear: this.cardYear.value,
+      cardCvc: this.cardCvc.value,
+    };
+
+    const invoice: Invoice = {
+      id: this.invoiceId,
+      orderNumber: this.invoiceId.substr(0, 8),
+      anonymousUID: this.anonymousUser.id,
+      productName: this.product.name,
+      productId: this.product.id,
+      purchasePrice: this.product.price,
+      billingDetails,
+      creditCardDetails,
+      lastModified: now(),
+      previousPaymentAttempts: this.previousPaymentAttempts
+    };
+    console.log('Dispatching payment process request', invoice);
+    this.store$.dispatch(new BillingStoreActions.ProcessPaymentRequested({invoice}));
   }
 
   // This fires when the select field is changed, allowing access to the object
@@ -215,7 +285,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     };
 
     const creditCardDetails: CreditCardDetails = {
-      cardName: `${this.firstName.value} ${this.lastName.value}`,
+      cardName: this.cardName.value,
       cardNumber: this.cardNumber.value,
       cardMonth: this.cardMonth.value,
       cardYear: this.cardYear.value,
@@ -344,6 +414,11 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     }
     console.log('Form has not been touched');
     return true;
+  }
+
+  private initializePaymentStatus() {
+    this.paymentProcessing$ = this.store$.select(BillingStoreSelectors.selectPaymentProcessing);
+    this.paymentResponse$ = this.store$.select(BillingStoreSelectors.selectPaymentResponseMsg);
   }
 
 

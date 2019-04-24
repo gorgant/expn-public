@@ -12,7 +12,8 @@ export interface Invoice {
   creditCardDetails: CreditCardDetails;
   lastModified: number;
   orderSubmitted?: boolean; // Set when user clicks purchase
-  purchaseDate?: number; // Set when user clicks purchase
+  submittedDate?: number; // Set when user clicks purchase
   paymentComplete?: boolean; // Set when server confirms payment has been processed
   inoviceClosedDate?: number; // Set when payment is complete
+  previousPaymentAttempts?: Invoice[]; // Invoice added if a payment fails
 }
