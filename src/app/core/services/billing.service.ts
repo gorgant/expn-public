@@ -53,17 +53,12 @@ export class BillingService {
       );
   }
 
-  createInvoice(invoiceNoId: Invoice): Observable<Invoice> {
-    const newInvoiceId = this.generateInvoiceId();
-    const invoiceWithId: Invoice = {
-      ...invoiceNoId,
-      id: newInvoiceId,
-      orderNumber: newInvoiceId.substr(0, 8),
-    };
-    const fbResponse = this.getInvoiceCollection(invoiceWithId.anonymousUID).doc(invoiceWithId.id).set(invoiceWithId)
+  // Note additional fields are set in proccessInvoice()
+  createInvoice(invoice: Invoice): Observable<Invoice> {
+    const fbResponse = this.getInvoiceCollection(invoice.anonymousUID).doc(invoice.id).set(invoice)
       .then(empty => {
-        console.log('Invoice created', invoiceWithId);
-        return invoiceWithId;
+        console.log('Invoice created', invoice);
+        return invoice;
       })
       .catch(error => {
         return throwError(error).toPromise();
@@ -79,11 +74,23 @@ export class BillingService {
         return invoice;
       })
       .catch(error => {
-        console.log('Error updating post', error);
+        console.log('Error updating invoice', error);
         return throwError(error).toPromise();
       });
 
     return from(fbResponse);
+  }
+
+  processInvoice(invoice: Invoice) {
+    const finalizedInvoice: Invoice = {
+      ...invoice,
+      orderSubmitted: true,
+      purchaseDate: now()
+    };
+    // Update invoice with final details
+    this.updateInvoice(finalizedInvoice);
+
+    // TODO: Send to server for processing
   }
 
 

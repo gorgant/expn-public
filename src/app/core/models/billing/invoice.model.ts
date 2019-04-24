@@ -2,16 +2,17 @@ import { CreditCardDetails } from './credit-card-details.model';
 import { BillingDetails } from './billing-details.model';
 
 export interface Invoice {
-  id?: string;
+  id: string;
+  orderNumber: string; // A subset of invoiceId
   anonymousUID: string;
   productName: string;
   productId: string;
-  purchaseDate: number;
   purchasePrice: number;
   billingDetails: BillingDetails;
   creditCardDetails: CreditCardDetails;
   lastModified: number;
-  orderNumber?: string; // A subset of invoiceId
   orderSubmitted?: boolean; // Set when user clicks purchase
+  purchaseDate?: number; // Set when user clicks purchase
   paymentComplete?: boolean; // Set when server confirms payment has been processed
+  inoviceClosedDate?: number; // Set when payment is complete
 }
