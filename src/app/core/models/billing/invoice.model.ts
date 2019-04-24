@@ -12,5 +12,6 @@ export interface Invoice {
   creditCardDetails: CreditCardDetails;
   lastModified: number;
   orderNumber?: string; // A subset of invoiceId
-  paymentComplete?: boolean;
+  orderSubmitted?: boolean; // Set when user clicks purchase
+  paymentComplete?: boolean; // Set when server confirms payment has been processed
 }

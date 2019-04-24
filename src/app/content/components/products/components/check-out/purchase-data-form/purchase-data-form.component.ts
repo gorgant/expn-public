@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {
   BILLING_VALIDATION_MESSAGES,
@@ -13,8 +13,8 @@ import {
   BillingStoreActions,
   BillingStoreSelectors,
 } from 'src/app/root-store';
-import { Observable } from 'rxjs';
-import { withLatestFrom, map, take } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { withLatestFrom, map, take, takeWhile } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
 import { CreditCardDetails } from 'src/app/core/models/billing/credit-card-details.model';
@@ -27,12 +27,11 @@ import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
   templateUrl: './purchase-data-form.component.html',
   styleUrls: ['./purchase-data-form.component.scss']
 })
-export class PurchaseDataFormComponent implements OnInit {
+export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   @Input() product: Product;
-  // @Input() anonymousUser: AnonymousUser;
 
-  // This asynchronously fires only once item is present
+  // This block asynchronously loads user data and patches invoice into purchase form
   @Input()
   set anonymousUser(user: AnonymousUser) {
     this._anonymousUser =  user;
@@ -40,6 +39,18 @@ export class PurchaseDataFormComponent implements OnInit {
     if (user && !this.userLoaded) {
       this.loadExistingInvoiceData();
       this.userLoaded = true;
+      // If purchase data form isn't immediately available, wait for form to load, then patch values
+      // This is the case when loading from separate page
+      if (!this.purchaseDataForm) {
+        this.formInitialized$
+          .subscribe(formInitialized => {
+            if (formInitialized) {
+              this.patchExistingValuesIntoForm();
+            }
+          });
+      } else {
+        this.patchExistingValuesIntoForm();
+      }
     }
   }
   // tslint:disable-next-line:variable-name
@@ -49,35 +60,23 @@ export class PurchaseDataFormComponent implements OnInit {
     return this._anonymousUser;
   }
   private userLoaded: boolean;
+  private formInitialized$ = new BehaviorSubject<boolean>(false);
+  private formValuesPatched: boolean;
 
-  // // This asynchronously loads the timer logic only once timer is present
-  // // Not sure why this is necessary here while not in the timer-card-item component
-  // @Input()
-  // set timer(timer: Timer) {
-  //   this._timer = timer;
-  //   // Set timer type once timer is available
-  //   if (timer && !this.timerLoaded) {
-  //     this.setTimerType();
-  //     this.timerLoaded = true; // This prevents additional tickers from firing when edit dialogue is closed
-  //   }
-  //   // If timer is deleted on separate client, navigate away from the timer details
-  //   if (!timer && this.timerLoaded) {
-  //     this.exitTimerDetails();
-  //   }
-  // }
-  // private _timer: Timer;
-  // get timer(): Timer { return this._timer; }
 
   invoiceData$: Observable<Invoice>;
-  invoiceDataRequested: boolean;
+  private invoiceDataRequested: boolean;
+  private invoiceSubscription: Subscription;
 
   geographicData$: Observable<GeographicData>;
-  geographicDataRequested: boolean;
+  private geographicDataRequested: boolean;
 
-  purchaseDataForm: FormGroup;
+  private purchaseDataForm: FormGroup;
   billingValidationMessages = BILLING_VALIDATION_MESSAGES;
   creditCardValidationMessages = CREDIT_CARD_VALIDATION_MESSAGES;
-  nonUsStateCodeValue = 'non-us';
+  private nonUsStateCodeValue = 'non-us';
+
+  private invoiceInitialized: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -88,11 +87,12 @@ export class PurchaseDataFormComponent implements OnInit {
     this.initializeForm();
 
     this.initializeGeographicData();
+
   }
 
   // This fires when the select field is changed, allowing access to the object
   // Without this, when saving the form, the field view value will not populate on the form
-  setCountry(countryCode: string) {
+  setCountry(countryCode: string): void {
     this.store$.select(UiStoreSelectors.selectCountryByCode(countryCode))
       .pipe(take(1))
       .subscribe(country => {
@@ -122,7 +122,7 @@ export class PurchaseDataFormComponent implements OnInit {
 
   // This fires when the select field is changed, allowing access to the object
   // Without this, when saving the form, the field view value not populate on the form
-  setUsState(stateAbbr: string) {
+  setUsState(stateAbbr: string): void {
     this.store$.select(UiStoreSelectors.selectUsStateByAbbr(stateAbbr))
       .pipe(take(1))
       .subscribe(usState => {
@@ -132,7 +132,89 @@ export class PurchaseDataFormComponent implements OnInit {
       });
   }
 
-  onSubmit() {
+  private initializeForm(): void {
+    this.purchaseDataForm = this.fb.group({
+      billingDetailsGroup: this.fb.group({
+        firstName: ['', [Validators.required]],
+        lastName: ['', [Validators.required]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: ['', [Validators.required]],
+        billingOne: ['', [Validators.required]],
+        billingTwo: [''],
+        city: ['', [Validators.required]],
+        state: ['', [Validators.required]],
+        usStateCode: [this.nonUsStateCodeValue, [Validators.required]],
+        postalCode: ['', [Validators.required]],
+        country: [''],
+        countryCode: ['', [Validators.required]]
+      }),
+      creditCardDetailsGroup: this.fb.group({
+        cardNumber: ['', [Validators.required]],
+        cardMonth: ['', [Validators.required]],
+        cardYear: ['', [Validators.required]],
+        cardCvc: ['', [Validators.required]],
+      })
+    });
+    console.log('Form initialized');
+    this.formInitialized$.next(true);
+    this.formInitialized$.complete();
+  }
+
+  private loadExistingInvoiceData(): void {
+    this.invoiceData$ = this.store$.select(BillingStoreSelectors.selectInvoice)
+      .pipe(
+        withLatestFrom(this.store$.select(BillingStoreSelectors.selectInvoiceLoaded)),
+        map(([invoice, invoiceLoaded]) => {
+          if (!invoiceLoaded && !this.invoiceDataRequested) {
+            this.store$.dispatch(new BillingStoreActions.LoadLatestInvoiceRequested({userId: this.anonymousUser.id}));
+          }
+          this.invoiceDataRequested = true;
+          console.log('Loaded invoice data');
+          return invoice;
+        })
+      );
+  }
+
+  private patchExistingValuesIntoForm(): void {
+    this.invoiceSubscription = this.invoiceData$
+      .pipe(
+        takeWhile(invoice => {
+          console.log('Taking for now', this.formValuesPatched);
+          return !this.formValuesPatched;
+        })
+      )
+      .subscribe(invoice => {
+        // If invoice exists, patch invoice values
+        if (invoice) {
+          this.invoiceInitialized = true;
+          console.log('Patching values into form');
+          this.billingDetailsGroup.patchValue(invoice.billingDetails);
+          this.creditCardDetailsGroup.patchValue(invoice.creditCardDetails);
+          this.formValuesPatched = true;
+        } else {
+          console.log('No invoice exists for user');
+        }
+      });
+  }
+
+  private initializeGeographicData(): void {
+    this.geographicData$ = this.store$.select(UiStoreSelectors.selectGeographicData)
+    .pipe(
+      withLatestFrom(
+        this.store$.select(UiStoreSelectors.selectGeographicDataLoaded)
+      ),
+      map(([geographicData, geoStoreLoaded]) => {
+        if (!geoStoreLoaded && !this.geographicDataRequested) {
+          console.log('No geo data loaded, fetching from server');
+          this.store$.dispatch(new UiStoreActions.GeographicDataRequested());
+        }
+        this.geographicDataRequested = true; // Prevents loading from firing more than needed
+        return geographicData;
+      })
+    );
+  }
+
+  private initializeInvoice(): void {
     const billingDetails: BillingDetails = {
       firstName: this.firstName.value,
       lastName: this.lastName.value,
@@ -167,77 +249,51 @@ export class PurchaseDataFormComponent implements OnInit {
       lastModified: now()
     };
 
-    console.log('Purchase Data', invoiceNoId);
     this.store$.dispatch(new BillingStoreActions.CreateNewInvoiceRequested({invoiceNoId}));
+    this.invoiceInitialized = true;
+    console.log('Invoice initialized', invoiceNoId);
   }
 
-  private initializeForm() {
-    this.purchaseDataForm = this.fb.group({
-      billingDetailsGroup: this.fb.group({
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
-        phone: ['', [Validators.required]],
-        billingOne: ['', [Validators.required]],
-        billingTwo: [''],
-        city: ['', [Validators.required]],
-        state: ['', [Validators.required]],
-        usStateCode: [this.nonUsStateCodeValue, [Validators.required]],
-        postalCode: ['', [Validators.required]],
-        country: [''],
-        countryCode: ['', [Validators.required]]
-      }),
-      creditCardDetailsGroup: this.fb.group({
-        cardNumber: ['', [Validators.required]],
-        cardMonth: ['', [Validators.required]],
-        cardYear: ['', [Validators.required]],
-        cardCvc: ['', [Validators.required]],
-      })
-    });
-  }
+  private createAutoSaveTicker() {
+    // Set interval at 5 seconds
+    const step = 5000;
 
-  private loadExistingInvoiceData() {
-    // TODO: Patch in invoice data if exists
-    this.invoiceData$ = this.store$.select(BillingStoreSelectors.selectInvoice)
-      .pipe(
-        withLatestFrom(this.store$.select(BillingStoreSelectors.selectInvoiceLoaded)),
-        map(([invoice, invoiceLoaded]) => {
-          if (!invoiceLoaded && !this.invoiceDataRequested) {
-            this.store$.dispatch(new BillingStoreActions.LoadLatestInvoiceRequested({userId: this.anonymousUser.id}));
-          }
-          this.invoiceDataRequested = true;
-          return invoice;
-        })
-      );
 
-    this.invoiceData$
-    // .pipe(take(1))
-    .subscribe(invoice => {
-      // If invoice exists, patch invoice values
-      if (invoice) {
-        this.billingDetailsGroup.patchValue(invoice.billingDetails);
-        this.creditCardDetailsGroup.patchValue(invoice.creditCardDetails);
-      } else {
-        console.log('No invoice exists for user');
-      }
-    });
-  }
-
-  private initializeGeographicData() {
-    this.geographicData$ = this.store$.select(UiStoreSelectors.selectGeographicData)
-    .pipe(
-      withLatestFrom(
-        this.store$.select(UiStoreSelectors.selectGeographicDataLoaded)
-      ),
-      map(([geographicData, geoStoreLoaded]) => {
-        if (!geoStoreLoaded && !this.geographicDataRequested) {
-          console.log('No geo data loaded, fetching from server');
-          this.store$.dispatch(new UiStoreActions.GeographicDataRequested());
+    this.autoSaveSubscription = this.productService.fetchSingleProduct(this.productId)
+      .subscribe(product => {
+        if (this.autoSaveTicker) {
+          // Clear old interval
+          this.killAutoSaveTicker();
+          console.log('clearing old interval');
         }
-        this.geographicDataRequested = true; // Prevents loading from firing more than needed
-        return geographicData;
-      })
-    );
+        if (product) {
+          // Refresh interval every 10 seconds
+          console.log('Creating autosave ticker');
+          this.autoSaveTicker = setInterval(() => {
+            this.autoSave(product);
+          }, step);
+        }
+      });
+
+  }
+
+  private autoSave(product: Product) {
+    // Cancel autosave if no changes to content
+    if (!this.changesDetected(product)) {
+      console.log('No changes to content, no auto save');
+      return;
+    }
+    this.updateInvoice();
+    console.log('Auto saving post');
+  }
+
+  private changesDetected(invoice: Invoice): boolean {
+    if (
+
+    ) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -262,5 +318,11 @@ export class PurchaseDataFormComponent implements OnInit {
   get cardMonth() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardMonth'); }
   get cardYear() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardYear'); }
   get cardCvc() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardCvc'); }
+
+  ngOnDestroy() {
+    if (this.invoiceSubscription) {
+      this.invoiceSubscription.unsubscribe();
+    }
+  }
 
 }

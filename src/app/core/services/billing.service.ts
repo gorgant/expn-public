@@ -58,6 +58,7 @@ export class BillingService {
     const invoiceWithId: Invoice = {
       ...invoiceNoId,
       id: newInvoiceId,
+      orderNumber: newInvoiceId.substr(0, 8),
     };
     const fbResponse = this.getInvoiceCollection(invoiceWithId.anonymousUID).doc(invoiceWithId.id).set(invoiceWithId)
       .then(empty => {
@@ -99,6 +100,8 @@ export class BillingService {
   }
 
   private getLatestInvoiceCollectionQuery(userId: string): AngularFirestoreCollection<Invoice> {
-    return this.userService.getUserDoc(userId).collection<Invoice>('invoices', ref => ref.orderBy('lastModified', 'desc').limit(1));
+    return this.userService.getUserDoc(userId).collection<Invoice>('invoices',
+      ref => ref.where('orderSubmitted', '==', false).orderBy('lastModified', 'desc').limit(1)
+    );
   }
 }
