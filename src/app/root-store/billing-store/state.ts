@@ -1,20 +1,13 @@
-import { Invoice } from 'src/app/core/models/billing/invoice.model';
-import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
+import * as Stripe from 'stripe';
 
 export interface State {
-  isLoading: boolean;
-  invoiceLoaded: boolean;
-  paymentResponseMsg: PaymentResponseMsg;
-  invoice: Invoice;
   paymentProcessing: boolean;
+  stripeCharge: Stripe.charges.ICharge;
   error?: any;
 }
 
 export const initialState: State = {
-  isLoading: false,
-  invoiceLoaded: false,
-  paymentResponseMsg: null,
-  invoice: null,
   paymentProcessing: false,
+  stripeCharge: null,
   error: null,
 };

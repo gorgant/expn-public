@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material.module';
 import { SubscribeComponent } from './components/subscribe/subscribe.component';
 import { PageHeroComponent } from './components/page-hero/page-hero.component';
@@ -26,12 +26,14 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     FlexLayoutModule,
   ],
   exports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     FlexLayoutModule,
     SubscribeComponent,

@@ -1,0 +1,25 @@
+<form (submit)="handleForm($event)">
+  <div [hidden]="paymentProcessing$ | async" class="credit-card-details-group" [ngClass]="{'credit-card-error': (paymentResponse$ | async) === paymentResponseTypes.REJECTED}" fxLayout="column" fxLayoutAlign="center center">
+    <div class="card-details-title">Enter Your Billing Information - SECURE</div>
+    <div class="card-element-container">
+      <div #cardElement>
+        <!-- A Stripe Element will be inserted here. -->
+      </div>
+      <!-- Used to display Element errors. -->
+      <p>{{ cardErrors }}</p>
+    </div>
+    <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
+      <button [disabled]="paymentSubmitted" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ product.name }}</button>
+      <div class="processing-hint">It can take up to 30 seconds to process your order, so please be patient.</div>
+    </div>
+  </div>
+
+  <div *ngIf="(paymentProcessing$ | async)" class="payment-processing-container" fxLayout="column" fxLayoutAlign="center center">
+    <div class="payment-processing-text">Payment Processing -- Please Be Patient</div>
+    <mat-progress-spinner color="accent" mode="indeterminate"></mat-progress-spinner>
+  </div>
+  
+  <div *ngIf="(paymentResponse$ | async)?.status === 'failed'">
+    <div class="payment-failed">Payment failed. No charge was applied to your card. Please confirm your billing information and try again.</div>
+  </div>
+</form>

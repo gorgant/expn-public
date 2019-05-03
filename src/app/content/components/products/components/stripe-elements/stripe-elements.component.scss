@@ -1,15 +1,7 @@
-@import '../../../../../../variables';
+@import '../../../../../variables';
 
 :host {
   width: 100%;
-}
-
-.billing-details-group {
-  width: 100%;
-}
-
-mat-form-field {
-  width: $desktop-form-width;
 }
 
 .credit-card-details-group {
@@ -29,15 +21,13 @@ mat-form-field {
   margin-bottom: 16px;
 }
 
-.card-month, .card-year {
-  width: 40px;
-  text-align: center;
+.card-element-container {
+  width: 100%;
 }
 
-.card-cvc {
-  width: 56px;
-  text-align: center;
-}
+// #card-element {
+//   width: 100%;
+// }
 
 .buy-button {
   width: $desktop-buy-button-width;
@@ -59,16 +49,8 @@ mat-form-field {
   text-align: center;
 }
 
-app-stripe-elements {
-  width: 100%;
-}
-
 @media screen and (max-width: $mobile-cutoff-width) {
  
-  mat-form-field {
-    width: $mobile-form-width;
-  }
-
   .buy-button {
     width: 100%;
     font-size: 1em;

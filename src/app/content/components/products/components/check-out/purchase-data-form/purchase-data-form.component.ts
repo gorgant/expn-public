@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {
   BILLING_VALIDATION_MESSAGES,
-  CREDIT_CARD_VALIDATION_MESSAGES
 } from 'src/app/core/models/forms-and-components/validation-messages.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { Store } from '@ngrx/store';
@@ -15,16 +14,11 @@ import {
   UserStoreSelectors,
   BillingStoreSelectors,
 } from 'src/app/root-store';
-import { Observable, Subscription, BehaviorSubject, Subject } from 'rxjs';
-import { withLatestFrom, map, take, takeUntil } from 'rxjs/operators';
+import { Observable, Subscription, BehaviorSubject } from 'rxjs';
+import { withLatestFrom, map, take } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
-import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
-import { CreditCardDetails } from 'src/app/core/models/billing/credit-card-details.model';
-import { now } from 'moment';
-import { Invoice } from 'src/app/core/models/billing/invoice.model';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
+import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -73,24 +67,11 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   purchaseDataForm: FormGroup;
   billingValidationMessages = BILLING_VALIDATION_MESSAGES;
-  creditCardValidationMessages = CREDIT_CARD_VALIDATION_MESSAGES;
   private nonUsStateCodeValue = 'non-us';
-
-  invoiceInitialized: boolean;
-  private invoiceId: string;
-  private initInvoiceTimeout: NodeJS.Timer; // Add "types": ["node"] to tsconfig.app.json to remove TS error from NodeJS.Timer function
-  private invoiceSubmitted: boolean;
-  private previousPaymentAttempts: Invoice[] = [];
-  private paymentRejectionRegistered$: Subject<void>;
-
-  paymentProcessing$: Observable<boolean>;
-  paymentResponse$: Observable<PaymentResponseMsg>;
-  paymentResponseTypes = PaymentResponseMsg;
 
   constructor(
     private fb: FormBuilder,
     private store$: Store<RootStoreState.State>,
-    private afs: AngularFirestore // Used purely to generate an invoice ID
   ) { }
 
   ngOnInit() {
@@ -98,76 +79,14 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
     this.initializeGeographicData();
 
-    this.initializePaymentStatus();
-
     // Clear out any previous billing data in the state
     this.store$.dispatch(new BillingStoreActions.PurgeBillingState());
-
   }
 
-  onSubmit() {
-    this.invoiceSubmitted = true;
-    this.processPayment();
+  onSubmit(event: Event) {
+    event.preventDefault(); // Purchase takes place on Stripe form component
   }
 
-  private processPayment() {
-
-    // Populates the previous invoice attempts from the store if the payment fails
-    this.paymentRejectionRegistered$ = new Subject();
-    this.store$.select(BillingStoreSelectors.selectPaymentResponseMsg)
-      .pipe(
-        takeUntil(this.paymentRejectionRegistered$),
-        withLatestFrom(this.store$.select(BillingStoreSelectors.selectInvoice))
-      )
-      .subscribe(([paymentMsg, processedInvoice]) => {
-        console.log('Monitoring payment response msg');
-        if (paymentMsg === PaymentResponseMsg.REJECTED) {
-          console.log('Rejection detected, invoking logic');
-          this.invoiceSubmitted = false;
-          this.previousPaymentAttempts = processedInvoice.previousPaymentAttempts;
-          this.paymentRejectionRegistered$.next();
-          this.paymentRejectionRegistered$.complete();
-        }
-      });
-
-    const billingDetails: BillingDetails = {
-      firstName: this.firstName.value,
-      lastName: this.lastName.value,
-      email: this.email.value,
-      phone: this.phone.value,
-      billingOne: this.billingOne.value,
-      billingTwo: this.billingTwo.value,
-      city: this.city.value,
-      state: this.state.value,
-      usStateCode: this.usStateCode.value,
-      postalCode: this.postalCode.value,
-      country: this.country.value,
-      countryCode: this.countryCode.value,
-    };
-
-    const creditCardDetails: CreditCardDetails = {
-      cardName: this.cardName.value,
-      cardNumber: this.cardNumber.value,
-      cardMonth: this.cardMonth.value,
-      cardYear: this.cardYear.value,
-      cardCvc: this.cardCvc.value,
-    };
-
-    const invoice: Invoice = {
-      id: this.invoiceId,
-      orderNumber: this.invoiceId.substr(0, 8),
-      anonymousUID: this.anonymousUser.id,
-      productName: this.product.name,
-      productId: this.product.id,
-      purchasePrice: this.product.price,
-      billingDetails,
-      creditCardDetails,
-      lastModified: now(),
-      previousPaymentAttempts: this.previousPaymentAttempts
-    };
-    console.log('Dispatching payment process request', invoice);
-    this.store$.dispatch(new BillingStoreActions.ProcessPaymentRequested({invoice}));
-  }
 
   // This fires when the select field is changed, allowing access to the object
   // Without this, when saving the form, the field view value will not populate on the form
@@ -228,6 +147,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  // TODO: Consolidate into a single form (rather than a group)
   private initializeForm(): void {
     this.purchaseDataForm = this.fb.group({
       billingDetailsGroup: this.fb.group({
@@ -243,83 +163,20 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
         postalCode: ['', [Validators.required]],
         country: [''],
         countryCode: ['', [Validators.required]]
-      }),
-      creditCardDetailsGroup: this.fb.group({
-        cardName: [''],
-        cardNumber: ['', [Validators.required]],
-        cardMonth: ['', [Validators.required]],
-        cardYear: ['', [Validators.required]],
-        cardCvc: ['', [Validators.required]],
       })
     });
     console.log('Form initialized');
     this.formInitialized$.next(true);
     this.formInitialized$.complete();
 
-    // Auto-create an invoice after 5 seconds on the checkout page
-    this.initInvoiceTimeout = setTimeout(() => {
-      if (!this.invoiceInitialized) {
-        this.initializeInvoice();
-      }
-      this.createAutoSaveTicker();
-    }, 5000);
-  }
+    this.createAutoSaveTicker();
 
-
-
-
-  private initializeInvoice(): void {
-    const billingDetails: BillingDetails = {
-      firstName: this.firstName.value,
-      lastName: this.lastName.value,
-      email: this.email.value,
-      phone: this.phone.value,
-      billingOne: this.billingOne.value,
-      billingTwo: this.billingTwo.value,
-      city: this.city.value,
-      state: this.state.value,
-      usStateCode: this.usStateCode.value,
-      postalCode: this.postalCode.value,
-      country: this.country.value,
-      countryCode: this.countryCode.value,
-    };
-
-    const creditCardDetails: CreditCardDetails = {
-      cardName: this.cardName.value,
-      cardNumber: this.cardNumber.value,
-      cardMonth: this.cardMonth.value,
-      cardYear: this.cardYear.value,
-      cardCvc: this.cardCvc.value,
-    };
-
-    // Set the global invoice id
-    this.invoiceId = this.afs.createId();
-
-    const invoiceNoId: Invoice = {
-      id: this.invoiceId,
-      orderNumber: this.invoiceId.substr(0, 8),
-      anonymousUID: this.anonymousUser.id,
-      productName: this.product.name,
-      productId: this.product.id,
-      purchasePrice: this.product.price,
-      billingDetails,
-      creditCardDetails,
-      lastModified: now()
-    };
-
-    this.store$.dispatch(new BillingStoreActions.CreateNewInvoiceRequested({invoiceNoId}));
-    this.invoiceInitialized = true;
-    console.log('Invoice initialized', invoiceNoId);
   }
 
   private patchUserBillingInfo(): void {
     const billingDetails = this.anonymousUser.billingDetails ? this.anonymousUser.billingDetails : null;
-    const creditCardDetails = this.anonymousUser.creditCardDetails ? this.anonymousUser.creditCardDetails : null;
     if (billingDetails) {
       this.billingDetailsGroup.patchValue(this.anonymousUser.billingDetails);
-    }
-    if (creditCardDetails) {
-      this.creditCardDetailsGroup.patchValue(this.anonymousUser.creditCardDetails);
     }
     console.log('User details patched in');
   }
@@ -349,65 +206,56 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     clearInterval(this.autoSaveTicker);
   }
 
-  private killInitProductTimeout(): void {
-    clearTimeout(this.initInvoiceTimeout);
-  }
-
   private autoSave(user: AnonymousUser) {
     // Cancel autosave if no changes to content
     if (!this.changesDetected(user) || this.formIsBlank()) {
       console.log('No changes to form, no auto save');
       return;
     }
+
     // Prevents auto-save from overwriting final form submission data
-    if (this.invoiceSubmitted) {
-      console.log('Form already submitted, no auto save');
-      return;
-    }
-    this.updateUserBillingAndCCDetails();
-    console.log('Auto saving');
+    this.store$.select(BillingStoreSelectors.selectPaymentProcessing)
+      .pipe(take(1))
+      .subscribe(paymentProcessing => {
+        if (paymentProcessing) {
+          console.log('Payment processing, no auto save');
+          return;
+        }
+        this.updateUserBillingDetails(); // Execute auto-save logic
+        console.log('Auto saving');
+      });
   }
 
   private changesDetected(user: AnonymousUser): boolean {
     const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(user.billingDetails));
     const formBillingDetails = JSON.stringify(this.sortObjectByKeyName(this.billingDetailsGroup.value));
-    const serverCreditCardDetails = JSON.stringify(this.sortObjectByKeyName(user.creditCardDetails));
-    const formCreditCardDetails = JSON.stringify(this.sortObjectByKeyName(this.creditCardDetailsGroup.value));
 
-    // console.log('Server billing details', serverBillingDetails);
-    // console.log('For billing details', formBillingDetails);
-    // console.log('Server credit card details', serverCreditCardDetails);
-    // console.log('Form credit card details', formCreditCardDetails);
-
-    if (
-      serverBillingDetails === formBillingDetails &&
-      serverCreditCardDetails === formCreditCardDetails
-    ) {
+    if (serverBillingDetails === formBillingDetails) {
       return false;
     }
     return true;
   }
 
   private sortObjectByKeyName(object: {}): {} {
-    const keyArray = Object.keys(object);
-    keyArray.sort();
-    const sortedObject = keyArray.map(key => {
-      return object[key];
-    });
-    return sortedObject;
+    // Check for object, if new user, billing details don't yet exist
+    if (object) {
+      const keyArray = Object.keys(object);
+      keyArray.sort();
+      const sortedObject = keyArray.map(key => object[key]);
+      return sortedObject;
+    }
+    return {};
   }
 
-  private updateUserBillingAndCCDetails() {
+  private updateUserBillingDetails() {
     const updatedUser: AnonymousUser = {
       ...this.anonymousUser,
       billingDetails: this.billingDetailsGroup.value,
-      creditCardDetails: this.creditCardDetailsGroup.value,
     };
     this.store$.dispatch(new UserStoreActions.StoreUserDataRequested({userData: updatedUser}));
   }
 
   private formIsBlank() {
-    // const formValuesString = JSON.stringify(this.purchaseDataForm.value);
     const formTouched = this.purchaseDataForm.dirty;
     if (formTouched) {
       return false;
@@ -416,14 +264,9 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  private initializePaymentStatus() {
-    this.paymentProcessing$ = this.store$.select(BillingStoreSelectors.selectPaymentProcessing);
-    this.paymentResponse$ = this.store$.select(BillingStoreSelectors.selectPaymentResponseMsg);
-  }
-
-
   // These getters are used for easy access in the HTML template
   get billingDetailsGroup() { return this.purchaseDataForm.get('billingDetailsGroup'); }
+  get billingDetailsData(): BillingDetails { return this.purchaseDataForm.get('billingDetailsGroup').value; }
   get firstName() { return this.purchaseDataForm.get('billingDetailsGroup.firstName'); }
   get lastName() { return this.purchaseDataForm.get('billingDetailsGroup.lastName'); }
   get email() { return this.purchaseDataForm.get('billingDetailsGroup.email'); }
@@ -437,18 +280,11 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   get country() { return this.purchaseDataForm.get('billingDetailsGroup.country'); }
   get countryCode() { return this.purchaseDataForm.get('billingDetailsGroup.countryCode'); }
 
-  get creditCardDetailsGroup() { return this.purchaseDataForm.get('creditCardDetailsGroup'); }
-  get cardName() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardName'); }
-  get cardNumber() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardNumber'); }
-  get cardMonth() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardMonth'); }
-  get cardYear() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardYear'); }
-  get cardCvc() { return this.purchaseDataForm.get('creditCardDetailsGroup.cardCvc'); }
-
   ngOnDestroy() {
 
     // Auto save product if navigating away
-    if (this.invoiceInitialized && !this.invoiceSubmitted && !this.formIsBlank()) {
-      this.updateUserBillingAndCCDetails();
+    if (!this.formIsBlank()) {
+      this.updateUserBillingDetails();
     }
 
     if (this.autoSaveSubscription) {
@@ -459,9 +295,6 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
       this.killAutoSaveTicker();
     }
 
-    if (this.initInvoiceTimeout) {
-      this.killInitProductTimeout();
-    }
   }
 
 }

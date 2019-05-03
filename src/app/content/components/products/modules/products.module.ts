@@ -12,6 +12,7 @@ import { PurchaseDataFormComponent } from '../components/check-out/purchase-data
 import { ProductSummaryComponent } from '../components/check-out/product-summary/product-summary.component';
 import { ProductCardComponent } from '../components/product-card/product-card.component';
 import { ProductPageComponent } from '../components/product-page/product-page.component';
+import { StripeElementsComponent } from '../components/stripe-elements/stripe-elements.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ProductPageComponent } from '../components/product-page/product-page.co
     ProductSummaryComponent,
     PurchaseDataFormComponent,
     ProductCardComponent,
-    ProductPageComponent
+    ProductPageComponent,
+    StripeElementsComponent
   ],
   imports: [
     SharedModule,
