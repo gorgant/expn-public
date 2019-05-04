@@ -9,24 +9,24 @@ export const testFunction = functions.https.onCall( async (data, context) => {
 
 export { 
   stripeAttachSource 
-} from './sources';
+} from './stripe/sources';
 
 export { 
   stripeCreateCharge,
   stripeGetCharges 
-} from './charges';
+} from './stripe/charges';
 
 export { 
   stripeCreateSubscription, 
   stripeGetSubscriptions, 
   stripeCancelSubscription 
-} from './subscriptions';
+} from './stripe/subscriptions';
 
 export { 
   invoiceWebhookEndpoint,
   subscriptionWebhookEndpoint
-} from './webhooks';
+} from './stripe/webhooks';
 
 export {
   stripeGetCoupon
-} from './coupons';
+} from './stripe/coupons';

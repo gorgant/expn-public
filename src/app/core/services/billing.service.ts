@@ -28,14 +28,8 @@ export class BillingService {
 
   processPayment(billingData: StripeChargeData): Observable<Stripe.charges.ICharge> {
 
-    const fun = this.fns.httpsCallable('stripeCreateCharge');
-    const res: Observable<Stripe.charges.ICharge> = fun(
-      {
-        source: billingData.source.id,
-        uid: billingData.anonymousUID,
-        amount: billingData.priceInCents,
-      }
-    )
+    const chargeFunction: (data: StripeChargeData) => Observable<Stripe.charges.ICharge> = this.fns.httpsCallable('stripeCreateCharge');
+    const res = chargeFunction(billingData)
       .pipe(
         take(1),
         tap(response => console.log('Payment processed', response)),

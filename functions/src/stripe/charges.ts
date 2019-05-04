@@ -3,6 +3,7 @@ import { getCustomer, getOrCreateCustomer } from "./customers";
 import { stripe } from './config';
 import { attachSource } from './sources';
 import { assertUID, assert, catchErrors } from './helpers';
+// import { StripeChargeData } from '../../../shared-models/billing/stripe-charge-data.model';
 
 /**
  * Gets a user's charge history
@@ -42,14 +43,15 @@ export const createCharge = async(uid: string, source: string, amount: number, i
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const stripeCreateCharge = functions.https.onCall( async (data, context) => {
-  const uid = assertUID(context);
-  const source = assert(data, 'source');
-  const amount = assert(data, 'amount');
+  console.log('Create charge request received with this data', data);
+  const uid: string = assertUID(context);
+  const sourceId: string = assert(data.source, 'id');
+  const amount: number = assert(data, 'priceInCents');
 
-  // Optional
-  const idempotency_key = data.itempotency_key;
+  // // Optional -- Prevents multiple charges
+  // const idempotency_key = data.itempotency_key;
 
-  return catchErrors( createCharge(uid, source, amount, idempotency_key) );
+  return catchErrors( createCharge(uid, sourceId, amount) );
 })
 
 export const stripeGetCharges = functions.https.onCall( async (data, context) => {

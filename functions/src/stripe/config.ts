@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-admin.initializeApp();
+import * as Stripe from 'stripe';
+import { adminFirestore } from '../db';
 
 // Iniitialize Cloud Firestore Database
-export const db = admin.firestore();
+export const db = adminFirestore;
 const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
@@ -11,6 +11,5 @@ db.settings(settings);
 export const stripeSecret = functions.config().stripe.secret;
 
 //Export Stripe
-import * as Stripe from 'stripe';
 export const stripe = new Stripe(stripeSecret);
 
