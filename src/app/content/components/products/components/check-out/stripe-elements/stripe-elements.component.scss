@@ -5,29 +5,26 @@
 }
 
 .credit-card-details-group {
-  @include background-opacity($primary, $opacity-minimal);
   width: 100%;
   max-width: 480px;
-  padding: 24px;
-  border: 1px solid $form-border-color;
 }
 
-.credit-card-error {
+.processing-error {
   border: 2px solid $warn;
-}
-
-.card-details-title {
-  font-size: 1.4em;
-  margin-bottom: 16px;
 }
 
 .card-element-container {
   width: 100%;
+  border-radius: 3px;
 }
 
-// #card-element {
-//   width: 100%;
-// }
+.card-element {
+  padding: 16px;
+}
+
+.card-input-errors {
+  color: $warn;
+}
 
 .buy-button {
   width: $desktop-buy-button-width;
@@ -58,7 +55,11 @@
     height: $mobile-buy-button-height;
   }
 
-  .card-expiration-container {
-    width: 100%;
+}
+
+@media screen and (max-width: 350px) {
+ 
+  .card-element {
+    padding: 16px 4px 16px 4px;
   }
 }

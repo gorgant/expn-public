@@ -1,15 +1,19 @@
 <form (submit)="handleForm($event)">
-  <div [hidden]="paymentProcessing$ | async" class="credit-card-details-group" [ngClass]="{'credit-card-error': (paymentResponse$ | async) === paymentResponseTypes.REJECTED}" fxLayout="column" fxLayoutAlign="center center">
-    <div class="card-details-title">Enter Your Billing Information - SECURE</div>
-    <div class="card-element-container">
-      <div #cardElement>
+  <div [hidden]="(paymentProcessing$ | async)" class="credit-card-details-group" [ngClass]="{'processing-error': (paymentResponse$ | async)?.status === 'failed'}" fxLayout="column" fxLayoutAlign="center center">
+    <div appMatElevation class="card-element-container">
+      <div class="card-element" #cardElement>
         <!-- A Stripe Element will be inserted here. -->
       </div>
       <!-- Used to display Element errors. -->
-      <p>{{ cardErrors }}</p>
+    </div>
+    <div>
+      <p class="card-input-errors">{{ cardErrors }}</p>
     </div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
-      <button [disabled]="paymentSubmitted" class="buy-button" mat-raised-button color="primary" type="submit">Get {{ product.name }}</button>
+      <button [disabled]="paymentSubmitted || billingDetailsForm.invalid" class="buy-button" mat-raised-button color="primary" type="submit">
+        <span *ngIf="billingDetailsForm.valid">Get {{ product.name }}</span>
+        <span *ngIf="billingDetailsForm.invalid">Complete Form to Continue</span>
+      </button>
       <div class="processing-hint">It can take up to 30 seconds to process your order, so please be patient.</div>
     </div>
   </div>

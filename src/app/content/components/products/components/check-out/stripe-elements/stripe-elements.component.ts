@@ -8,6 +8,7 @@ import { BillingDetails } from 'src/app/core/models/billing/billing-details.mode
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as StripeDefs from 'stripe';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -16,7 +17,7 @@ import * as StripeDefs from 'stripe';
 })
 export class StripeElementsComponent implements OnInit {
 
-  @Input() billingDetails: BillingDetails;
+  @Input() billingDetailsForm: AbstractControl;
   @Input() anonymousUser: AnonymousUser;
   @Input() product: Product;
 
@@ -45,7 +46,32 @@ export class StripeElementsComponent implements OnInit {
     this.stripe = Stripe(this.stripPublishableKey);
     const elements = this.stripe.elements();
 
-    this.card = elements.create('card');
+    this.card = elements.create('card', {
+      iconStyle: 'solid',
+      style: {
+        base: {
+          iconColor: '#2196f3', // theme accent
+          color: '#000000',
+          fontWeight: 400,
+          fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
+          fontSize: '16px',
+          fontSmoothing: 'antialiased',
+          ':-webkit-autofill': {
+            color: '#2196f3', // theme accent
+          },
+          '::placeholder': {
+            color: '#2196f3', // theme accent
+          },
+        },
+        invalid: {
+          iconColor: '#f44336',
+          color: '#f44336', // theme warn
+        },
+      },
+    });
+
+
+
     this.card.mount(this.cardElement.nativeElement);
 
     this.card.on('change', ({error}) => {
@@ -57,16 +83,17 @@ export class StripeElementsComponent implements OnInit {
 
   async handleForm(e: Event) {
     e.preventDefault();
+    const billingDetails: BillingDetails = this.billingDetailsForm.value;
     const owner: stripe.OwnerInfo = {
-      name: `${this.billingDetails.firstName} ${this.billingDetails.lastName}`,
-      email: this.billingDetails.email,
-      phone: this.billingDetails.phone,
+      name: `${billingDetails.firstName} ${billingDetails.lastName}`,
+      email: billingDetails.email,
+      phone: billingDetails.phone,
       address: {
-        line1: this.billingDetails.billingOne,
-        line2: this.billingDetails.billingTwo,
-        city: this.billingDetails.city,
-        state: this.billingDetails.countryCode === 'US' ? this.billingDetails.usStateCode : this.billingDetails.state,
-        country: this.billingDetails.countryCode
+        line1: billingDetails.billingOne,
+        line2: billingDetails.billingTwo,
+        city: billingDetails.city,
+        state: billingDetails.countryCode === 'US' ? billingDetails.usStateCode : billingDetails.state,
+        country: billingDetails.countryCode
       }
     };
 

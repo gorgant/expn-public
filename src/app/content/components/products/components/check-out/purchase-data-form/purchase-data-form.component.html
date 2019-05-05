@@ -8,7 +8,7 @@
   <div class="billing-details-group" formGroupName="billingDetailsGroup" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayoutAlign.gt-sm="center start">
     <mat-form-field class="country">
       <mat-label>Select Country</mat-label>
-      <mat-select formControlName="countryCode" (selectionChange)="setCountry($event.value)">
+      <mat-select formControlName="countryCode" (selectionChange)="getCountry($event.value)">
         <mat-option *ngFor="let country of (geographicData$ | async)?.countryList" [value]="country.code">{{ country.name }}</mat-option>
       </mat-select>
       <mat-error *ngFor="let validation of billingValidationMessages.countryCode">
@@ -58,7 +58,7 @@
       </mat-error>
     </mat-form-field>
     <mat-form-field *ngIf="countryCode.value !== 'US'" class="state">
-      <input matInput formControlName="state" type="text" placeholder="State/Province">
+      <input matInput formControlName="state" type="text" placeholder="State/Province (optional)">
       <mat-error *ngFor="let validation of billingValidationMessages.state">
         <mat-error *ngIf="state.hasError(validation.type) && state.invalid && (state.dirty || state.touched)">{{ validation.message }}</mat-error>
       </mat-error>
@@ -76,7 +76,7 @@
 </form>
 
 <app-stripe-elements 
-  [billingDetails]="billingDetailsData"
+  [billingDetailsForm]="billingDetailsGroup"
   [anonymousUser]="anonymousUser"
   [product]="product"
 ></app-stripe-elements>

@@ -19,6 +19,7 @@ import { withLatestFrom, map, take } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
+import { Country } from 'src/app/core/models/forms-and-components/geography/country.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -90,32 +91,73 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   // This fires when the select field is changed, allowing access to the object
   // Without this, when saving the form, the field view value will not populate on the form
-  setCountry(countryCode: string): void {
+  getCountry(countryCode: string): void {
     this.store$.select(UiStoreSelectors.selectCountryByCode(countryCode))
       .pipe(take(1))
       .subscribe(country => {
-        // If switching from U.S. to another country and there is a U.S. state value present, purge it
-        if (country.code !== 'US' && this.usStateCode.value && this.usStateCode.value !== this.nonUsStateCodeValue) {
-          console.log('State value detected, removing it bc country changed');
-          this.billingDetailsGroup.patchValue({
-            state: '',
-            usStateCode: this.nonUsStateCodeValue
-          });
-        }
+        this.patchStateandCountryValues(country);
+        this.patchPhoneDialPrefix(country);
+        this.setStateValidators();
 
-        // If switching from U.S. to another country and there is a U.S. state value present, purge it
-        if (country.code === 'US') {
-          console.log('U.S. selected, clearing default stateCodeValue');
-          this.billingDetailsGroup.patchValue({
-            usStateCode: ''
-          });
-        }
-
-
-        this.billingDetailsGroup.patchValue({
-          country: country.name
-        });
       });
+  }
+
+  private patchStateandCountryValues(country: Country) {
+    // If switching from U.S. to another country and there is a U.S. state value present, purge it
+    if (country.code !== 'US' && this.usStateCode.value && this.usStateCode.value !== this.nonUsStateCodeValue) {
+      console.log('State value detected, removing it bc country changed');
+      this.billingDetailsGroup.patchValue({
+        state: '',
+        usStateCode: this.nonUsStateCodeValue
+      });
+    }
+
+    // If switching from U.S. to another country and there is a U.S. state value present, purge it
+    if (country.code === 'US') {
+      console.log('U.S. selected, clearing default stateCodeValue');
+      this.billingDetailsGroup.patchValue({
+        usStateCode: ''
+      });
+    }
+
+    this.billingDetailsGroup.patchValue({
+      country: country.name
+    });
+
+  }
+
+  private setStateValidators() {
+
+    switch (this.countryCode.value) {
+      case 'US':
+        this.state.setValidators([Validators.required]);
+        console.log('US country, adding state validators');
+        break;
+      case !'US':
+        console.log('Non-us country, removing state validators');
+        this.state.setValidators([]);
+        break;
+      default:
+        console.log('Unknown country, removing state validators');
+        this.state.setValidators([]);
+        break;
+    }
+
+  }
+
+  private patchPhoneDialPrefix(country: Country) {
+    const dialPrefix = `+${country.dial} `;
+    let existingPhoneValue = this.phone.value as string;
+    if (existingPhoneValue.includes('+')) {
+      if (existingPhoneValue.includes(' ')) {
+        existingPhoneValue = existingPhoneValue.substr(existingPhoneValue.indexOf(' ') + 1);
+      } else {
+        existingPhoneValue = '';
+      }
+    }
+    this.billingDetailsGroup.patchValue({
+      phone: existingPhoneValue ? `${dialPrefix}${existingPhoneValue}` : dialPrefix
+    });
   }
 
   // This fires when the select field is changed, allowing access to the object
@@ -158,7 +200,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
         billingOne: ['', [Validators.required]],
         billingTwo: [''],
         city: ['', [Validators.required]],
-        state: ['', [Validators.required]],
+        state: ['', []],
         usStateCode: [this.nonUsStateCodeValue, [Validators.required]],
         country: [''],
         countryCode: ['', [Validators.required]]
@@ -176,7 +218,9 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     const billingDetails = this.anonymousUser.billingDetails ? this.anonymousUser.billingDetails : null;
     if (billingDetails) {
       this.billingDetailsGroup.patchValue(this.anonymousUser.billingDetails);
+      this.setStateValidators();
     }
+
     console.log('User details patched in');
   }
 
@@ -226,8 +270,13 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   }
 
   private changesDetected(user: AnonymousUser): boolean {
-    const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(user.billingDetails));
+    const serverBillingDetailsNoPostal = {...user.billingDetails};
+    delete serverBillingDetailsNoPostal.postalCode; // Remove postal code from server version since it isn't collected in form
+    const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(serverBillingDetailsNoPostal));
     const formBillingDetails = JSON.stringify(this.sortObjectByKeyName(this.billingDetailsGroup.value));
+
+    // console.log('Server Billing Details', serverBillingDetails);
+    // console.log('Form Billing Details', formBillingDetails);
 
     if (serverBillingDetails === formBillingDetails) {
       return false;
