@@ -1,26 +1,29 @@
 import { assert } from './helpers';
 import { db, stripe } from './config'; 
+import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
 
 /**
 Read the user document from Firestore
 */
 export const getUser = async(uid: string) => {
-    return await db.collection('users').doc(uid).get().then(doc => doc.data());
+    return await db.collection('anonymousUsers').doc(uid).get().then(doc => doc.data() as AnonymousUser);
 }
 
 /**
 Gets a customer from Stripe
 */
-export const getCustomer = async(uid: string) => {
+export const getStripeCustomerId = async(uid: string) => {
     const user = await getUser(uid);
-    return assert(user, 'stripeCustomerId');
+    return assert(user, 'stripeCustomerId') as string;
 }
 
 /**
 Updates the user document non-destructively
+
+UID requred because sometimes user update is partial
 */
-export const updateUser = async(uid: string, data: Object) => {
-    return await db.collection('users').doc(uid).set(data, { merge: true })
+export const updateUser = async(uid: string, user: AnonymousUser | Partial<AnonymousUser>) => {
+    return await db.collection('anonymousUsers').doc(uid).set(user, { merge: true })
 }
 
 /**
@@ -31,7 +34,11 @@ export const createCustomer = async(uid: any) => {
         metadata: { firebaseUID: uid }
     })
 
-    await updateUser(uid, { stripeCustomerId: customer.id })
+    const fbUser: Partial<AnonymousUser> = {
+        stripeCustomerId: customer.id
+    }
+
+    await updateUser(uid, fbUser);
 
     return customer;
 }

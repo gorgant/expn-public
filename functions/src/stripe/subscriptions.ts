@@ -1,22 +1,23 @@
 import * as functions from 'firebase-functions';
 import { assert, assertUID, catchErrors } from './helpers';
 import { stripe } from './config'; 
-import { getCustomer, updateUser, getOrCreateCustomer } from './customers';
+import { getStripeCustomerId, updateUser, getOrCreateCustomer } from './customers';
 import { attachSource } from './sources';
+import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
 
 
 /**
 Gets a user's subscriptions
 */
 export const getSubscriptions = async(uid: string) => {
-  const customer = await getCustomer(uid);
+  const customer = await getStripeCustomerId(uid);
   return stripe.subscriptions.list({ customer });
 }
 
 /**
 Creates and charges user for a new subscription
 */
-export const createSubscription = async(uid:string, source:string, plan: string, coupon?: string) => {
+export const createSubscription = async(uid:string, source: stripe.Source, plan: string, coupon?: string) => {
  
   const customer = await getOrCreateCustomer(uid);
 
@@ -33,12 +34,12 @@ export const createSubscription = async(uid:string, source:string, plan: string,
   });
 
   // Add the plan to existing subscriptions
-  const docData = {
+  const updatedUser: Partial<AnonymousUser> = {
     [plan]: true,
     [subscription.id]: 'active',
   }
 
-  await updateUser(uid, docData);
+  await updateUser(uid, updatedUser);
 
   return subscription;
 }
@@ -50,12 +51,12 @@ export async function cancelSubscription(uid: string, subId: string): Promise<an
 
     const subscription  = await stripe.subscriptions.del(subId);
 
-    const docData = {
+    const updatedUser: Partial<AnonymousUser> = {
         [subscription.plan!.id]: false,
         [subscription.id]: 'canceled'
     }
 
-    await updateUser(uid, docData);
+    await updateUser(uid, updatedUser);
 
     return subscription;
 }

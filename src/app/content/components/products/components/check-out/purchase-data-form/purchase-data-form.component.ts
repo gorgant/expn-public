@@ -160,7 +160,6 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
         city: ['', [Validators.required]],
         state: ['', [Validators.required]],
         usStateCode: [this.nonUsStateCodeValue, [Validators.required]],
-        postalCode: ['', [Validators.required]],
         country: [''],
         countryCode: ['', [Validators.required]]
       })
@@ -276,7 +275,6 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   get city() { return this.purchaseDataForm.get('billingDetailsGroup.city'); }
   get state() { return this.purchaseDataForm.get('billingDetailsGroup.state'); }
   get usStateCode() { return this.purchaseDataForm.get('billingDetailsGroup.usStateCode'); }
-  get postalCode() { return this.purchaseDataForm.get('billingDetailsGroup.postalCode'); }
   get country() { return this.purchaseDataForm.get('billingDetailsGroup.country'); }
   get countryCode() { return this.purchaseDataForm.get('billingDetailsGroup.countryCode'); }
 

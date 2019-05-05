@@ -2,6 +2,7 @@ import { stripe } from './config';
 import * as Stripe from 'stripe';
 import * as functions from 'firebase-functions';
 import { updateUser } from './customers';
+import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
 
 export const invoiceWebhookSignature = functions.config().stripe.invoice_webhook_signature;
 export const subscriptionWebhookSignature = functions.config().stripe.subscription_webhook_signature;
@@ -22,13 +23,13 @@ export const invoiceWebhookHandler = async (invoice: Stripe.invoices.IInvoice) =
   const dayInMils = 86400000;
   const nextPaymentDueDate = subscription.current_period_end + dayInMils;
 
-  const docData = {
+  const updatedUser: Partial<AnonymousUser> = {
     [subscription.plan!.id]: isActive,
     [subscription.id]: subscription.status,
     nextPaymentDue: nextPaymentDueDate
   }
 
-  return await updateUser(uid, docData);
+  return await updateUser(uid, updatedUser);
 };
 
 // Receives an invoice payload from stripe
@@ -66,7 +67,7 @@ export const subscriptionWebhookHandler = async (subscription: Stripe.subscripti
   }
 
   // Clear next payment due and add termination date
-  const docData = {
+  const updatedUser = {
     [subscription.id]: subscription.status,
     nextPaymentDue: null as any,
     subscriptionTerminationDate
@@ -75,10 +76,10 @@ export const subscriptionWebhookHandler = async (subscription: Stripe.subscripti
   // Mark plan false if subscription canceled
   const isCanceled = subscription.status === 'canceled';
   if (isCanceled) {
-    docData[subscription.plan!.id] = false;
+    updatedUser[subscription.plan!.id] = false;
   }
 
-  return await updateUser(uid, docData);
+  return await updateUser(uid, updatedUser);
 };
 
 // Receives a subscription payload from stripe

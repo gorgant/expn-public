@@ -72,12 +72,6 @@
         <mat-error *ngIf="usStateCode.hasError(validation.type) && usStateCode.invalid && (usStateCode.dirty || usStateCode.touched)">{{ validation.message }}</mat-error>
       </mat-error>
     </mat-form-field>
-    <mat-form-field class="postal-code">
-      <input matInput formControlName="postalCode" type="text" placeholder="Postal Code">
-      <mat-error *ngFor="let validation of billingValidationMessages.postalCode">
-        <mat-error *ngIf="postalCode.hasError(validation.type) && postalCode.invalid && (postalCode.dirty || postalCode.touched)">{{ validation.message }}</mat-error>
-      </mat-error>
-    </mat-form-field>
   </div>
 </form>
 
