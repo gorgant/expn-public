@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
 import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
 import { Observable } from 'rxjs';
@@ -11,13 +11,15 @@ import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data
 import * as StripeDefs from 'stripe';
 import { AbstractControl } from '@angular/forms';
 import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
+import { Router } from '@angular/router';
+import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-stripe-elements',
   templateUrl: './stripe-elements.component.html',
   styleUrls: ['./stripe-elements.component.scss']
 })
-export class StripeElementsComponent implements OnInit {
+export class StripeElementsComponent implements OnInit, OnDestroy {
 
   @Input() billingDetailsForm: AbstractControl;
   @Input() anonymousUser: AnonymousUser;
@@ -42,6 +44,7 @@ export class StripeElementsComponent implements OnInit {
 
   constructor(
     private store$: Store<RootStoreState.State>,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -76,7 +79,7 @@ export class StripeElementsComponent implements OnInit {
         source,
         anonymousUID: this.anonymousUser.id,
         amountPaid: this.product.price * 100, // Stripe prices in cents,
-        productId: this.product.id
+        product: this.product
       };
 
       this.paymentSubmitted = true;
@@ -97,8 +100,11 @@ export class StripeElementsComponent implements OnInit {
           if (charge && charge.status === 'succeeded') {
             this.paymentSucceeded = true;
             this.paymentSubmitted = false;
-            this.card.destroy(); // Remove element from DOM
+            // if (this.card) {
+            //   this.card.destroy(); // Remove element from DOM
+            // }
             console.log('Charge succeeded, closing payment loop and destroying stripe element');
+            this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
           }
 
           // Listen for failure
@@ -158,6 +164,14 @@ export class StripeElementsComponent implements OnInit {
   private initializePaymentStatus() {
     this.paymentProcessing$ = this.store$.select(BillingStoreSelectors.selectPaymentProcessing);
     this.paymentResponse$ = this.store$.select(BillingStoreSelectors.selectStripeCharge);
+  }
+
+  ngOnDestroy() {
+    // Destroy card when navigating away
+    if (this.card) {
+      console.log('Card destroyed');
+      this.card.destroy();
+    }
   }
 
 }

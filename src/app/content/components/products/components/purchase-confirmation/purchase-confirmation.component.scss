@@ -1,1 +1,38 @@
 @import '../../../../../variables';
+
+.page-container {
+  width: 100%;
+  max-width: $text-block-max-width;
+  font-size: 22px;
+  margin-bottom: 32px;
+  padding: 16px;
+}
+
+.header {
+  font-size: 2em;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.receipt-url {
+  font-size: 0.8em;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .header {
+    text-align: center;
+  }
+
+  .next-steps {
+    text-align: center;
+  }
+
+  .receipt-url {
+    text-align: center;
+  }
+}
+
+
+
+
+

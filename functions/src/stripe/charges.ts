@@ -5,6 +5,7 @@ import { attachSource } from './sources';
 import { assertUID, assert, catchErrors } from './helpers';
 import { StripeChargeData } from '../../../shared-models/billing/stripe-charge-data.model';
 import { StripeError } from '../../../shared-models/billing/stripe-error.model';
+import { Product } from '../../../shared-models/products/product.model';
 
 /**
  * Gets a user's charge history
@@ -24,7 +25,7 @@ export const getUserCharges = async(uid: string, limit?: number) => {
  * @amount in pennies (e.g. $20 === 2000)
  * @idempotency_key ensures charge will only be executed once
  */
-export const createCharge = async(uid: string, source: stripe.Source, amount: number, productId: string, idempotency_key?: string) => {
+export const createCharge = async(uid: string, source: stripe.Source, amount: number, product: Product, idempotency_key?: string) => {
   
   const customer = await getOrCreateCustomer(uid);
 
@@ -36,8 +37,9 @@ export const createCharge = async(uid: string, source: stripe.Source, amount: nu
     source: source.id,
     currency: 'usd',
     metadata: {
-      productId
-    }
+      productId: product.id // Add product id to charge record
+    },
+    description: product.name // Shows up on receipt billing line item
   },
   { idempotency_key }
   )
@@ -51,12 +53,12 @@ export const stripeCreateCharge = functions.https.onCall( async (data: StripeCha
   const uid: string = assertUID(context);
   const source: stripe.Source = assert(data, 'source');
   const amount: number = assert(data, 'amountPaid');
-  const productId: string = assert(data, 'productId');
+  const product: Product = assert(data, 'product');
 
   // // Optional -- Prevents multiple charges
   // const idempotency_key = data.itempotency_key;
 
-  return createCharge(uid, source, amount, productId)
+  return createCharge(uid, source, amount, product)
     .then(
       result => result,
       err => {

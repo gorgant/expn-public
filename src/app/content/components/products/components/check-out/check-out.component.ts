@@ -54,7 +54,4 @@ export class CheckOutComponent implements OnInit {
     );
   }
 
-  private initializeInvoiceData() {
-    // TODO: create billing store and select invoice (if exists)
-  }
 }
