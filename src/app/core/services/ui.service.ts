@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable, throwError } from 'rxjs';
 import { MatSnackBarConfig, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Country } from '../models/forms-and-components/geography/country.model';
 import { take, map, catchError } from 'rxjs/operators';
 import { GeographicData } from '../models/forms-and-components/geography/geographic-data.model';
+import { FbCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class UiService {
   }
 
   fetchGeographicData(): Observable<GeographicData> {
-    const geographicDataDoc = this.afs.collection('publicResources').doc<GeographicData>('geographicData');
+    const geographicDataDoc = this.afs.collection(FbCollectionPaths.PUBLIC_RESOURCES).doc<GeographicData>('geographicData');
 
     return geographicDataDoc.valueChanges()
       .pipe(

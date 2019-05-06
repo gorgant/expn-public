@@ -65,4 +65,14 @@ export class UserStoreEffects {
       localStorage.setItem(ProductStrings.OFFLINE_PRODUCT_DATA, JSON.stringify(productData));
     })
   );
+
+  @Effect({dispatch: false})
+  removeProductFromLocalStorage$: Observable<Action | Product> = this.actions$.pipe(
+    ofType<userFeatureActions.PurgeCartData>(
+      userFeatureActions.ActionTypes.PURGE_CART_DATA
+    ),
+    tap(() => {
+      localStorage.removeItem(ProductStrings.OFFLINE_PRODUCT_DATA);
+    })
+  );
 }

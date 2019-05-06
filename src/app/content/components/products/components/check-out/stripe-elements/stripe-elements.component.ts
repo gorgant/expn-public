@@ -4,7 +4,7 @@ import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response
 import { Observable } from 'rxjs';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { RootStoreState, BillingStoreSelectors, BillingStoreActions } from 'src/app/root-store';
+import { RootStoreState, BillingStoreSelectors, BillingStoreActions, UserStoreActions } from 'src/app/root-store';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
@@ -100,11 +100,9 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           if (charge && charge.status === 'succeeded') {
             this.paymentSucceeded = true;
             this.paymentSubmitted = false;
-            // if (this.card) {
-            //   this.card.destroy(); // Remove element from DOM
-            // }
             console.log('Charge succeeded, closing payment loop and destroying stripe element');
             this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
+            this.store$.dispatch(new UserStoreActions.PurgeCartData()); // Remove cart data from store and local storage
           }
 
           // Listen for failure

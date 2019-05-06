@@ -1,18 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, QueryDocumentSnapshot } from '@angular/fire/firestore';
-import { UserService } from './user.service';
-import { Invoice } from '../models/billing/invoice.model';
-import { Observable, throwError, pipe, from } from 'rxjs';
-import { takeUntil, map, catchError, take, tap } from 'rxjs/operators';
-import { AuthService } from './auth.service';
-import { now } from 'moment';
-import { PaymentResponseMsg } from '../models/billing/payment-response-msg.model';
-import { Store } from '@ngrx/store';
-import { RootStoreState, UserStoreActions } from 'src/app/root-store';
-import { PaymentSvrResponse } from '../models/billing/payment-svr-response.model';
+import { Observable, throwError } from 'rxjs';
+import { catchError, take, tap } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { StripeChargeData } from '../models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
+import { FbFunctionNames } from '../models/routes-and-paths/fb-function-names';
 
 
 
@@ -28,7 +20,9 @@ export class BillingService {
 
   processPayment(billingData: StripeChargeData): Observable<Stripe.charges.ICharge> {
 
-    const chargeFunction: (data: StripeChargeData) => Observable<Stripe.charges.ICharge> = this.fns.httpsCallable('stripeCreateCharge');
+    const chargeFunction: (data: StripeChargeData) => Observable<Stripe.charges.ICharge> = this.fns.httpsCallable(
+      FbFunctionNames.STRIPE_CREATE_CHARGE
+    );
     const res = chargeFunction(billingData)
       .pipe(
         take(1),

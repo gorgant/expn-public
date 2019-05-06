@@ -12,7 +12,8 @@ export enum ActionTypes {
   UPDATE_PROFILE_IMAGE_REQUESTED = '[User] Update Profile Image Requested',
   UPDATE_PROFILE_IMAGE_COMPLETE = '[User] Update Profile Image Complete',
   USER_DATA_LOAD_ERROR = '[User] Load Failure',
-  SET_CART_DATA = '[User] Cart Data Set'
+  SET_CART_DATA = '[User] Cart Data Set',
+  PURGE_CART_DATA = '[User] Cart Data Purged'
 }
 
 export class UserDataRequested implements Action {
@@ -47,11 +48,16 @@ export class SetCartData implements Action {
   constructor(public payload: {productData: Product}) {}
 }
 
+export class PurgeCartData implements Action {
+  readonly type = ActionTypes.PURGE_CART_DATA;
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
 StoreUserDataRequested |
 StoreUserDataComplete |
 LoadErrorDetected |
-SetCartData
+SetCartData |
+PurgeCartData
 ;

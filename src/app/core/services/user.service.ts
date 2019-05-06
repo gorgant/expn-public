@@ -4,6 +4,7 @@ import { Observable, from, throwError } from 'rxjs';
 import { AnonymousUser } from '../models/user/anonymous-user.model';
 import { map, takeUntil, catchError } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { FbCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +55,7 @@ export class UserService {
   }
 
   private getUserColletion(): AngularFirestoreCollection<AnonymousUser> {
-    return this.db.collection<AnonymousUser>('anonymousUsers');
+    return this.db.collection<AnonymousUser>(FbCollectionPaths.USERS);
   }
 
 

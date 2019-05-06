@@ -38,6 +38,11 @@ export function featureReducer(state = initialState, action: Actions): State {
         ...state,
         cartItem: action.payload.productData
       };
+    case ActionTypes.PURGE_CART_DATA:
+      return {
+        ...state,
+        cartItem: null
+      };
 
     default: {
       return state;

@@ -5,9 +5,4 @@
     <p>Your receipt will be included in that email. You can also view it <span><a target="_blank" rel="noopener noreferrer" [href]="purchaseData.receipt_url">here</a></span>.</p>
     <p>We hope you are as excited as we are to get started!</p>
   </div>
-  <!-- <div *ngIf="(productData$ | async) as productData" class="receipt-container" fxLayout="column" fxLayoutAlign="center start">
-    <div class="product"><b>Product:</b> {{ productData.name }}</div>
-    <div class="purchase-date"><b>Purchase Date:</b> {{ purchaseData.created | date }}</div>
-    <div class="purchase-price"><b>Amount Paid:</b> ${{ (purchaseData.amount / 100) | number: '1.2' }}</div>
-  </div> -->
 </div>

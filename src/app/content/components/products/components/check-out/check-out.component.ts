@@ -5,8 +5,10 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
-import { withLatestFrom, map } from 'rxjs/operators';
+import { withLatestFrom, map, take } from 'rxjs/operators';
 import { Invoice } from 'src/app/core/models/billing/invoice.model';
+import { Router } from '@angular/router';
+import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-check-out',
@@ -23,7 +25,8 @@ export class CheckOutComponent implements OnInit {
   imagePaths = ImagePaths;
 
   constructor(
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -52,6 +55,15 @@ export class CheckOutComponent implements OnInit {
     this.product$ = this.store$.select(
       UserStoreSelectors.selectCartData
     );
+
+    this.product$
+      .pipe(take(1))
+      .subscribe(product => {
+        if (!product) {
+          console.log('No product detected in cart, routing to home page');
+          this.router.navigate([AppRoutes.HOME]);
+        }
+      });
   }
 
 }

@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { takeUntil, map, catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { UiService } from './ui.service';
+import { FbCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'
@@ -64,11 +65,11 @@ export class PostService {
   }
 
   private getPostsCollection(): AngularFirestoreCollection<Post> {
-    return this.afs.collection<Post>('posts', ref => ref.orderBy('publishedDate', 'desc'));
+    return this.afs.collection<Post>(FbCollectionPaths.POSTS, ref => ref.orderBy('publishedDate', 'desc'));
   }
 
   private getFeaturedPostsCollection(): AngularFirestoreCollection<Post> {
-    return this.afs.collection<Post>('posts', ref => ref.where('featured', '==', true));
+    return this.afs.collection<Post>(FbCollectionPaths.POSTS, ref => ref.where('featured', '==', true));
   }
 
   private getPostDoc(postId: string): AngularFirestoreDocument<Post> {

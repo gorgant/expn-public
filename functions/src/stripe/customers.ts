@@ -1,12 +1,13 @@
 import { assert } from './helpers';
 import { db, stripe } from './config'; 
 import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
+import { FbCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 
 /**
 Read the user document from Firestore
 */
 export const getUser = async(uid: string) => {
-    return await db.collection('anonymousUsers').doc(uid).get().then(doc => doc.data() as AnonymousUser);
+    return await db.collection(FbCollectionPaths.USERS).doc(uid).get().then(doc => doc.data() as AnonymousUser);
 }
 
 /**
@@ -23,7 +24,7 @@ Updates the user document non-destructively
 UID requred because sometimes user update is partial
 */
 export const updateUser = async(uid: string, user: AnonymousUser | Partial<AnonymousUser>) => {
-    return await db.collection('anonymousUsers').doc(uid).set(user, { merge: true })
+    return await db.collection(FbCollectionPaths.USERS).doc(uid).set(user, { merge: true })
 }
 
 /**
