@@ -6,7 +6,6 @@ import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/ro
 import { Observable } from 'rxjs';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { withLatestFrom, map, take } from 'rxjs/operators';
-import { Invoice } from 'src/app/core/models/billing/invoice.model';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
@@ -20,7 +19,6 @@ export class CheckOutComponent implements OnInit {
   product$: Observable<Product>;
   anonymousUser$: Observable<AnonymousUser>;
   userAuthenticationRequested: boolean;
-  invoice$: Observable<Invoice>;
 
   imagePaths = ImagePaths;
 

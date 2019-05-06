@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
-import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
 import { Observable } from 'rxjs';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -27,7 +26,6 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
 
   paymentProcessing$: Observable<boolean>;
   paymentResponse$: Observable<StripeDefs.charges.ICharge | StripeError>;
-  paymentResponseTypes = PaymentResponseMsg;
   paymentSubmitted: boolean;
   paymentSucceeded: boolean;
 
