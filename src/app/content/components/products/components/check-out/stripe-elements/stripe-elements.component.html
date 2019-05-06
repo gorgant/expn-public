@@ -1,6 +1,6 @@
-<form (submit)="handleForm($event)">
-  <div [hidden]="(paymentProcessing$ | async)" class="credit-card-details-group" [ngClass]="{'processing-error': (paymentResponse$ | async)?.status === 'failed'}" fxLayout="column" fxLayoutAlign="center center">
-    <div appMatElevation class="card-element-container">
+<form (submit)="onSubmitPayment($event)">
+  <div [hidden]="(paymentProcessing$ | async)" class="credit-card-details-group"  fxLayout="column" fxLayoutAlign="center center">
+    <div appMatElevation class="card-element-container" [ngClass]="{'processing-error': (paymentResponse$ | async)?.stripeErrorType}">
       <div class="card-element" #cardElement>
         <!-- A Stripe Element will be inserted here. -->
       </div>
@@ -9,8 +9,11 @@
     <div>
       <p class="card-input-errors">{{ cardErrors }}</p>
     </div>
+    <div *ngIf="(paymentResponse$ | async) as response">
+      <div *ngIf="response.stripeErrorType" class="payment-failed">{{ response.message }}</div>
+    </div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
-      <button [disabled]="paymentSubmitted || billingDetailsForm.invalid" class="buy-button" mat-raised-button color="primary" type="submit">
+      <button [disabled]="paymentSubmitted || billingDetailsForm.invalid || paymentSucceeded" class="buy-button" mat-raised-button color="primary" type="submit">
         <span *ngIf="billingDetailsForm.valid">Get {{ product.name }}</span>
         <span *ngIf="billingDetailsForm.invalid">Complete Form to Continue</span>
       </button>
@@ -23,7 +26,5 @@
     <mat-progress-spinner color="accent" mode="indeterminate"></mat-progress-spinner>
   </div>
   
-  <div *ngIf="(paymentResponse$ | async)?.status === 'failed'">
-    <div class="payment-failed">Payment failed. No charge was applied to your card. Please confirm your billing information and try again.</div>
-  </div>
+  
 </form>

@@ -5,6 +5,7 @@ import * as Stripe from 'stripe';
 export enum ActionTypes {
   PROCESS_PAYMENT_REQUESTED = '[Billing] Process Payment Requested',
   PROCESS_PAYMENT_COMPLETE = '[Billing] Process Payment Complete',
+  PURGE_STRIPE_CHARGE = '[Billing] Stripe Charge Purged',
   PURGE_BILLING_STATE = '[Billing] Invoice State Purged',
   LOAD_ERROR_DETECTED = '[Billing] Billing Load Error',
 }
@@ -21,6 +22,10 @@ export class ProcessPaymentComplete implements Action {
   constructor(public payload: { paymentResponse: Stripe.charges.ICharge }) {}
 }
 
+export class PurgeStripeCharge implements Action {
+  readonly type = ActionTypes.PURGE_STRIPE_CHARGE;
+}
+
 export class PurgeBillingState implements Action {
   readonly type = ActionTypes.PURGE_BILLING_STATE;
 }
@@ -33,6 +38,7 @@ export class LoadErrorDetected implements Action {
 export type Actions =
 ProcessPaymentRequested |
 ProcessPaymentComplete |
+PurgeStripeCharge |
 PurgeBillingState |
 LoadErrorDetected
 ;

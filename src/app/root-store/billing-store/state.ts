@@ -1,8 +1,9 @@
 import * as Stripe from 'stripe';
+import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
 
 export interface State {
   paymentProcessing: boolean;
-  stripeCharge: Stripe.charges.ICharge;
+  stripeCharge: Stripe.charges.ICharge | StripeError;
   error?: any;
 }
 

@@ -6,13 +6,18 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.PROCESS_PAYMENT_REQUESTED:
       return {
         ...state,
-        paymentProcessing: true
+        paymentProcessing: true,
       };
     case ActionTypes.PROCESS_PAYMENT_COMPLETE:
       return {
         ...state,
         paymentProcessing: false,
         stripeCharge: action.payload.paymentResponse,
+      };
+    case ActionTypes.PURGE_STRIPE_CHARGE:
+      return {
+        ...state,
+        stripeCharge: null,
       };
     case ActionTypes.PURGE_BILLING_STATE:
       return {

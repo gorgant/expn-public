@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
 import { PaymentResponseMsg } from 'src/app/core/models/billing/payment-response-msg.model';
 import { Observable } from 'rxjs';
+import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors, BillingStoreActions } from 'src/app/root-store';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
@@ -9,6 +10,7 @@ import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as StripeDefs from 'stripe';
 import { AbstractControl } from '@angular/forms';
+import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -22,9 +24,10 @@ export class StripeElementsComponent implements OnInit {
   @Input() product: Product;
 
   paymentProcessing$: Observable<boolean>;
-  paymentResponse$: Observable<StripeDefs.charges.ICharge>;
+  paymentResponse$: Observable<StripeDefs.charges.ICharge | StripeError>;
   paymentResponseTypes = PaymentResponseMsg;
   paymentSubmitted: boolean;
+  paymentSucceeded: boolean;
 
 
 
@@ -36,13 +39,80 @@ export class StripeElementsComponent implements OnInit {
   cardErrors: string;
 
   loading = false;
-  confirmation;
 
   constructor(
     private store$: Store<RootStoreState.State>,
   ) { }
 
   ngOnInit() {
+    this.initializeStripeElement();
+    this.initializePaymentStatus();
+  }
+
+  async onSubmitPayment(e: Event) {
+    e.preventDefault();
+    const billingDetails: BillingDetails = this.billingDetailsForm.value;
+    const owner: stripe.OwnerInfo = {
+      name: `${billingDetails.firstName} ${billingDetails.lastName}`,
+      email: billingDetails.email,
+      phone: billingDetails.phone,
+      address: {
+        line1: billingDetails.billingOne,
+        line2: billingDetails.billingTwo,
+        city: billingDetails.city,
+        state: billingDetails.countryCode === 'US' ? billingDetails.usStateCode : billingDetails.state,
+        country: billingDetails.countryCode
+      }
+    };
+
+    const { source, error } = await this.stripe.createSource(this.card, {owner});
+
+    if (error) {
+      // Inform the customer that there was an error.
+      const cardErrors = error.message;
+    } else {
+      // Send the token to your server.
+      const billingData: StripeChargeData = {
+        source,
+        anonymousUID: this.anonymousUser.id,
+        amountPaid: this.product.price * 100, // Stripe prices in cents,
+        productId: this.product.id
+      };
+
+      this.paymentSubmitted = true;
+
+      this.store$.dispatch(new BillingStoreActions.ProcessPaymentRequested({billingData}));
+
+      // Update UI based on response from Stripe
+      this.paymentProcessing$
+        .pipe(
+          withLatestFrom(this.paymentResponse$),
+          takeWhile(() => this.paymentSubmitted) // Prevents memory leak between attempts
+        )
+        .subscribe(([processing, response]) => {
+          console.log('Observable fired', processing, response);
+
+          // Listen for success
+          const charge = response as StripeDefs.charges.ICharge;
+          if (charge && charge.status === 'succeeded') {
+            this.paymentSucceeded = true;
+            this.paymentSubmitted = false;
+            this.card.destroy(); // Remove element from DOM
+            console.log('Charge succeeded, closing payment loop and destroying stripe element');
+          }
+
+          // Listen for failure
+          const err = response as StripeError;
+          if (err && err.stripeErrorType) {
+            this.paymentSucceeded = false;
+            this.paymentSubmitted = false;
+            console.log('Charge failed, resetting payment loop');
+          }
+        });
+    }
+  }
+
+  private initializeStripeElement() {
     this.stripe = Stripe(this.stripPublishableKey);
     const elements = this.stripe.elements();
 
@@ -74,47 +144,15 @@ export class StripeElementsComponent implements OnInit {
 
     this.card.mount(this.cardElement.nativeElement);
 
-    this.card.on('change', ({error}) => {
-      this.cardErrors = error && error.message;
-    });
+    this.card.on('change', ({complete, error}) => {
+      this.cardErrors = error && error.message; // Display card errors in real-time
 
-    this.initializePaymentStatus();
-  }
-
-  async handleForm(e: Event) {
-    e.preventDefault();
-    const billingDetails: BillingDetails = this.billingDetailsForm.value;
-    const owner: stripe.OwnerInfo = {
-      name: `${billingDetails.firstName} ${billingDetails.lastName}`,
-      email: billingDetails.email,
-      phone: billingDetails.phone,
-      address: {
-        line1: billingDetails.billingOne,
-        line2: billingDetails.billingTwo,
-        city: billingDetails.city,
-        state: billingDetails.countryCode === 'US' ? billingDetails.usStateCode : billingDetails.state,
-        country: billingDetails.countryCode
+      // Clears server response error message when new data is entered
+      if (complete) {
+        console.log('Purging stripe charge from store');
+        this.store$.dispatch(new BillingStoreActions.PurgeStripeCharge());
       }
-    };
-
-    const { source, error } = await this.stripe.createSource(this.card, {owner});
-
-    if (error) {
-      // Inform the customer that there was an error.
-      const cardErrors = error.message;
-    } else {
-      // Send the token to your server.
-      const billingData: StripeChargeData = {
-        source,
-        anonymousUID: this.anonymousUser.id,
-        priceInCents: this.product.price * 100 // Stripe prices in cents
-      };
-
-      this.paymentSubmitted = true;
-
-      this.store$.dispatch(new BillingStoreActions.ProcessPaymentRequested({billingData}));
-
-    }
+    });
   }
 
   private initializePaymentStatus() {
