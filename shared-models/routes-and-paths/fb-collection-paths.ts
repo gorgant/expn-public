@@ -1,6 +1,7 @@
 export enum FbCollectionPaths {
   PRODUCTS = 'products',
-  USERS = 'anonymousUsers',
+  ANONYMOUS_USERS = 'anonymousUsers',
+  USERS = 'users',
   POSTS = 'posts',
   PUBLIC_RESOURCES = 'publicResources'
 }

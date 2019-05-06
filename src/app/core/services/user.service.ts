@@ -55,7 +55,7 @@ export class UserService {
   }
 
   private getUserColletion(): AngularFirestoreCollection<AnonymousUser> {
-    return this.db.collection<AnonymousUser>(FbCollectionPaths.USERS);
+    return this.db.collection<AnonymousUser>(FbCollectionPaths.ANONYMOUS_USERS);
   }
 
 
