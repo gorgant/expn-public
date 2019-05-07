@@ -6,6 +6,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { from, Observable, Subject, throwError } from 'rxjs';
 import { now } from 'moment';
+import { AppRoutes } from '../models/routes-and-paths/app-routes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +69,7 @@ export class AuthService {
     console.log('Triggering ng Unsubscribe');
     // Reinitialize the unsubscribe subject in case page isn't refreshed after logout (which means auth wouldn't reset)
     this.ngUnsubscribe$ = new Subject<void>();
-    this.router.navigate(['/login']);
+    this.router.navigate([AppRoutes.HOME]);
   }
 
   private postLogoutActions(): void {

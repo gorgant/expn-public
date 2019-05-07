@@ -1,5 +1,4 @@
 import { Action } from '@ngrx/store';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 
 export enum ActionTypes {
   AUTHENTICATION_REQUESTED = '[Auth] Authentication Requested',
