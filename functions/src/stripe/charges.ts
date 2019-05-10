@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { getStripeCustomerId, getOrCreateCustomer } from "./customers";
+import { getOrCreateCustomer } from "./customers";
 import { stripe } from './config';
 import { attachSource } from './sources';
 import { assertUID, assert, catchErrors } from './helpers';
@@ -18,26 +18,13 @@ export const getSingleCharge = async(chargeId:string) => {
   })
 }
 
-
-/**
- * Gets a user's charge history
- */
-export const getUserCharges = async(uid: string, limit?: number) => {
-  const customer = await getStripeCustomerId(uid);
-
-  return await stripe.charges.list({
-    limit,
-    customer
-  });
-}
-
 /**
  * Creates a charge for a specific amount
  * 
  * @amount in pennies (e.g. $20 === 2000)
  * @idempotency_key ensures charge will only be executed once
  */
-export const createCharge = async(uid: string, source: stripe.Source, amount: number, product: Product, idempotency_key?: string): Promise<Stripe.charges.ICharge> => {
+export const createCharge = async(uid: string, source: stripe.Source, amount: number, product: Product): Promise<Stripe.charges.ICharge> => {
   
   const customer = await getOrCreateCustomer(uid);
 
@@ -105,23 +92,11 @@ export const stripeCreateCharge = functions.https.onCall( async (data: StripeCha
   const amount: number = assert(data, 'amountPaid');
   const product: Product = assert(data, 'product');
 
-  // // Optional -- Prevents multiple charges
-  // const idempotency_key = data.itempotency_key;
-
   // Apply charge to customer
   const chargeResponse: Stripe.charges.ICharge = await createCharge(uid, source, amount, product).catch(err => handleStripeChargeResponse(err));
 
-  // // Send order data to admin
-  // await transmitOrder(chargeResponse);
-
-  await publishOrderToAdminTopic(chargeResponse);
+  // Publish order data to admin via pubsub
+  await catchErrors(publishOrderToAdminTopic(chargeResponse));
 
   return chargeResponse;
-
-  
-})
-
-export const stripeGetCharges = functions.https.onCall( async (data, context) => {
-  const uid = assertUID(context);
-  return catchErrors( getUserCharges(uid) );
 });
