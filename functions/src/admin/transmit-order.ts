@@ -6,7 +6,11 @@ import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 const pubSub = new PubSub();
 
+/////// DEPLOYABLE FUNCTIONS ///////
+
 export const publishOrderToAdminTopic = async (chargeData: Stripe.charges.ICharge) => {
+
+  console.log('Commencing order trasmission based on this data', chargeData);
   
   // Get charge with expanded customer data
   const charge = await getSingleCharge(chargeData.id);

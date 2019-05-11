@@ -92,11 +92,19 @@ export const stripeCreateCharge = functions.https.onCall( async (data: StripeCha
   const amount: number = assert(data, 'amountPaid');
   const product: Product = assert(data, 'product');
 
+  let chargeError = false;
   // Apply charge to customer
-  const chargeResponse: Stripe.charges.ICharge = await createCharge(uid, source, amount, product).catch(err => handleStripeChargeResponse(err));
+  const chargeResponse: Stripe.charges.ICharge = await createCharge(uid, source, amount, product)
+    .catch(err => {
+      chargeError = true;
+      return handleStripeChargeResponse(err);
+    });
 
-  // Publish order data to admin via pubsub
-  await catchErrors(publishOrderToAdminTopic(chargeResponse));
+  // Only publish order if no charge error
+  if (!chargeError) {
+    // Publish order data to admin via pubsub
+    await catchErrors(publishOrderToAdminTopic(chargeResponse));
+  }
 
   return chargeResponse;
 });
