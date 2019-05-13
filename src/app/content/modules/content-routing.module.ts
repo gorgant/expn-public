@@ -1,18 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from '../components/home/home.component';
-import { AboutComponent } from '../components/about/about.component';
-import { PodcastComponent } from '../components/podcast/podcast.component';
-import { ContactComponent } from '../components/contact/contact.component';
+import { ContactComponent } from '../components/contact/components/contact/contact.component';
 
 const routes: Routes = [
   {
     path: 'home',
-    component: HomeComponent
+    loadChildren: '../components/home/modules/home.module#HomeModule'
   },
   {
     path: 'about',
-    component: AboutComponent
+    loadChildren: '../components/about/modules/about.module#AboutModule'
   },
   {
     path: 'products',
@@ -23,12 +20,8 @@ const routes: Routes = [
     loadChildren: '../components/blog/modules/blog.module#BlogModule'
   },
   {
-    path: 'podcast',
-    component: PodcastComponent
-  },
-  {
     path: 'contact',
-    component: ContactComponent
+    loadChildren: '../components/contact/modules/contact.module#ContactModule'
   },
   {
     path: '',
