@@ -5,9 +5,17 @@
       <div class="hero-title" >{{ pageTitle }}</div>
       <div *ngIf="pageSubtitle" class="hero-subtitle">{{ pageSubtitle }}</div>
     </div>
+
+    <!-- Only Active for Home Page -->
     <div class="hero-button-container" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxLayoutGap.gt-sm="64px" >
       <ng-content select=".hero-button"></ng-content>
     </div>
+
+  </div>
+
+  <!-- Only Active for About Me Page -->
+  <div class="about-me-blurb-container">
+    <ng-content select=".about-me-blurb"></ng-content>
   </div>
   
   <div class="hero-action-container" [fxFlex]="heroActionContainerMobileFlexValue" fxLayout="column" fxLayoutAlign="end center" [fxFlex.gt-sm]="heroActionContainerFlexValue">

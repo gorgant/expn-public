@@ -17,6 +17,13 @@
   max-width: 100%; // Ensures padding doesn't cause side-scroll on smallest devices
 }
 
+.about-me-blurb-container {
+  margin-left: 86px;
+  padding-left: 16px;
+  padding-right: 16px;
+  max-width: 100%; // Ensures padding doesn't cause side-scroll on smallest devices
+}
+
 .post-hero-content-container {
   margin-left: 0px;
   text-align: center;
@@ -80,6 +87,10 @@
 @media screen and (max-width: $mobile-cutoff-width) {
 
   .hero-content-container {
+    margin-left: 0px;
+  }
+
+  .about-me-blurb-container {
     margin-left: 0px;
   }
 

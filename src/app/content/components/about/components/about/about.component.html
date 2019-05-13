@@ -1,3 +1,17 @@
-<p>
-  about works!
-</p>
+
+<div class="page-container" fxLayout="column" fxLayoutAlign="center center">
+  <app-page-hero [heroData]="heroData">
+    <div class="about-me-blurb" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
+      <div class="blurb-title">Hi, I'm Mary Daphne</div>
+      <div class="blurb-text">
+        <p>With an Ed.M from Columbia University, I've been teaching and coaching communications for over ten years.</p>
+        <p>I offer powerful, research-backed communications strategies to help you communicate with confidence, authenticity, and poise.</p>
+      </div>
+    </div>
+  </app-page-hero>
+
+  <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
+    <app-about-body></app-about-body>
+  </div>
+
+</div>
