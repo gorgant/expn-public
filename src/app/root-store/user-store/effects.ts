@@ -75,4 +75,20 @@ export class UserStoreEffects {
       localStorage.removeItem(ProductStrings.OFFLINE_PRODUCT_DATA);
     })
   );
+
+  @Effect()
+  subscribeUserEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<userFeatureActions.SubscribeUserRequested>(
+      userFeatureActions.ActionTypes.SUBSCRIBE_USER_REQUESTED
+    ),
+    switchMap(action =>
+      this.userService.publishEmailSubToAdminTopic(action.payload.emailSubData)
+        .pipe(
+          map(response => new userFeatureActions.SubscribeUserComplete()),
+          catchError(error => {
+            return of(new userFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

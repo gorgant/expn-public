@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
     };
 
     this.heroData = {
-      pageTitle: 'Communications Coaching & Strategies',
+      pageTitle: 'Communicate with Clarity and Purpose',
       pageSubtitle: null,
       imageProps: blogImageProps,
       actionMessage: 'Learn More'

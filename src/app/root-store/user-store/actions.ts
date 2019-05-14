@@ -1,6 +1,8 @@
 import { Action } from '@ngrx/store';
 import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
+import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
+import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',
@@ -13,7 +15,9 @@ export enum ActionTypes {
   UPDATE_PROFILE_IMAGE_COMPLETE = '[User] Update Profile Image Complete',
   USER_DATA_LOAD_ERROR = '[User] Load Failure',
   SET_CART_DATA = '[User] Cart Data Set',
-  PURGE_CART_DATA = '[User] Cart Data Purged'
+  PURGE_CART_DATA = '[User] Cart Data Purged',
+  SUBSCRIBE_USER_REQUESTED = '[User] Subscribe User Requested',
+  SUBSCRIBE_USER_COMPLETE = '[User] Subscribe User Complete'
 }
 
 export class UserDataRequested implements Action {
@@ -52,6 +56,15 @@ export class PurgeCartData implements Action {
   readonly type = ActionTypes.PURGE_CART_DATA;
 }
 
+export class SubscribeUserRequested implements Action {
+  readonly type = ActionTypes.SUBSCRIBE_USER_REQUESTED;
+  constructor(public payload: { emailSubData: EmailSubData }) {}
+}
+
+export class SubscribeUserComplete implements Action {
+  readonly type = ActionTypes.SUBSCRIBE_USER_COMPLETE;
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
@@ -59,5 +72,7 @@ StoreUserDataRequested |
 StoreUserDataComplete |
 LoadErrorDetected |
 SetCartData |
-PurgeCartData
+PurgeCartData |
+SubscribeUserRequested |
+SubscribeUserComplete
 ;

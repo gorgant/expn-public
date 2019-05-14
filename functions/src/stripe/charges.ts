@@ -2,12 +2,11 @@ import * as functions from 'firebase-functions';
 import { getOrCreateCustomer } from "./customers";
 import { stripe } from './config';
 import { attachSource } from './sources';
-import { assertUID, assert, catchErrors } from './helpers';
+import { assertUID, assert } from './helpers';
 import { StripeChargeData } from '../../../shared-models/billing/stripe-charge-data.model';
 import { StripeError } from '../../../shared-models/billing/stripe-error.model';
 import { Product } from '../../../shared-models/products/product.model';
 import * as Stripe from 'stripe';
-import { publishOrderToAdminTopic } from '../admin/transmit-order';
 
 /**
  * Get a specific charge
@@ -82,29 +81,19 @@ const handleStripeChargeResponse = (err: any) => {
   }
 }
 
-
 /////// DEPLOYABLE FUNCTIONS ///////
 
-export const stripeCreateCharge = functions.https.onCall( async (data: StripeChargeData, context) => {
+export const stripeProcessCharge = functions.https.onCall( async (data: StripeChargeData, context) => {
   console.log('Create charge request received with this data', data);
   const uid: string = assertUID(context);
   const source: stripe.Source = assert(data, 'source');
   const amount: number = assert(data, 'amountPaid');
   const product: Product = assert(data, 'product');
 
-  let chargeError = false;
-  // Apply charge to customer
   const chargeResponse: Stripe.charges.ICharge = await createCharge(uid, source, amount, product)
     .catch(err => {
-      chargeError = true;
       return handleStripeChargeResponse(err);
     });
-
-  // Only publish order if no charge error
-  if (!chargeError) {
-    // Publish order data to admin via pubsub
-    await catchErrors(publishOrderToAdminTopic(chargeResponse));
-  }
 
   return chargeResponse;
 });

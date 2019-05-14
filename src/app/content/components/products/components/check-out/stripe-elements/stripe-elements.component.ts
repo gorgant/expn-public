@@ -12,6 +12,8 @@ import { AbstractControl } from '@angular/forms';
 import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
+import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -98,6 +100,12 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           if (charge && charge.status === 'succeeded') {
             this.paymentSucceeded = true;
             this.paymentSubmitted = false;
+            // Subscribe the customer to email list
+            const emailSubData: EmailSubData = {
+              user: this.anonymousUser,
+              subSource: SubscriptionSource.PURCHASE
+            };
+            this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
             console.log('Charge succeeded, closing payment loop and destroying stripe element');
             this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
             this.store$.dispatch(new UserStoreActions.PurgeCartData()); // Remove cart data from store and local storage
