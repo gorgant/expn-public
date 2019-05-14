@@ -29,7 +29,6 @@ export class AboutComponent implements OnInit {
     // Text is added in-line because layout is specific to About Me page
     this.heroData = {
       pageTitle: null,
-      // tslint:disable-next-line:max-line-length
       pageSubtitle: null,
       imageProps: aboutImageProps,
       actionMessage: 'Read More'

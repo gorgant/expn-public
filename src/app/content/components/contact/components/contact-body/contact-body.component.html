@@ -1,0 +1,43 @@
+<div class="content-container" fxLayout="column" fxLayoutAlign="center center">
+  
+  <div class="header">
+    Want to get in touch? I'd love to hear from you! Send me a note below and we'll make magic happen.
+  </div>
+
+  <div appMatElevation class="form-container" fxLayout="column" fxLayoutAlign="center center">
+    <div class="form-header" fxLayoutAlign="center center">
+      <div class="form-header-text">What's On Your Mind</div>
+    </div>
+
+    <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
+      <div class="name-and-email-container" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="32px">
+        <mat-form-field>
+          <input class="name-input" matInput formControlName="name" type="text">
+          <mat-placeholder class="input-placeholder">Your Name</mat-placeholder>
+          <mat-error *ngFor="let validation of formValidationMessages.name">
+            <mat-error *ngIf="name.hasError(validation.type) && name.invalid && (name.dirty || name.touched)">{{ validation.message }}</mat-error>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <input class="email-input" matInput formControlName="email" type="email">
+          <mat-placeholder class="input-placeholder">Your Email</mat-placeholder>
+          <mat-error *ngFor="let validation of formValidationMessages.email">
+            <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <mat-form-field>
+        <textarea class="message-input" matInput cdkTextareaAutosize (keydown.enter)="textareaEnterPressed($event)" formControlName="message" type="text"></textarea>
+        <mat-placeholder class="input-placeholder">Your Message</mat-placeholder>
+        <mat-error *ngFor="let validation of formValidationMessages.message">
+          <mat-error *ngIf="message.hasError(validation.type) && message.invalid && (message.dirty || message.touched)">{{ validation.message }}</mat-error>
+        </mat-error>
+      </mat-form-field>
+      <button class="submit-button" color="primary" [disabled]="contactForm.invalid" type="submit" mat-raised-button>
+          Submit
+      </button>
+    </form>
+  
+  </div>
+
+</div>

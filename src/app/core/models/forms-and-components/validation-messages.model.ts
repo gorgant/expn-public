@@ -67,3 +67,16 @@ export const CREDIT_CARD_VALIDATION_MESSAGES = {
     { type: 'required', message: 'Credit card CVC is required'},
   ]
 };
+
+export const CONTACT_VALIDATION_MESSAGES = {
+  name: [
+    { type: 'required', message: 'Name is required.'},
+  ],
+  email: [
+    { type: 'required', message: 'Email is required.'},
+    { type: 'email', message: 'Not a valid email.'},
+  ],
+  message: [
+    { type: 'required', message: 'Message is required.'},
+  ]
+};

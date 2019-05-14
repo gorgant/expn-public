@@ -8,3 +8,9 @@
   padding: 16px;
 }
 
+@media screen and (max-width: $mobile-cutoff-width) {
+  .products-container {
+    margin-top: 32px;
+  }
+}
+

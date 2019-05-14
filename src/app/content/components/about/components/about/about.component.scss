@@ -12,9 +12,9 @@ app-page-hero {
 
 .about-me-blurb {
   @include background-opacity($primary, $opacity-faded);
-  padding: 64px 32px 64px 32px;
+  padding: 64px 64px 64px 64px;
   color: white;
-  max-width: 600px;
+  max-width: 700px;
 }
 
 .blurb-title {

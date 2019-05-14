@@ -1,0 +1,11 @@
+@import '../../../../../variables';
+
+:host {
+  width: 100%;
+  max-width: $max-screen-width;
+}
+
+app-page-hero {
+  width: 100%;
+  margin-bottom: 16px;
+}
