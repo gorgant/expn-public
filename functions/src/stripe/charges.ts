@@ -11,9 +11,12 @@ import * as Stripe from 'stripe';
 /**
  * Get a specific charge
  */
-export const getSingleCharge = async(chargeId:string) => {
-  return await stripe.charges.retrieve(chargeId, {
+export const getSingleCharge = (chargeId:string) => {
+  return stripe.charges.retrieve(chargeId, {
     expand: ['customer']
+  }).catch(error => {
+    console.log('Error with stripe getting charge', error);
+    return error;
   })
 }
 

@@ -31,7 +31,11 @@ export const transmitOrderToAdmin = functions.https.onCall( async (data: Stripe.
   console.log('Transmit order request received with this data', data);
 
   // Get charge with expanded customer data
-  const charge = await getSingleCharge(data.id);
+  const charge = await getSingleCharge(data.id)
+    .catch(error => {
+      console.log('Error fetching charge', error)
+      return error;
+    });
 
   // Ensure all key data is present
   const stripeChargeId: string = assert(charge, 'id');

@@ -72,7 +72,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
 
     if (error) {
       // Inform the customer that there was an error.
-      const cardErrors = error.message;
+      this.cardErrors = error.message;
     } else {
       // Send the token to your server.
       const billingData: StripeChargeData = {
@@ -98,17 +98,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           // Listen for success
           const charge = response as StripeDefs.charges.ICharge;
           if (charge && charge.status === 'succeeded') {
-            this.paymentSucceeded = true;
-            this.paymentSubmitted = false;
-            // Subscribe the customer to email list
-            const emailSubData: EmailSubData = {
-              user: this.anonymousUser,
-              subSource: SubscriptionSource.PURCHASE
-            };
-            this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
-            console.log('Charge succeeded, closing payment loop and destroying stripe element');
-            this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
-            this.store$.dispatch(new UserStoreActions.PurgeCartData()); // Remove cart data from store and local storage
+            this.postChargeSuccessActions(charge);
           }
 
           // Listen for failure
@@ -120,6 +110,26 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+  // Various actions to be performed if charge is successful
+  private postChargeSuccessActions(stripeCharge: StripeDefs.charges.ICharge) {
+    this.paymentSucceeded = true;
+    this.paymentSubmitted = false; // Closes out the payment processing subscription
+
+    // Transmit order to admin
+    this.store$.dispatch(new BillingStoreActions.TransmitOrderToAdminRequested({stripeCharge}));
+
+
+    // Subscribe the customer to email list
+    const emailSubData: EmailSubData = {
+      user: this.anonymousUser,
+      subSource: SubscriptionSource.PURCHASE
+    };
+    this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
+    console.log('Charge succeeded, closing payment loop and destroying stripe element');
+    this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
+    this.store$.dispatch(new UserStoreActions.PurgeCartData()); // Remove cart data from store and local storage
   }
 
   private initializeStripeElement() {

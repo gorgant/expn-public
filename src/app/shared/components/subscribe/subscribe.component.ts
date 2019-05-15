@@ -83,8 +83,11 @@ export class SubscribeComponent implements OnInit {
           };
           this.store$.dispatch(new UserStoreActions.SubscribeUserRequested({emailSubData}));
 
-          // TODO: SET EMAIL SUBMITTED IN STORE SO THAT IT IS DISABLED ACROSS THE APP
+          // TODO: SET ARRAY OF SUBCRIBED EMAILS ON USER DOC, IF NEW SUB EXISTS ON THAT ARRAY, DO NOT PROCESS (except in checkout)
+          // TODO: SET EMAIL SUBMITTED IN STORE SO THAT IT IS DISABLED ACROSS THE APP (TO DISABLE BUTTON FOR SESSION)
+          // TODO: ADD STATE PROPERTY TO INDICATE SUBSCRIPTION IS PROCESSING (TO DISABLE BUTTON WHILE PROCESSING)
 
+          // TODO: REMOVE THIS ONCE THIS IS STORED IN STATE
           // Mark email submitted
           this.emailSubmitted = true;
         }

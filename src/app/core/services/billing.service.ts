@@ -25,7 +25,6 @@ export class BillingService {
         take(1),
         tap(stripeChargeRes => {
           console.log('Payment processed', stripeChargeRes);
-          this.publishOrderToAdminTopic(stripeChargeRes);
         }),
         catchError(error => {
           console.log('Error processing payment', error);
@@ -36,14 +35,14 @@ export class BillingService {
     return res;
   }
 
-  // Once the charge has completed successfuly, send order to admin server
-  private publishOrderToAdminTopic(stripeCharge: Stripe.charges.ICharge): Observable<any> {
+  // This is fired if a charge is processed successfully
+  transmitOrderToAdmin(stripeCharge: Stripe.charges.ICharge): Observable<any> {
     console.log('Tansmitting order to admin');
 
-    const publishOrderFunction: (data: Stripe.charges.ICharge) => Observable<any> = this.fns.httpsCallable(
+    const transmitOrderFunction: (data: Stripe.charges.ICharge) => Observable<any> = this.fns.httpsCallable(
       FbFunctionNames.TRANSMIT_ORDER_TO_ADMIN
     );
-    const res = publishOrderFunction(stripeCharge)
+    const res = transmitOrderFunction(stripeCharge)
       .pipe(
         take(1),
         tap(response => {

@@ -30,4 +30,21 @@ export class BillingStoreEffects {
     )
   );
 
+  @Effect()
+  transmitOrderToAdminEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<billingFeatureActions.TransmitOrderToAdminRequested>(
+      billingFeatureActions.ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED
+    ),
+    switchMap(action =>
+      this.billingService.transmitOrderToAdmin(action.payload.stripeCharge)
+        .pipe(
+          map(paymentResponse => new billingFeatureActions.TransmitOrderToAdminComplete()),
+          catchError(error => {
+            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+
+    )
+  );
+
 }
