@@ -7,6 +7,7 @@ import { StripeChargeData } from '../../../shared-models/billing/stripe-charge-d
 import { StripeError } from '../../../shared-models/billing/stripe-error.model';
 import { Product } from '../../../shared-models/products/product.model';
 import * as Stripe from 'stripe';
+import { StripeChargeMetadata, StripeCustomerMetadata } from '../../../shared-models/billing/stripe-object-metadata.model';
 
 /**
  * Get a specific charge
@@ -38,7 +39,8 @@ export const createCharge = async(uid: string, source: stripe.Source, amount: nu
     source: source.id,
     currency: 'usd',
     metadata: {
-      productId: product.id // Add product id to charge record
+      [StripeChargeMetadata.PRODUCT_ID]: product.id, // Add product id to charge record
+      [StripeCustomerMetadata.PUBLIC_USER_ID]: uid // Add public UID to charge record
     },
     description: product.name // Shows up on receipt billing line item
   }

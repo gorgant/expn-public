@@ -1,13 +1,14 @@
 import { assert } from './helpers';
 import { db, stripe } from './config'; 
-import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
+import { PublicUser } from '../../../shared-models/user/public-user.model';
 import { FbCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
+import { StripeCustomerMetadata } from '../../../shared-models/billing/stripe-object-metadata.model';
 
 /**
 Read the user document from Firestore
 */
 export const getUser = async(uid: string) => {
-    return await db.collection(FbCollectionPaths.ANONYMOUS_USERS).doc(uid).get().then(doc => doc.data() as AnonymousUser);
+    return await db.collection(FbCollectionPaths.PUBLIC_USERS).doc(uid).get().then(doc => doc.data() as PublicUser);
 }
 
 /**
@@ -23,8 +24,8 @@ Updates the user document non-destructively
 
 UID requred because sometimes user update is partial
 */
-export const updateUser = async(uid: string, user: AnonymousUser | Partial<AnonymousUser>) => {
-    return await db.collection(FbCollectionPaths.ANONYMOUS_USERS).doc(uid).set(user, { merge: true })
+export const updateUser = async(uid: string, user: PublicUser | Partial<PublicUser>) => {
+    return await db.collection(FbCollectionPaths.PUBLIC_USERS).doc(uid).set(user, { merge: true })
 }
 
 /**
@@ -32,14 +33,14 @@ Takes a Firebase user and creates a Stripe customer account
 */
 export const createCustomer = async(uid: any) => {
     const customer = await stripe.customers.create({
-        metadata: { firebaseUID: uid }
+        metadata: { [StripeCustomerMetadata.PUBLIC_USER_ID]: uid }
     })
 
-    const fbUser: Partial<AnonymousUser> = {
+    const publicUser: Partial<PublicUser> = {
         stripeCustomerId: customer.id
     }
 
-    await updateUser(uid, fbUser);
+    await updateUser(uid, publicUser);
 
     return customer;
 }

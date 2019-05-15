@@ -1,11 +1,7 @@
 import * as functions from 'firebase-functions';
-import { now } from 'moment';
 import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
-import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
 import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscriber.model';
-import { SubscriptionSource } from '../../../shared-models/subscribers/subscription-source.model';
-import { EmailSubData } from '../../../shared-models/subscribers/email-sub-data.model';
 
 const pubSub = new PubSub();
 
@@ -30,26 +26,14 @@ const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>)
 /////// DEPLOYABLE FUNCTIONS ///////
 
 
-export const transmitEmailSubToAdmin = functions.https.onCall( async (data: EmailSubData, context ) => {
+export const transmitEmailSubToAdmin = functions.https.onCall( async (data: Partial<EmailSubscriber>, context ) => {
   console.log('Transmit sub request received with this data', data);
   
-  // Ensure all key data is present
-  const user: AnonymousUser = assert(data, 'user');
-  const subSource: SubscriptionSource = assert(data, 'subSource');
-  const email: string = assert(user.billingDetails, 'email');
+  assert(data, 'lastSubSource'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid
 
-  
-  const partialSubscriber: Partial<EmailSubscriber> = {
-    id: email, // Set id to the user's email
-    publicUserData: user,
-    active: true,
-    lastUpdated: now(),
-    lastSubSource: subSource
-    // Sub source array is handled on the admin depending on if subscriber already exists
-    // Created date set on admin server depending on if subscriber already exists
-  }
+  const emailSubscriber: Partial<EmailSubscriber> = data;
 
-  const transmitSubResponse = await publishEmailSubToAdminTopic(partialSubscriber)
+  const transmitSubResponse = await publishEmailSubToAdminTopic(emailSubscriber)
     .catch(error => {
       console.log('Error transmitting subscriber', error);
       return error;

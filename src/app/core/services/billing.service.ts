@@ -5,6 +5,10 @@ import { AngularFireFunctions } from '@angular/fire/functions';
 import { StripeChargeData } from '../models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
 import { FbFunctionNames } from '../models/routes-and-paths/fb-function-names';
+import { Order } from '../models/orders/order.model';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { now } from 'moment';
+import { StripeChargeMetadata } from '../models/billing/stripe-object-metadata.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +16,7 @@ import { FbFunctionNames } from '../models/routes-and-paths/fb-function-names';
 export class BillingService {
 
   constructor(
+    private afs: AngularFirestore,
     private fns: AngularFireFunctions,
   ) { }
 
@@ -37,12 +42,14 @@ export class BillingService {
 
   // This is fired if a charge is processed successfully
   transmitOrderToAdmin(stripeCharge: Stripe.charges.ICharge): Observable<any> {
-    console.log('Tansmitting order to admin');
+    console.log('Transmitting order to admin');
 
-    const transmitOrderFunction: (data: Stripe.charges.ICharge) => Observable<any> = this.fns.httpsCallable(
+    const order = this.convertStripeChargeToOrder(stripeCharge);
+
+    const transmitOrderFunction: (data: Order) => Observable<any> = this.fns.httpsCallable(
       FbFunctionNames.TRANSMIT_ORDER_TO_ADMIN
     );
-    const res = transmitOrderFunction(stripeCharge)
+    const res = transmitOrderFunction(order)
       .pipe(
         take(1),
         tap(response => {
@@ -55,6 +62,36 @@ export class BillingService {
       );
 
     return res;
+  }
+
+  convertStripeChargeToOrder(stripeCharge: Stripe.charges.ICharge): Order {
+    // Ensure all key data is present
+    const stripeChargeId: string = stripeCharge.id;
+    const stripeCustomerId: string = stripeCharge.customer as string;
+    const name: string = (stripeCharge as any).billing_details.name; // Isn't in the type definitions but exists on the object
+    const email: string = (stripeCharge as any).billing_details.email; // Isn't in the type definitions but exists on the object
+    const publicUserId: string = stripeCharge.metadata[StripeChargeMetadata.PUBLIC_USER_ID];
+    const productId: string = stripeCharge.metadata[StripeChargeMetadata.PRODUCT_ID];
+    const amountPaid: number = stripeCharge.amount;
+
+    const orderId = this.afs.createId();
+    const orderNumber = orderId.substring(orderId.length - 8, orderId.length); // Create a user friendly 8 digit order ID
+
+    const order: Order = {
+      id: orderId,
+      orderNumber,
+      createdDate: now(),
+      stripeChargeId,
+      stripeCustomerId,
+      name,
+      email,
+      publicUserId,
+      productId,
+      amountPaid,
+      status: 'inactive',
+    };
+
+    return order;
   }
 
 }

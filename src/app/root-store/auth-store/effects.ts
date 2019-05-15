@@ -22,7 +22,7 @@ export class AuthStoreEffects {
       authFeatureActions.ActionTypes.AUTHENTICATION_REQUESTED
     ),
     switchMap(action => {
-      return this.authService.authenticateAnonymousUser()
+      return this.authService.authenticatePublicUser()
         .pipe(
           // Load user data into the store
           tap(userData => {

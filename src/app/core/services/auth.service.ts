@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { from, Observable, Subject, throwError } from 'rxjs';
@@ -32,17 +32,24 @@ export class AuthService {
     });
   }
 
-  authenticateAnonymousUser(): Observable<AnonymousUser> {
+  authenticatePublicUser(): Observable<PublicUser> {
     const authResponse = this.afAuth.auth.signInAnonymously()
       .then(creds => {
-        const userData: AnonymousUser = {
+        const userData: PublicUser = {
           id: creds.user.uid,
+          modifiedDate: now(),
           lastAuthenticated: now()
         };
+
+        // Record creation date if new user
+        if (creds.additionalUserInfo.isNewUser) {
+          userData.createdDate = now();
+        }
+
         return userData;
       })
       .catch(error => {
-        console.log('Error during anonymous auth', error);
+        console.log('Error during public auth', error);
         return throwError(error).toPromise();
       });
 

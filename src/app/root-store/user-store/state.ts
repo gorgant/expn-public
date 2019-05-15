@@ -1,8 +1,8 @@
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
 
 export interface State {
-  user: AnonymousUser | null;
+  user: PublicUser | null;
   isLoading: boolean;
   userLoaded: boolean;
   error?: any;

@@ -5,7 +5,7 @@ import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors, BillingStoreActions, UserStoreActions } from 'src/app/root-store';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as StripeDefs from 'stripe';
 import { AbstractControl } from '@angular/forms';
@@ -23,7 +23,7 @@ import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.mod
 export class StripeElementsComponent implements OnInit, OnDestroy {
 
   @Input() billingDetailsForm: AbstractControl;
-  @Input() anonymousUser: AnonymousUser;
+  @Input() publicUser: PublicUser;
   @Input() product: Product;
 
   paymentProcessing$: Observable<boolean>;
@@ -77,7 +77,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
       // Send the token to your server.
       const billingData: StripeChargeData = {
         source,
-        anonymousUID: this.anonymousUser.id,
+        publicUserId: this.publicUser.id,
         amountPaid: this.product.price * 100, // Stripe prices in cents,
         product: this.product
       };
@@ -123,8 +123,9 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
 
     // Subscribe the customer to email list
     const emailSubData: EmailSubData = {
-      user: this.anonymousUser,
-      subSource: SubscriptionSource.PURCHASE
+      user: this.publicUser,
+      subSource: SubscriptionSource.PURCHASE,
+      stripeCharge
     };
     this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
     console.log('Charge succeeded, closing payment loop and destroying stripe element');

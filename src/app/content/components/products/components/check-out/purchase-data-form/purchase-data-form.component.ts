@@ -17,7 +17,7 @@ import {
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
 import { Country } from 'src/app/core/models/forms-and-components/geography/country.model';
 
@@ -32,8 +32,8 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   // This block asynchronously loads user data and patches invoice into purchase form
   @Input()
-  set anonymousUser(user: AnonymousUser) {
-    this._anonymousUser =  user;
+  set publicUser(user: PublicUser) {
+    this._publicUser =  user;
     // Set item once is available
     if (user && !this.userLoaded) {
       this.userLoaded = true; // Prevents this from firing multiple times
@@ -52,10 +52,10 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     }
   }
   // tslint:disable-next-line:variable-name
-  private _anonymousUser: AnonymousUser;
+  private _publicUser: PublicUser;
   // tslint:disable-next-line:adjacent-overload-signatures
-  get anonymousUser(): AnonymousUser {
-    return this._anonymousUser;
+  get publicUser(): PublicUser {
+    return this._publicUser;
   }
   private userLoaded: boolean;
   private formInitialized$ = new BehaviorSubject<boolean>(false);
@@ -215,9 +215,9 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   }
 
   private patchUserBillingInfo(): void {
-    const billingDetails = this.anonymousUser.billingDetails ? this.anonymousUser.billingDetails : null;
+    const billingDetails = this.publicUser.billingDetails ? this.publicUser.billingDetails : null;
     if (billingDetails) {
-      this.billingDetailsGroup.patchValue(this.anonymousUser.billingDetails);
+      this.billingDetailsGroup.patchValue(this.publicUser.billingDetails);
       this.setStateValidators();
     }
 
@@ -228,7 +228,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     // Set interval at 5 seconds
     const step = 5000;
 
-    this.autoSaveSubscription = this.store$.select(UserStoreSelectors.selectAppUser)
+    this.autoSaveSubscription = this.store$.select(UserStoreSelectors.selectUser)
       .subscribe(user => {
         if (this.autoSaveTicker) {
           // Clear old interval
@@ -249,7 +249,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     clearInterval(this.autoSaveTicker);
   }
 
-  private autoSave(user: AnonymousUser) {
+  private autoSave(user: PublicUser) {
     // Cancel autosave if no changes to content
     if (!this.changesDetected(user) || this.formIsBlank()) {
       console.log('No changes to form, no auto save');
@@ -269,7 +269,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
       });
   }
 
-  private changesDetected(user: AnonymousUser): boolean {
+  private changesDetected(user: PublicUser): boolean {
     const serverBillingDetailsNoPostal = {...user.billingDetails};
     delete serverBillingDetailsNoPostal.postalCode; // Remove postal code from server version since it isn't collected in form
     const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(serverBillingDetailsNoPostal));
@@ -296,8 +296,8 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   }
 
   private updateUserBillingDetails() {
-    const updatedUser: AnonymousUser = {
-      ...this.anonymousUser,
+    const updatedUser: PublicUser = {
+      ...this.publicUser,
       billingDetails: this.billingDetailsGroup.value,
     };
     this.store$.dispatch(new UserStoreActions.StoreUserDataRequested({userData: updatedUser}));

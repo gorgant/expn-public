@@ -1,13 +1,10 @@
 import * as functions from 'firebase-functions';
 import { Order } from '../../../shared-models/orders/order.model';
-import { now } from 'moment';
-import * as Stripe from 'stripe';
-import { getSingleCharge } from '../stripe/charges';
 import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 const pubSub = new PubSub();
 
-const publishOrderToAdminTopic = async (order: Partial<Order>) => {
+const publishOrderToAdminTopic = async (order: Order) => {
 
   console.log('Commencing order trasmission based on this data', order);
   
@@ -27,36 +24,12 @@ const publishOrderToAdminTopic = async (order: Partial<Order>) => {
 
 /////// DEPLOYABLE FUNCTIONS ///////
 
-export const transmitOrderToAdmin = functions.https.onCall( async (data: Stripe.charges.ICharge, context ) => {
+export const transmitOrderToAdmin = functions.https.onCall( async (data: Order, context ) => {
   console.log('Transmit order request received with this data', data);
 
-  // Get charge with expanded customer data
-  const charge = await getSingleCharge(data.id)
-    .catch(error => {
-      console.log('Error fetching charge', error)
-      return error;
-    });
+  assert(data, 'orderNumber'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid
 
-  // Ensure all key data is present
-  const stripeChargeId: string = assert(charge, 'id');
-  const stripeCustomerId: string = assert(charge.customer, 'id');
-  const name: string = assert(charge.customer, 'name');
-  const email: string = assert(charge.customer, 'email');
-  const anonymousUID: string = assert((charge.customer as Stripe.customers.ICustomer).metadata, 'firebaseUID');
-  const productId: string = assert(charge.metadata, 'productId');
-  const amountPaid: number = assert(charge, 'amount');
-
-  const order: Partial<Order> = {
-    processedDate: now(),
-    stripeChargeId,
-    stripeCustomerId,
-    name,
-    email,
-    anonymousUID,
-    productId,
-    amountPaid,
-    status: 'inactive',
-  }
+  const order: Order = data;
 
   const transmitSubResponse = await publishOrderToAdminTopic(order)
     .catch(error => {

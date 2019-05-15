@@ -5,7 +5,7 @@ import { assertUID, assert, catchErrors } from './helpers';
 import { StripeCustomerUpdate } from '../../../shared-models/billing/stripe-customer-update.model'
 import { StripeOwnerAddress } from '../../../shared-models/billing/stripe-owner-address.model';
 import { BillingDetails } from '../../../shared-models/billing/billing-details.model';
-import { AnonymousUser } from '../../../shared-models/user/anonymous-user.model';
+import { PublicUser } from '../../../shared-models/user/public-user.model';
 
 /**
  * Attaches a payment source to a stripe customer account.
@@ -26,8 +26,8 @@ export const attachSource = async(uid: string, source: stripe.Source) => {
     
     // Use source zip to update FB user (which isn't collected on the FB form)
     const updatedZip: Partial<BillingDetails> = { postalCode: source.owner.address!.postal_code };
-    const anonymousUser: Partial<AnonymousUser> = { billingDetails: updatedZip };
-    await updateUser(uid, anonymousUser);
+    const publicUser: Partial<PublicUser> = { billingDetails: updatedZip };
+    await updateUser(uid, publicUser);
 
     // Update additional stripe customer fields based on source data and return that customer
     // Create a custom customer update that extends the standard one to include some other properties

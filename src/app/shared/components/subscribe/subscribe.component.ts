@@ -4,7 +4,7 @@ import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/forms-and-co
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { withLatestFrom, map, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
@@ -33,8 +33,8 @@ export class SubscribeComponent implements OnInit {
     });
   }
 
-  private initializeAnonymousUser() {
-    return this.store$.select(UserStoreSelectors.selectAppUser)
+  private initializePublicUser() {
+    return this.store$.select(UserStoreSelectors.selectUser)
       .pipe(
         withLatestFrom(
           this.store$.select(UserStoreSelectors.selectUserLoaded)
@@ -53,7 +53,7 @@ export class SubscribeComponent implements OnInit {
   onSubmit() {
 
     // Fetch user or create a new one if not yet authenticated
-    this.initializeAnonymousUser()
+    this.initializePublicUser()
       .pipe(
         takeWhile(() => !this.emailSubmitted)
       )
@@ -61,7 +61,7 @@ export class SubscribeComponent implements OnInit {
         console.log('Checking for user to subscribe', user);
         if (user) {
           // Update the user's email address (or add to a new billing details object)
-          const updatedUser: AnonymousUser = {
+          const updatedUser: PublicUser = {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,

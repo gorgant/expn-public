@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
@@ -29,13 +29,13 @@ export class UserDataRequested implements Action {
 export class UserDataLoaded implements Action {
   readonly type = ActionTypes.USER_DATA_LOADED;
 
-  constructor(public payload: { userData: AnonymousUser }) {}
+  constructor(public payload: { userData: PublicUser }) {}
 }
 
 export class StoreUserDataRequested implements Action {
   readonly type = ActionTypes.STORE_USER_DATA_REQUESTED;
 
-  constructor(public payload: { userData: AnonymousUser}) {}
+  constructor(public payload: { userData: PublicUser}) {}
 }
 
 export class StoreUserDataComplete implements Action {

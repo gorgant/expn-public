@@ -16,7 +16,7 @@ service cloud.firestore {
       allow read;
     }
 
-    match /anonymousUsers/{userId} {
+    match /publicUsers/{userId} {
       // Users can only see and edit their profile if it belongs to them
       allow read, write: if isOwner(userId);
     }
@@ -36,7 +36,7 @@ service cloud.firestore {
     // Retrieve user data
     // Note you need to explicitly escape variables using the $(variable) syntax.
     function getUserData() {
-    	return get(/databases/$(database)/documents/anonymousUsers/$(request.auth.uid)).data
+    	return get(/databases/$(database)/documents/publicUsers/$(request.auth.uid)).data
     }
   
     function existingData() {

@@ -4,7 +4,7 @@ import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.mod
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { AnonymousUser } from 'src/app/core/models/user/anonymous-user.model';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
@@ -17,7 +17,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 export class CheckOutComponent implements OnInit {
 
   product$: Observable<Product>;
-  anonymousUser$: Observable<AnonymousUser>;
+  publicUser$: Observable<PublicUser>;
   userAuthenticationRequested: boolean;
 
   imagePaths = ImagePaths;
@@ -29,11 +29,11 @@ export class CheckOutComponent implements OnInit {
 
   ngOnInit() {
     this.initializeProductData();
-    this.initializeAnonymousUser();
+    this.initializePublicUser();
   }
 
-  private initializeAnonymousUser() {
-    this.anonymousUser$ = this.store$.select(UserStoreSelectors.selectAppUser)
+  private initializePublicUser() {
+    this.publicUser$ = this.store$.select(UserStoreSelectors.selectUser)
       .pipe(
         withLatestFrom(
           this.store$.select(UserStoreSelectors.selectUserLoaded)
