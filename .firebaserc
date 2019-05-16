@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "explearning-76d93"
+    "default": "explearning-76d93",
+    "sandbox-public": "explearning-sandbox-public"
   }
 }

@@ -6,6 +6,7 @@ export const environment = {
     databaseURL: 'https://explearning-76d93.firebaseio.com',
     projectId: 'explearning-76d93',
     storageBucket: 'explearning-76d93.appspot.com',
-    messagingSenderId: '924141189564'
+    messagingSenderId: '924141189564',
+    appId: '1:924141189564:web:0643de1cc566c18d'
   }
 };
