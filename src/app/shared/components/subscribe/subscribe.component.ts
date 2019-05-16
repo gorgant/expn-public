@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { withLatestFrom, map, take, takeUntil, takeWhile } from 'rxjs/operators';
+import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
 import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 
@@ -18,9 +18,12 @@ export class SubscribeComponent implements OnInit {
 
   subscribeForm: FormGroup;
   formValidationMessages = SUBSCRIBE_VALIDATION_MESSAGES;
-  emailSubmitted;
 
-  userAuthenticationRequested: boolean;
+  subscribeProcessing$: Observable<boolean>;
+  subscribeSubmitted$: Observable<boolean>;
+  private emailSubmitted: boolean;
+
+  private userAuthenticationRequested: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -31,23 +34,8 @@ export class SubscribeComponent implements OnInit {
     this.subscribeForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
-  }
 
-  private initializePublicUser() {
-    return this.store$.select(UserStoreSelectors.selectUser)
-      .pipe(
-        withLatestFrom(
-          this.store$.select(UserStoreSelectors.selectUserLoaded)
-        ),
-        map(([user, userLoaded]) => {
-          if (!userLoaded && !this.userAuthenticationRequested) {
-            console.log('No user in store, dispatching authentication request');
-            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
-          }
-          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
-          return user;
-        })
-      );
+    this.initializeSubscribeObservers(); // Used to disable subscribe buttons
   }
 
   onSubmit() {
@@ -83,15 +71,32 @@ export class SubscribeComponent implements OnInit {
           };
           this.store$.dispatch(new UserStoreActions.SubscribeUserRequested({emailSubData}));
 
-          // TODO: SET ARRAY OF SUBCRIBED EMAILS ON USER DOC, IF NEW SUB EXISTS ON THAT ARRAY, DO NOT PROCESS (except in checkout)
-          // TODO: SET EMAIL SUBMITTED IN STORE SO THAT IT IS DISABLED ACROSS THE APP (TO DISABLE BUTTON FOR SESSION)
-          // TODO: ADD STATE PROPERTY TO INDICATE SUBSCRIPTION IS PROCESSING (TO DISABLE BUTTON WHILE PROCESSING)
-
-          // TODO: REMOVE THIS ONCE THIS IS STORED IN STATE
-          // Mark email submitted
+          // Mark email submitted to close the subscription
           this.emailSubmitted = true;
         }
       });
+  }
+
+  private initializePublicUser() {
+    return this.store$.select(UserStoreSelectors.selectUser)
+      .pipe(
+        withLatestFrom(
+          this.store$.select(UserStoreSelectors.selectUserLoaded)
+        ),
+        map(([user, userLoaded]) => {
+          if (!userLoaded && !this.userAuthenticationRequested) {
+            console.log('No user in store, dispatching authentication request');
+            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
+          }
+          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
+          return user;
+        })
+      );
+  }
+
+  private initializeSubscribeObservers() {
+    this.subscribeProcessing$ = this.store$.select(UserStoreSelectors.selectSubscribeProcessing);
+    this.subscribeSubmitted$ = this.store$.select(UserStoreSelectors.selectSubscribeSubmitted);
   }
 
   // These getters are used for easy access in the HTML template

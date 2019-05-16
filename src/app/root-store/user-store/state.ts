@@ -7,6 +7,8 @@ export interface State {
   userLoaded: boolean;
   error?: any;
   cartItem: Product;
+  subscribeProcessing: boolean;
+  subscribeSubmitted: boolean;
 }
 
 export const initialState: State = {
@@ -15,4 +17,6 @@ export const initialState: State = {
   userLoaded: false,
   error: null,
   cartItem: null,
+  subscribeProcessing: false,
+  subscribeSubmitted: false,
 };

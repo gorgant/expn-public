@@ -43,6 +43,17 @@ export function featureReducer(state = initialState, action: Actions): State {
         ...state,
         cartItem: null
       };
+    case ActionTypes.SUBSCRIBE_USER_REQUESTED:
+      return {
+        ...state,
+        subscribeProcessing: true
+      };
+    case ActionTypes.SUBSCRIBE_USER_COMPLETE:
+      return {
+        ...state,
+        subscribeProcessing: false,
+        subscribeSubmitted: true
+      };
 
     default: {
       return state;

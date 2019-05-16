@@ -1,7 +1,6 @@
 import { Action } from '@ngrx/store';
 import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
-import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 
 export enum ActionTypes {
