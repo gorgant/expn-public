@@ -2,10 +2,12 @@
 <div *ngIf="(product$ | async) as product" class="page-container" fxLayout="column" fxLayoutAlign="center center">
   <app-page-hero [heroData]="heroData"></app-page-hero>
   <div class="content-container" fxLayout="column" fxLayoutAlign="center center">
+
+    <!-- DYNAMICALLY POPULATE PRODUCT TEMPLATE BASED ON ID -->
     <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
-      <app-remote-coach></app-remote-coach>
+      <ng-container *ngTemplateOutlet="productId === productIdList.REMOTE_COACH ? remoteCoach : null"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
     </div>
-    <!-- [DYNAMICALLY ADD PRODUCT SPECIFIC CONTENT COMPONENT HERE BASED ON ID USING NG CONTENT] -->
 
     <div class="buy-now-container">
       <app-buy-now-box [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
@@ -16,3 +18,16 @@
     </div>
   </div>
 </div>
+
+<!-- SELECTION OF PRODUCT TEMPLATES TO DRAW FROM -->
+<ng-template #remoteCoach>
+  <app-remote-coach></app-remote-coach>
+</ng-template>
+
+<ng-template #testProduct>
+  Test Product Here
+</ng-template>
+
+<ng-template #blank>
+  No Product Identified
+</ng-template>

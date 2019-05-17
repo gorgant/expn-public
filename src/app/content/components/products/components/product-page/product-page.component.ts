@@ -11,6 +11,8 @@ import { testamonialsList } from 'src/app/core/models/forms-and-components/testa
 import { ActivatedRoute } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { ProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-product-page',
@@ -24,6 +26,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   productLoaded: boolean;
   productSubscription: Subscription;
 
+  private currentEnvironmentType: boolean = environment.production;
+  productIdList;
 
   heroData: PageHeroData;
   buyNowData: BuyNowBoxData;
@@ -36,10 +40,25 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.setProductPathsBasedOnEnvironment();
     this.initializeProductData();
-
     this.initializePageComponents();
+  }
 
+  private setProductPathsBasedOnEnvironment() {
+    switch (this.currentEnvironmentType) {
+      case true:
+        console.log('Setting productIdList to production');
+        this.productIdList = ProductIdList;
+        break;
+      case false:
+        console.log('Setting productIdList to sandbox');
+        this.productIdList = SandboxProductIdList;
+        break;
+      default:
+        this.productIdList = SandboxProductIdList;
+        break;
+    }
   }
 
 
@@ -51,6 +70,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
       this.productId = idParam;
       this.getProduct();
     }
+
+
   }
 
   // Triggered after params are fetched
