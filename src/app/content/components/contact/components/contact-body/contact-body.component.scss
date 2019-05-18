@@ -55,6 +55,11 @@ mat-form-field {
   width: $desktop-button-width;
 }
 
+.post-submit-message {
+  color: $accent;
+  text-align: center;
+}
+
 @media screen and (max-width: $mobile-cutoff-width) {
   
   .header {

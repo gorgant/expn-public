@@ -2,38 +2,21 @@ import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscriber.model';
-import { currentEnvironmentType } from '../environments/config';
-import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
+import { adminProjectName } from '../environments/config';
+import { AdminFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 
 const pubSub = new PubSub();
-
-const getAdminProjectName = (): string => {
-  let projectName: string;
-
-  switch (currentEnvironmentType) {
-    case EnvironmentTypes.PRODUCTION:
-      projectName = PRODUCTION_APPS.adminApp.projectId
-      break;
-    case EnvironmentTypes.SANDBOX:
-      projectName = SANDBOX_APPS.adminApp.projectId
-      break;
-    default:
-      projectName = SANDBOX_APPS.adminApp.projectId
-      break;
-  }
-  return projectName;
-}
 
 const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>) => {
 
   console.log('Commencing subscriber trasmission based on this data', subscriber);
 
-  const adminProjectName = getAdminProjectName();
-  console.log('Publishing to this project topic', adminProjectName);
+  const adminProject = adminProjectName;
+  console.log('Publishing to this project topic', adminProject);
 
   // Target topic in the admin PubSub (must add this project's service account to target project)
   // Courtesy of https://stackoverflow.com/a/55003466/6572208
-  const topic = pubSub.topic(`projects/${adminProjectName}/topics/save-email-sub`);
+  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminFunctionNames.SAVE_EMAIL_SUB_TOPIC}`);
 
   const topicPublishRes = await topic.publishJSON(subscriber)
     .catch(err => {

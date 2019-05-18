@@ -1,6 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CONTACT_VALIDATION_MESSAGES } from 'src/app/core/models/forms-and-components/validation-messages.model';
+import { CONTACT_VALIDATION_MESSAGES } from 'src/app/core/models/forms-and-components/public-validation-messages.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { RootStoreState, UserStoreSelectors, AuthStoreActions, UserStoreActions } from 'src/app/root-store';
+import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
+import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
+import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
+import { ContactForm } from 'src/app/core/models/user/contact-form.model';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { now } from 'moment';
 
 @Component({
   selector: 'app-contact-body',
@@ -11,9 +20,14 @@ export class ContactBodyComponent implements OnInit {
 
   contactForm: FormGroup;
   formValidationMessages = CONTACT_VALIDATION_MESSAGES;
+  formSubmitted: boolean;
+
+  private userAuthenticationRequested: boolean;
 
   constructor(
     private fb: FormBuilder,
+    private store$: Store<RootStoreState.State>,
+    private afs: AngularFirestore // Used exclusively to generate an id
   ) { }
 
   ngOnInit() {
@@ -26,6 +40,53 @@ export class ContactBodyComponent implements OnInit {
 
   onSubmit() {
     console.log('Contact form submitted', this.contactForm.value);
+
+    // Fetch user or create a new one if not yet authenticated
+    this.initializePublicUser()
+      .pipe(
+        takeWhile(() => !this.formSubmitted)
+      )
+      .subscribe(user => {
+        console.log('Checking for user to subscribe', user);
+        if (user) {
+          // Update the user's email address (or add to a new billing details object)
+          const updatedUser: PublicUser = {
+            ...user,
+            billingDetails: user.billingDetails ? {
+              ...user.billingDetails,
+              email: this.email.value
+            } : {
+              email: this.email.value
+            }
+          };
+
+          console.log('Subscribe email submitted', updatedUser);
+
+          // Update user record
+          this.store$.dispatch(new UserStoreActions.StoreUserDataRequested({userData: updatedUser}));
+
+          // Submit subscriber data to admin
+          const emailSubData: EmailSubData = {
+            user: updatedUser,
+            subSource: SubscriptionSource.CONTACT_FORM
+          };
+          this.store$.dispatch(new UserStoreActions.SubscribeUserRequested({emailSubData}));
+
+          // Submit form data to admin
+          const contactFormData: ContactForm = {
+            id: this.afs.createId(),
+            createdDate: now(),
+            name: this.name.value,
+            email: this.email.value,
+            message: this.message.value,
+            publicUser: user
+          };
+          this.store$.dispatch(new UserStoreActions.TransmitContactFormRequested({contactForm: contactFormData}));
+
+          // Mark form submitted to close the subscription
+          this.formSubmitted = true;
+        }
+      });
   }
 
   // This handles a weird error related to lastpass form detection when pressing enter
@@ -33,6 +94,23 @@ export class ContactBodyComponent implements OnInit {
   textareaEnterPressed($event: KeyboardEvent) {
     $event.preventDefault();
     $event.stopPropagation();
+  }
+
+  private initializePublicUser() {
+    return this.store$.select(UserStoreSelectors.selectUser)
+      .pipe(
+        withLatestFrom(
+          this.store$.select(UserStoreSelectors.selectUserLoaded)
+        ),
+        map(([user, userLoaded]) => {
+          if (!userLoaded && !this.userAuthenticationRequested) {
+            console.log('No user in store, dispatching authentication request');
+            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
+          }
+          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
+          return user;
+        })
+      );
   }
 
   // These getters are used for easy access in the HTML template

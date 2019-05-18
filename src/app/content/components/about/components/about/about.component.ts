@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 
 @Component({
@@ -20,7 +20,7 @@ export class AboutComponent implements OnInit {
 
   private initializeHeroData() {
     const aboutImageProps: ImageProps = {
-      src: ImagePaths.ABOUT_ME,
+      src: PublicImagePaths.ABOUT_ME,
       sizes: null,
       srcset: null,
       width: null,

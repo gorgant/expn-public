@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import {
   BILLING_VALIDATION_MESSAGES,
-} from 'src/app/core/models/forms-and-components/validation-messages.model';
+} from 'src/app/core/models/forms-and-components/public-validation-messages.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { Store } from '@ngrx/store';
 import {

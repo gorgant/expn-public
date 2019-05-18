@@ -4,11 +4,12 @@ import { catchError, take, tap } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { StripeChargeData } from '../models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
-import { FbFunctionNames } from '../models/routes-and-paths/fb-function-names';
+import { PublicFunctionNames } from '../models/routes-and-paths/fb-function-names';
 import { Order } from '../models/orders/order.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
 import { StripeChargeMetadata } from '../models/billing/stripe-object-metadata.model';
+import { PublicUser } from '../models/user/public-user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class BillingService {
   processPayment(billingData: StripeChargeData): Observable<Stripe.charges.ICharge> {
 
     const chargeFunction: (data: StripeChargeData) => Observable<Stripe.charges.ICharge> = this.fns.httpsCallable(
-      FbFunctionNames.STRIPE_PROCESS_CHARGE
+      PublicFunctionNames.STRIPE_PROCESS_CHARGE
     );
     const res = chargeFunction(billingData)
       .pipe(
@@ -41,13 +42,13 @@ export class BillingService {
   }
 
   // This is fired if a charge is processed successfully
-  transmitOrderToAdmin(stripeCharge: Stripe.charges.ICharge): Observable<any> {
+  transmitOrderToAdmin(stripeCharge: Stripe.charges.ICharge, user: PublicUser): Observable<any> {
     console.log('Transmitting order to admin');
 
-    const order = this.convertStripeChargeToOrder(stripeCharge);
+    const order = this.convertStripeChargeToOrder(stripeCharge, user);
 
     const transmitOrderFunction: (data: Order) => Observable<any> = this.fns.httpsCallable(
-      FbFunctionNames.TRANSMIT_ORDER_TO_ADMIN
+      PublicFunctionNames.TRANSMIT_ORDER_TO_ADMIN
     );
     const res = transmitOrderFunction(order)
       .pipe(
@@ -64,13 +65,13 @@ export class BillingService {
     return res;
   }
 
-  convertStripeChargeToOrder(stripeCharge: Stripe.charges.ICharge): Order {
+  convertStripeChargeToOrder(stripeCharge: Stripe.charges.ICharge, user: PublicUser): Order {
     // Ensure all key data is present
     const stripeChargeId: string = stripeCharge.id;
     const stripeCustomerId: string = stripeCharge.customer as string;
     const name: string = (stripeCharge as any).billing_details.name; // Isn't in the type definitions but exists on the object
     const email: string = (stripeCharge as any).billing_details.email; // Isn't in the type definitions but exists on the object
-    const publicUserId: string = stripeCharge.metadata[StripeChargeMetadata.PUBLIC_USER_ID];
+    const publicUser: PublicUser = user;
     const productId: string = stripeCharge.metadata[StripeChargeMetadata.PRODUCT_ID];
     const amountPaid: number = stripeCharge.amount;
 
@@ -85,7 +86,7 @@ export class BillingService {
       stripeCustomerId,
       name,
       email,
-      publicUserId,
+      publicUser,
       productId,
       amountPaid,
       status: 'inactive',

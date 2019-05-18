@@ -36,7 +36,7 @@ export class BillingStoreEffects {
       billingFeatureActions.ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED
     ),
     switchMap(action =>
-      this.billingService.transmitOrderToAdmin(action.payload.stripeCharge)
+      this.billingService.transmitOrderToAdmin(action.payload.stripeCharge, action.payload.user)
         .pipe(
           map(paymentResponse => new billingFeatureActions.TransmitOrderToAdminComplete()),
           catchError(error => {

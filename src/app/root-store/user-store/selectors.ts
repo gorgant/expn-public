@@ -10,6 +10,8 @@ const getUser = (state: State): PublicUser => state.user;
 const getCartData = (state: State): Product => state.cartItem;
 const getSubscribeProcessing = (state: State): boolean => state.subscribeProcessing;
 const getSubscribeSubmitted = (state: State): boolean => state.subscribeSubmitted;
+const getContactFormProcessing = (state: State): boolean => state.contactFormProcessing;
+const getContactFormSubmitted = (state: State): boolean => state.contactFormSubmitted;
 
 const selectUserState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('user');
@@ -38,3 +40,9 @@ export const selectSubscribeProcessing: MemoizedSelector<object, boolean>
 
 export const selectSubscribeSubmitted: MemoizedSelector<object, boolean>
 = createSelector(selectUserState, getSubscribeSubmitted);
+
+export const selectContactFormProcessing: MemoizedSelector<object, boolean>
+= createSelector(selectUserState, getContactFormProcessing);
+
+export const selectContactFormSubmitted: MemoizedSelector<object, boolean>
+= createSelector(selectUserState, getContactFormSubmitted);

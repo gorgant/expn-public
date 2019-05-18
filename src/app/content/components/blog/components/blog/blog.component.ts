@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { Post } from 'src/app/core/models/posts/post.model';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 
 @Component({
@@ -35,7 +35,7 @@ export class BlogComponent implements OnInit {
 
   private initializeHeroData() {
     const blogImageProps: ImageProps = {
-      src: ImagePaths.BLOG,
+      src: PublicImagePaths.BLOG,
       sizes: null,
       srcset: null,
       width: null,

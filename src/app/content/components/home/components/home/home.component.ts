@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { ProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
 
@@ -13,11 +13,11 @@ import { environment } from 'src/environments/environment';
 })
 export class HomeComponent implements OnInit {
 
-  private currentEnvironmentType: boolean = environment.production;
+  private productionEnvironment: boolean = environment.production;
   productIdList;
 
   heroData: PageHeroData;
-  appRoutes = AppRoutes;
+  appRoutes = PublicAppRoutes;
 
   constructor() { }
 
@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
     this.setProductPathsBasedOnEnvironment();
 
     const blogImageProps: ImageProps = {
-      src: ImagePaths.HOME,
+      src: PublicImagePaths.HOME,
       sizes: null,
       srcset: null,
       width: null,
@@ -41,10 +41,10 @@ export class HomeComponent implements OnInit {
   }
 
   private setProductPathsBasedOnEnvironment() {
-    switch (this.currentEnvironmentType) {
+    switch (this.productionEnvironment) {
       case true:
         console.log('Setting productIdList to production');
-        this.productIdList = ProductIdList;
+        this.productIdList = ProductionProductIdList;
         break;
       case false:
         console.log('Setting productIdList to sandbox');

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
 import { Router } from '@angular/router';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-product-card',
@@ -20,7 +20,7 @@ export class ProductCardComponent implements OnInit {
   }
 
   onClick() {
-    this.router.navigate([AppRoutes.PRODUCT_INDIVIDUAL, this.product.id]);
+    this.router.navigate([PublicAppRoutes.PRODUCT_INDIVIDUAL, this.product.id]);
   }
 
 }

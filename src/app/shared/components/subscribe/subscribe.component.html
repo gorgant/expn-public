@@ -26,7 +26,7 @@
         Submit
     </button>
   </form>
-  <div *ngIf="(subscribeSubmitted$ | async)" class="post-submit-message">
+  <div *ngIf="(subscribeSubmitted$ | async) && emailSubmitted" class="post-submit-message">
     Thank you for signing up! Be sure to add @myexplearning.com to your trusted domains!
   </div>
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { SocialUrls } from 'src/app/core/models/routes-and-paths/social-urls.model';
 import { Observable } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
@@ -14,7 +14,7 @@ import { now } from 'moment';
 export class FooterComponent implements OnInit {
 
   activeUrl$: Observable<string>;
-  appRoutes = AppRoutes;
+  appRoutes = PublicAppRoutes;
   socialUrls = SocialUrls;
   currentDate: number;
 

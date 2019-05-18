@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UiService } from 'src/app/core/services/ui.service';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-sidenav',
@@ -9,7 +9,7 @@ import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model
 })
 export class SidenavComponent implements OnInit {
 
-  appRoutes = AppRoutes;
+  appRoutes = PublicAppRoutes;
 
   constructor(
     private uiService: UiService

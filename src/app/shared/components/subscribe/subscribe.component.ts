@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/forms-and-components/validation-messages.model';
+import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/forms-and-components/public-validation-messages.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
@@ -21,7 +21,7 @@ export class SubscribeComponent implements OnInit {
 
   subscribeProcessing$: Observable<boolean>;
   subscribeSubmitted$: Observable<boolean>;
-  private emailSubmitted: boolean;
+  emailSubmitted: boolean;
 
   private userAuthenticationRequested: boolean;
 

@@ -11,9 +11,11 @@ import * as StripeDefs from 'stripe';
 import { AbstractControl } from '@angular/forms';
 import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
 import { Router } from '@angular/router';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
+import { environment } from 'src/environments/environment';
+import { ProductionStripePublishableKeys, SandboxStripePublishableKeys } from 'src/app/core/models/environments/env-vars.model';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -36,11 +38,13 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   @ViewChild('cardElement') cardElement: ElementRef;
 
   stripe: stripe.Stripe;
-  stripPublishableKey = 'pk_test_qiAhFPd39eG3eqgEtWM9Yx0v00p7PxdzcH';
+  stripePublishableKey: string;
   card: stripe.elements.Element;
   cardErrors: string;
 
   loading = false;
+
+  private productionEnvironment: boolean = environment.production;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -48,8 +52,25 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.setStripeKeyBasedOnEnvironment();
     this.initializeStripeElement();
     this.initializePaymentStatus();
+  }
+
+  private setStripeKeyBasedOnEnvironment() {
+    switch (this.productionEnvironment) {
+      case true:
+        console.log('Setting publishable key to production');
+        this.stripePublishableKey = ProductionStripePublishableKeys.PUBLISHABLE;
+        break;
+      case false:
+        console.log('Setting publishable key to sandbox');
+        this.stripePublishableKey = SandboxStripePublishableKeys.PUBLISHABLE;
+        break;
+      default:
+        this.stripePublishableKey = SandboxStripePublishableKeys.PUBLISHABLE;
+        break;
+    }
   }
 
   async onSubmitPayment(e: Event) {
@@ -118,7 +139,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     this.paymentSubmitted = false; // Closes out the payment processing subscription
 
     // Transmit order to admin
-    this.store$.dispatch(new BillingStoreActions.TransmitOrderToAdminRequested({stripeCharge}));
+    this.store$.dispatch(new BillingStoreActions.TransmitOrderToAdminRequested({stripeCharge, user: this.publicUser}));
 
 
     // Subscribe the customer to email list
@@ -129,12 +150,12 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     };
     this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
     console.log('Charge succeeded, closing payment loop and destroying stripe element');
-    this.router.navigate([AppRoutes.PURCHASE_CONFIRMATION]);
+    this.router.navigate([PublicAppRoutes.PURCHASE_CONFIRMATION]);
     this.store$.dispatch(new UserStoreActions.PurgeCartData()); // Remove cart data from store and local storage
   }
 
   private initializeStripeElement() {
-    this.stripe = Stripe(this.stripPublishableKey);
+    this.stripe = Stripe(this.stripePublishableKey);
     const elements = this.stripe.elements();
 
     this.card = elements.create('card', {

@@ -4,14 +4,14 @@ import { BuyNowBoxData } from 'src/app/core/models/products/buy-now-box-data.mod
 import { TestamonialData } from 'src/app/core/models/forms-and-components/testamonial-data.model';
 import { Observable, Subscription } from 'rxjs';
 import { Product } from 'src/app/core/models/products/product.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
 import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
 import { ActivatedRoute } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
-import { ProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
+import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -26,13 +26,13 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   productLoaded: boolean;
   productSubscription: Subscription;
 
-  private currentEnvironmentType: boolean = environment.production;
+  private productionEnvironment: boolean = environment.production;
   productIdList;
 
   heroData: PageHeroData;
   buyNowData: BuyNowBoxData;
   testamonialData: TestamonialData[];
-  imagePaths = ImagePaths;
+  imagePaths = PublicImagePaths;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -46,10 +46,10 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   }
 
   private setProductPathsBasedOnEnvironment() {
-    switch (this.currentEnvironmentType) {
+    switch (this.productionEnvironment) {
       case true:
         console.log('Setting productIdList to production');
-        this.productIdList = ProductIdList;
+        this.productIdList = ProductionProductIdList;
         break;
       case false:
         console.log('Setting productIdList to sandbox');

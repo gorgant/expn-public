@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-check-out',
@@ -20,7 +20,7 @@ export class CheckOutComponent implements OnInit {
   publicUser$: Observable<PublicUser>;
   userAuthenticationRequested: boolean;
 
-  imagePaths = ImagePaths;
+  imagePaths = PublicImagePaths;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -59,7 +59,7 @@ export class CheckOutComponent implements OnInit {
       .subscribe(product => {
         if (!product) {
           console.log('No product detected in cart, routing to home page');
-          this.router.navigate([AppRoutes.HOME]);
+          this.router.navigate([PublicAppRoutes.HOME]);
         }
       });
   }

@@ -54,6 +54,17 @@ export function featureReducer(state = initialState, action: Actions): State {
         subscribeProcessing: false,
         subscribeSubmitted: true
       };
+    case ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED:
+      return {
+        ...state,
+        contactFormProcessing: true
+      };
+    case ActionTypes.TRANSMIT_CONTACT_FORM_COMPLETE:
+      return {
+        ...state,
+        contactFormProcessing: false,
+        contactFormSubmitted: true
+      };
 
     default: {
       return state;

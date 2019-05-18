@@ -1,4 +1,9 @@
-export enum ImagePaths {
+export enum AdminImagePaths {
+  HERO_PLACEHOLDER = 'assets/images/placeholders/blog_hero_placeholder.jpg',
+  PRODUCT_PLACEHOLDER = 'assets/products/product_placeholder_image_500x200_thumb@500.jpg'
+}
+
+export enum PublicImagePaths {
   HOME = 'assets/images/background/home_page_background_mary_daphne@2000.jpg',
   ABOUT_ME = 'assets/images/background/about_me_background_mary_daphne@2000.jpg',
   BLOG = 'assets/images/background/blog_background_mary_daphne@2000.jpg',
@@ -10,7 +15,7 @@ export enum ImagePaths {
   MD_CHECKOUT_SIGNATURE = 'assets/images/avatar/md_explearning_signature_thumb@300.png',
 }
 
-export enum TestamonialImagePaths {
+export enum PublicTestamonialImagePaths {
   AKIEM = 'assets/images/testamonials/akie_square_thumb@150.jpg',
   ANNC = 'assets/images/testamonials/ann_square_thumb@150.jpg',
   ASHINV = 'assets/images/testamonials/ashin_square_thumb@150.jpg',

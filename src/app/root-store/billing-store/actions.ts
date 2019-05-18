@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
 import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
+import { PublicUser } from 'src/app/core/models/user/public-user.model';
 
 export enum ActionTypes {
   PROCESS_PAYMENT_REQUESTED = '[Billing] Process Payment Requested',
@@ -27,7 +28,7 @@ export class ProcessPaymentComplete implements Action {
 export class TransmitOrderToAdminRequested implements Action {
   readonly type = ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED;
 
-  constructor(public payload: { stripeCharge: Stripe.charges.ICharge}) {}
+  constructor(public payload: { stripeCharge: Stripe.charges.ICharge, user: PublicUser}) {}
 }
 
 export class TransmitOrderToAdminComplete implements Action {

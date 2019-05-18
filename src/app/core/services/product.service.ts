@@ -5,7 +5,7 @@ import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore 
 import { AuthService } from './auth.service';
 import { takeUntil, map, catchError } from 'rxjs/operators';
 import { UiService } from './ui.service';
-import { FbCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
+import { SharedCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +52,7 @@ export class ProductService {
   }
 
   private getProductsCollection(): AngularFirestoreCollection<Product> {
-    return this.afs.collection<Product>(FbCollectionPaths.PRODUCTS);
+    return this.afs.collection<Product>(SharedCollectionPaths.PRODUCTS);
   }
 
   private getProductDoc(productId: string): AngularFirestoreDocument<Product> {

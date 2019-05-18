@@ -33,10 +33,14 @@
           <mat-error *ngIf="message.hasError(validation.type) && message.invalid && (message.dirty || message.touched)">{{ validation.message }}</mat-error>
         </mat-error>
       </mat-form-field>
-      <button class="submit-button" color="primary" [disabled]="contactForm.invalid" type="submit" mat-raised-button>
+      <button class="submit-button" color="primary" [disabled]="contactForm.invalid || formSubmitted" type="submit" mat-raised-button>
           Submit
       </button>
+      <div *ngIf="formSubmitted" class="post-submit-message">
+        Thank you for contacting us. We look forward to reading your message.
+      </div>
     </form>
+
   
   </div>
 

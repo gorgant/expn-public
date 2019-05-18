@@ -13,3 +13,7 @@ export {
 export {
   transmitEmailSubToAdmin
 } from './subscribers/transmit-email-sub-to-admin';
+
+export {
+  transmitContactFormToAdmin
+} from './contact-form/transmit-contact-form-to-admin';

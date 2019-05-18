@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BuyNowBoxData } from 'src/app/core/models/products/buy-now-box-data.model';
-import { IconPaths } from 'src/app/core/models/routes-and-paths/icon-paths.model';
+import { PublicIconPaths } from 'src/app/core/models/routes-and-paths/icon-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions } from 'src/app/root-store';
 import { Product } from 'src/app/core/models/products/product.model';
 import { Router } from '@angular/router';
-import { AppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-buy-now-box',
@@ -17,7 +17,7 @@ export class BuyNowBoxComponent implements OnInit {
   @Input() buyNowData: BuyNowBoxData;
   @Input() product: Product;
 
-  iconPaths = IconPaths;
+  iconPaths = PublicIconPaths;
 
   title: string;
   subtitle: string;
@@ -34,7 +34,7 @@ export class BuyNowBoxComponent implements OnInit {
 
   onBuyNow() {
     this.store$.dispatch(new UserStoreActions.SetCartData({productData: this.product}));
-    this.router.navigate([AppRoutes.CHECKOUT]);
+    this.router.navigate([PublicAppRoutes.CHECKOUT]);
   }
 
 }

@@ -4,15 +4,16 @@ import { Observable, from, throwError } from 'rxjs';
 import { PublicUser } from '../models/user/public-user.model';
 import { map, takeUntil, catchError, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { FbCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
+import { PublicCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 import { SubscriptionSource } from '../models/subscribers/subscription-source.model';
 import { AngularFireFunctions } from '@angular/fire/functions';
-import { FbFunctionNames } from '../models/routes-and-paths/fb-function-names';
+import { PublicFunctionNames } from '../models/routes-and-paths/fb-function-names';
 import { EmailSubData } from '../models/subscribers/email-sub-data.model';
 import { BillingService } from './billing.service';
 import { EmailSubscriber } from '../models/subscribers/email-subscriber.model';
 import { now } from 'moment';
 import { Order } from '../models/orders/order.model';
+import { ContactForm } from '../models/user/contact-form.model';
 
 @Injectable({
   providedIn: 'root'
@@ -61,12 +62,12 @@ export class UserService {
 
   // Add user subscription to admin database
   publishEmailSubToAdminTopic(emailSubData: EmailSubData): Observable<any> {
-    console.log('Tansmitting subscriber to admin');
+    console.log('Transmitting subscriber to admin');
 
     const emailSub = this.convertSubDataToSubscriber(emailSubData);
 
     const publishSubFunction: (data: Partial<EmailSubscriber>) => Observable<any> = this.fns.httpsCallable(
-      FbFunctionNames.TRANSMIT_EMAIL_SUB_TO_ADMIN
+      PublicFunctionNames.TRANSMIT_EMAIL_SUB_TO_ADMIN
     );
     const res = publishSubFunction(emailSub)
       .pipe(
@@ -83,13 +84,35 @@ export class UserService {
     return res;
   }
 
+  publishContactFormToAdminTopic(contactForm: ContactForm): Observable<any> {
+    console.log('Transmitting contact form to admin');
+
+    const publishSubFunction: (data: ContactForm) => Observable<any> = this.fns.httpsCallable(
+      PublicFunctionNames.TRANSMIT_CONTACT_FORM_TO_ADMIN
+    );
+
+    const res = publishSubFunction(contactForm)
+      .pipe(
+        take(1),
+        tap(response => {
+          console.log('Contact form transmitted to admin', response);
+        }),
+        catchError(error => {
+          console.log('Error transmitting contact form', error);
+          return throwError(error);
+        })
+      );
+
+    return res;
+  }
+
   private convertSubDataToSubscriber(subData: EmailSubData): Partial<EmailSubscriber> {
     // Ensure all key data is present
     const user: PublicUser = subData.user;
     const subSource: SubscriptionSource = subData.subSource;
     const email: string = user.billingDetails.email;
     // If sub came from a purchase, add that order to the sub data
-    const lastOrder: Order = subData.stripeCharge ? this.billingService.convertStripeChargeToOrder(subData.stripeCharge) : null;
+    const lastOrder: Order = subData.stripeCharge ? this.billingService.convertStripeChargeToOrder(subData.stripeCharge, user) : null;
 
     const partialSubscriber: Partial<EmailSubscriber> = {
       id: email, // Set id to the user's email
@@ -112,7 +135,7 @@ export class UserService {
   }
 
   private getUserColletion(): AngularFirestoreCollection<PublicUser> {
-    return this.db.collection<PublicUser>(FbCollectionPaths.PUBLIC_USERS);
+    return this.db.collection<PublicUser>(PublicCollectionPaths.PUBLIC_USERS);
   }
 
 

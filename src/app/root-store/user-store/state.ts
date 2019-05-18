@@ -9,6 +9,8 @@ export interface State {
   cartItem: Product;
   subscribeProcessing: boolean;
   subscribeSubmitted: boolean;
+  contactFormProcessing: boolean;
+  contactFormSubmitted: boolean;
 }
 
 export const initialState: State = {
@@ -19,4 +21,6 @@ export const initialState: State = {
   cartItem: null,
   subscribeProcessing: false,
   subscribeSubmitted: false,
+  contactFormProcessing: false,
+  contactFormSubmitted: false,
 };

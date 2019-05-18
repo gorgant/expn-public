@@ -91,4 +91,20 @@ export class UserStoreEffects {
         )
     )
   );
+
+  @Effect()
+  transmitContactFormEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<userFeatureActions.TransmitContactFormRequested>(
+      userFeatureActions.ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED
+    ),
+    switchMap(action =>
+      this.userService.publishContactFormToAdminTopic(action.payload.contactForm)
+        .pipe(
+          map(response => new userFeatureActions.TransmitContactFormComplete()),
+          catchError(error => {
+            return of(new userFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

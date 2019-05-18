@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 
 @Component({
   selector: 'app-page-hero',
@@ -64,7 +64,7 @@ export class PageHeroComponent implements OnInit {
     this.heroContentContainerMobileFlexValue = '70';
     this.heroActionContainerMobileFlexValue = '30';
 
-    this.imageUrl = ImagePaths.POST_HERO; // Fixed post image
+    this.imageUrl = PublicImagePaths.POST_HERO; // Fixed post image
   }
 
   private initalizeNonPostConfig() {

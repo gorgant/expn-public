@@ -2,6 +2,7 @@ import { Action } from '@ngrx/store';
 import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
+import { ContactForm } from 'src/app/core/models/user/contact-form.model';
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',
@@ -16,7 +17,9 @@ export enum ActionTypes {
   SET_CART_DATA = '[User] Cart Data Set',
   PURGE_CART_DATA = '[User] Cart Data Purged',
   SUBSCRIBE_USER_REQUESTED = '[User] Subscribe User Requested',
-  SUBSCRIBE_USER_COMPLETE = '[User] Subscribe User Complete'
+  SUBSCRIBE_USER_COMPLETE = '[User] Subscribe User Complete',
+  TRANSMIT_CONTACT_FORM_REQUESTED = '[User] Transmit Contact Form Requested',
+  TRANSMIT_CONTACT_FORM_COMPLETE = '[User] Transmit Contact Form Complete'
 }
 
 export class UserDataRequested implements Action {
@@ -64,6 +67,15 @@ export class SubscribeUserComplete implements Action {
   readonly type = ActionTypes.SUBSCRIBE_USER_COMPLETE;
 }
 
+export class TransmitContactFormRequested implements Action {
+  readonly type = ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED;
+  constructor(public payload: { contactForm: ContactForm }) {}
+}
+
+export class TransmitContactFormComplete implements Action {
+  readonly type = ActionTypes.TRANSMIT_CONTACT_FORM_COMPLETE;
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
@@ -73,5 +85,7 @@ LoadErrorDetected |
 SetCartData |
 PurgeCartData |
 SubscribeUserRequested |
-SubscribeUserComplete
+SubscribeUserComplete |
+TransmitContactFormRequested |
+TransmitContactFormComplete
 ;

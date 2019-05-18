@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -9,7 +9,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 })
 export class AboutBodyComponent implements OnInit {
 
-  imagePaths = ImagePaths;
+  imagePaths = PublicImagePaths;
   videoUrl = `https://youtu.be/X949bB9fqMA`;
 
   videoHtml: SafeHtml;
