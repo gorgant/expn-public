@@ -82,8 +82,9 @@
       </div>
   
     </div>
-    <div class="copyright">
-      <span>&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</span>
+    <div class="copyright" fxLayout="column" fxLayoutAlign="center center">
+      <p (click)="toggleShowAppVersion()">&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</p>
+      <p *ngIf="showAppVersion">{{ appVersion }}</p>
     </div>
   </div>
 

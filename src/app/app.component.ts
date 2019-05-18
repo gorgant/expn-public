@@ -15,6 +15,7 @@ import { Product } from './core/models/products/product.model';
 })
 export class AppComponent implements OnInit {
   title = 'Explearning';
+  appVersion = '1.1.0';
 
   @ViewChild('sidenav') sidenav: MatSidenav;
 
