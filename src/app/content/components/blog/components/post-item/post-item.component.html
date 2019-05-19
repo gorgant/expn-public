@@ -1,4 +1,4 @@
-<div [routerLink]="[appRoutes.BLOG, post.id]" class="item" fxLayout="column" fxLayoutAlign="center center">
+<div [routerLink]="[appRoutes.BLOG, post.id]" class="item" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
   <div class="thumbnail">
     <img appMatElevation class="post-image" [src]="post.imageProps.src" [srcset]="post.imageProps.srcset" [sizes]="post.imageProps.sizes" [alt]="post.title">
   </div>

@@ -120,7 +120,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     console.log('Initializing buy now data with this product', product);
     this.buyNowData = {
       title: product.buyNowData.title,
-      subtitle: product.buyNowData.title,
+      subtitle: product.buyNowData.subtitle,
       buttonText: `Get Started - $${product.price}`
     };
   }

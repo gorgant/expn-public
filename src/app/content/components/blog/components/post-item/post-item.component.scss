@@ -6,6 +6,9 @@
 
 .item:hover {
   cursor: pointer;
+  .caption {
+    opacity: $opacity-full;
+  }
 }
 
 .thumbnail {
@@ -18,7 +21,7 @@
 
 .caption {
   font-size: 22px;
-  opacity: $opacity-medium;
+  opacity: $opacity-high;
   text-align: center;
   position: relative;
   display: inline-block;
