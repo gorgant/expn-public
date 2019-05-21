@@ -1,13 +1,11 @@
 @import '../../../variables';
 
 .hero-background-image {
-  background-image: url("src/assets/images/background/home_page_background_mary_daphne@2000.jpg");
   background-color: #cccccc;
   height: 93vh;
   background-position: top;
   background-repeat: no-repeat;
   background-size: cover;
-  // padding: 16px;
 }
 
 .hero-content-container {
@@ -85,6 +83,12 @@
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
+
+  .hero-background-image {
+    background-position: 75%;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 
   .hero-content-container {
     margin-left: 0px;
