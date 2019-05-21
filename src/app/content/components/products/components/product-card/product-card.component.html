@@ -1,4 +1,5 @@
 <div appMatElevation class="product-card" fxLayout="column" fxLayout.gt-sm="row">
+  
   <div class="card-image-container" fxFlex="40" fxLayout="column" fxLayoutAlign="center center" fxFlexOrder.gt-sm="2">
     <img class="card-image" [src]="product.cardImageProps.src" [alt]="product.name">
   </div>
@@ -11,7 +12,7 @@
       </ul>
     </div>
     <div class="card-action">
-      <button class="action-button" mat-raised-button color="primary" (click)="onClick()">Learn More</button>
+      <a class="action-button" mat-raised-button color="primary" [routerLink]="[appRoutes.PRODUCT_INDIVIDUAL, product.id, productName]">Learn More</a>
     </div>
   </div>
 </div>

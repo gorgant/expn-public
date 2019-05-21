@@ -85,9 +85,7 @@
 @media screen and (max-width: $mobile-cutoff-width) {
 
   .hero-background-image {
-    background-position: 75%;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background-position: 75%; // Center MD's face on mobile screens (requires MD to be on right side of image)
   }
 
   .hero-content-container {

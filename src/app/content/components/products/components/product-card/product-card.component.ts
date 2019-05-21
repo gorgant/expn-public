@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
-import { Router } from '@angular/router';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { UiService } from 'src/app/core/services/ui.service';
 
 @Component({
   selector: 'app-product-card',
@@ -11,16 +11,20 @@ import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes
 export class ProductCardComponent implements OnInit {
 
   @Input() product: Product;
+  productName: string;
+
+  appRoutes = PublicAppRoutes;
 
   constructor(
-    private router: Router,
+    private uiService: UiService
   ) { }
 
   ngOnInit() {
+    this.setUserFriendlyUrlString();
   }
 
-  onClick() {
-    this.router.navigate([PublicAppRoutes.PRODUCT_INDIVIDUAL, this.product.id]);
+  private setUserFriendlyUrlString() {
+    this.productName = this.uiService.convertToFriendlyUrlFormat(this.product.name);
   }
 
 }

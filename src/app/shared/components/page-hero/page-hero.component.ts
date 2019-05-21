@@ -1,24 +1,28 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { Subscription } from 'rxjs';
+import { UiService } from 'src/app/core/services/ui.service';
 
 @Component({
   selector: 'app-page-hero',
   templateUrl: './page-hero.component.html',
   styleUrls: ['./page-hero.component.scss']
 })
-export class PageHeroComponent implements OnInit {
+export class PageHeroComponent implements OnInit, OnDestroy {
 
   @Input() heroData: PageHeroData;
 
   @ViewChild('contentStartTag') ContentStartTag: ElementRef;
+
 
   imageUrl: string;
   pageTitle: string;
   pageSubtitle: string;
   actionMessage: string;
 
+  private screenObserverSubscription: Subscription;
   stylesObject: {};
 
   isPost: boolean;
@@ -33,6 +37,7 @@ export class PageHeroComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
+    private uiService: UiService
   ) { }
 
   ngOnInit() {
@@ -77,18 +82,36 @@ export class PageHeroComponent implements OnInit {
 
   private configureBackgroundStyleObject() {
 
-    const backgroundImageUrl = `url(${this.imageUrl})`;
-    let linearGradient = 'linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(9,9,121,0.006) 100%)';
+    // Get screen size before setting config
+    this.screenObserverSubscription = this.uiService.screenIsMobile$
+      .subscribe(screenIsMobile => {
 
-    if (this.isPost) {
-      linearGradient = 'linear-gradient(0deg, rgba(0,0,0,0.6) 100%, rgba(9,9,121,0.006) 100%)';
+        const backgroundImageUrl = `url(${this.imageUrl})`;
+        let linearGradient = 'linear-gradient(0deg, rgba(0,0,0,0.5) 10%, rgba(9,9,121,0.006) 100%)';
+
+        if (this.isPost) {
+          linearGradient = 'linear-gradient(0deg, rgba(0,0,0,0.6) 100%, rgba(9,9,121,0.006) 100%)';
+        }
+
+        // Increase linear gradient if on mobile for better readability
+        if (screenIsMobile) {
+          console.log('Screen is mobile');
+          linearGradient = 'linear-gradient(0deg, rgba(0,0,0,0.5) 100%, rgba(9,9,121,0.006) 100%)';
+        }
+
+        const combinedStyles = `${linearGradient}, ${backgroundImageUrl}`; // Layer in the gradient
+
+        const safeStyles = this.sanitizer.bypassSecurityTrustStyle(`${combinedStyles}`); // Mark string as safe
+
+        this.stylesObject = safeStyles;
+      });
+
+  }
+
+  ngOnDestroy() {
+    if (this.screenObserverSubscription) {
+      this.screenObserverSubscription.unsubscribe();
     }
-
-    const combinedStyles = `${linearGradient}, ${backgroundImageUrl}`; // Layer in the gradient
-
-    const safeStyles = this.sanitizer.bypassSecurityTrustStyle(`${combinedStyles}`); // Mark string as safe
-
-    this.stylesObject = safeStyles;
   }
 
 }
