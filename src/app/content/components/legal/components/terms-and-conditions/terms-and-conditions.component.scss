@@ -1,0 +1,18 @@
+@import '../../../../../variables';
+
+:host {
+  width: 100%;
+  max-width: $max-screen-width;
+}
+
+.page-container {
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.text-content {
+  width: 100%;
+  max-width: 800px;
+}

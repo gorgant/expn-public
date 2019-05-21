@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ContactComponent } from '../components/contact/components/contact/contact.component';
 
 const routes: Routes = [
   {
@@ -22,6 +21,10 @@ const routes: Routes = [
   {
     path: 'contact',
     loadChildren: '../components/contact/modules/contact.module#ContactModule'
+  },
+  {
+    path: 'legal',
+    loadChildren: '../components/legal/modules/legal.module#LegalModule'
   },
   {
     path: '',

@@ -1,91 +1,104 @@
 <div class="footer-container" fxLayout="column" fxLayoutAlign="center center">
-    <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT" class="footer-content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="32px" fxLayout.gt-md="row" fxLayoutAlign.gt-md="center start" fxFlexFill.gt-md fxLayoutGap.gt-md="64px">
-      
-      <div class="site-map" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="16px" fxFlex="40">
-        <div class="home" fxLayout="column">
-          <div class="title">
-            Home
-          </div>
-          <ul class="subtopics">
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home Page</a>
-            </li>
-          </ul>
+  <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT" class="footer-content" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="32px" fxLayout.gt-md="row" fxLayoutAlign.gt-md="center start" fxFlexFill.gt-md fxLayoutGap.gt-md="64px">
+    
+    <div class="site-map" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="16px" fxFlex="40">
+      <div class="home" fxLayout="column">
+        <div class="title">
+          Home
         </div>
-        <div class="about-me" fxLayout="column">
-          <div class="title">
-            About
-          </div>
-          <ul class="subtopics">
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.ABOUT_ME">About Me</a>
-            </li>
-          </ul>
-        </div>
-        <div class="products" fxLayout="column">
-          <div class="title">
-            Services
-          </div>
-          <ul class="subtopics">
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PRODUCTS">Web Courses</a>
-            </li>
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PRODUCTS">Remote Coach</a>
-            </li>
-          </ul>
-        </div>
-        <div class="blog" fxLayout="column">
-          <div class="title">
-            Blog
-          </div>
-          <ul class="subtopics">
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.BLOG">Blog</a>
-            </li>
-          </ul>
-        </div>
-        <div class="contact" fxLayout="column">
-          <div class="title">
-            Contact
-          </div>
-          <ul class="subtopics">
-            <li>
-              <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact Me</a>
-            </li>
-          </ul>
-        </div>
+        <ul class="subtopics">
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home Page</a>
+          </li>
+        </ul>
       </div>
-      
-      <div class="subscribe" fxLayoutAlign="start start" fxFlex="40">
-        <app-subscribe></app-subscribe>
-      </div>
-      
-      <div class="social" fxFlex="20">
-        <div class="social-header">
-          Check us out on social media!
+      <div class="about-me" fxLayout="column">
+        <div class="title">
+          About
         </div>
-        <div fxLayout="row" fxLayoutGap="16px">
-          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.YOUTUBE">
-            <img class="social-icons" src="assets/icons/social-media/youtube_icon.svg" alt="YouTube Channel Icon">
-          </a>
-          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.INSTAGRAM">
-            <img class="social-icons" src="assets/icons/social-media/instagram_icon.svg" alt="Instagram Icon">
-          </a>
-          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.TWITTER">
-            <img class="social-icons" src="assets/icons/social-media/twitter_icon.svg" alt="Twitter Icon">
-          </a>
-          <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.FACEBOOK">
-            <img class="social-icons" src="assets/icons/social-media/facebook_icon.svg" alt="Facebook Icon">
-          </a>
-        </div>
+        <ul class="subtopics">
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.ABOUT_ME">About Me</a>
+          </li>
+        </ul>
       </div>
-  
+      <div class="products" fxLayout="column">
+        <div class="title">
+          Services
+        </div>
+        <ul class="subtopics">
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PRODUCTS">Web Courses</a>
+          </li>
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PRODUCTS">Remote Coach</a>
+          </li>
+        </ul>
+      </div>
+      <div class="blog" fxLayout="column">
+        <div class="title">
+          Blog
+        </div>
+        <ul class="subtopics">
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.BLOG">Blog</a>
+          </li>
+        </ul>
+      </div>
+      <div class="contact" fxLayout="column">
+        <div class="title">
+          Contact
+        </div>
+        <ul class="subtopics">
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact Me</a>
+          </li>
+          <!-- <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.PRIVACY_POLICY">Privacy Policy</a>
+          </li>
+          <li>
+            <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.TERMS_AND_CONDITIONS">Terms and Conditions</a>
+          </li> -->
+        </ul>
+      </div>
     </div>
-    <div class="copyright" fxLayout="column" fxLayoutAlign="center center">
-      <p (click)="toggleShowAppVersion()">&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</p>
-      <p *ngIf="showAppVersion">{{ appVersion }}</p>
+    
+    <div class="subscribe" fxLayoutAlign="start start" fxFlex="40">
+      <app-subscribe></app-subscribe>
     </div>
+    
+    <div class="social" fxFlex="20">
+      <div class="social-header">
+        Check us out on social media!
+      </div>
+      <div fxLayout="row" fxLayoutGap="16px">
+        <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.YOUTUBE">
+          <img class="social-icons" src="assets/icons/social-media/youtube_icon.svg" alt="YouTube Channel Icon">
+        </a>
+        <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.INSTAGRAM">
+          <img class="social-icons" src="assets/icons/social-media/instagram_icon.svg" alt="Instagram Icon">
+        </a>
+        <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.TWITTER">
+          <img class="social-icons" src="assets/icons/social-media/twitter_icon.svg" alt="Twitter Icon">
+        </a>
+        <a target="_blank" rel="noopener noreferrer" [href]="socialUrls.FACEBOOK">
+          <img class="social-icons" src="assets/icons/social-media/facebook_icon.svg" alt="Facebook Icon">
+        </a>
+      </div>
+    </div>
+
   </div>
+  <div class="footer-base" fxLayout="column" fxLayoutAlign="center center">
+    <div class="legal-container" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+      <div class="copyright" (click)="toggleShowAppVersion()">&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</div>
+      <!-- <div class="legal-spacer">|</div> -->
+      <a class="legal-link" [routerLink]="appRoutes.PRIVACY_POLICY">Privacy Policy</a>
+      <!-- <div class="legal-spacer">|</div> -->
+      <a class="legal-link" [routerLink]="appRoutes.TERMS_AND_CONDITIONS">Terms and Conditions</a>
+      
+    </div>
+    <p *ngIf="showAppVersion">{{ appVersion }}</p>
+  </div>
+</div>
 
 

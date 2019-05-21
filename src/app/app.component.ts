@@ -7,6 +7,7 @@ import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreAction
 import { withLatestFrom } from 'rxjs/operators';
 import { ProductStrings } from './core/models/products/product-strings.model';
 import { Product } from './core/models/products/product.model';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -23,12 +24,14 @@ export class AppComponent implements OnInit {
     private uiService: UiService,
     private authService: AuthService,
     private store$: Store<RootStoreState.State>,
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.configureSideNav();
     this.configureAuthDetection();
     this.checkForOfflineProductData();
+    this.monitorRoutes();
   }
 
   // Handles sideNav clicks
@@ -79,5 +82,15 @@ export class AppComponent implements OnInit {
       const productData: Product = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));
       this.store$.dispatch(new UserStoreActions.SetCartData({productData}));
     }
+  }
+
+  private monitorRoutes() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        (window as any).ga('set', 'page', event.urlAfterRedirects);
+        (window as any).ga('send', 'pageview');
+        console.log('Page change detected', event.urlAfterRedirects);
+      }
+    });
   }
 }

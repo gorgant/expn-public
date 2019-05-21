@@ -6,11 +6,11 @@ export const featureAdapter: EntityAdapter<Post>
     {
       selectId: (post: Post) => post.id,
 
-      // Sort by published date
+      // Sort by reverse published date
       sortComparer: (a: Post, b: Post): number => {
         const publishedDateA = a.publishedDate;
         const publishedDateB = b.publishedDate;
-        return publishedDateA.toString().localeCompare(publishedDateB.toString(), undefined, {numeric: true});
+        return publishedDateB.toString().localeCompare(publishedDateA.toString(), undefined, {numeric: true});
       }
     }
   );
