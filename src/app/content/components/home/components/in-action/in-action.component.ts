@@ -4,6 +4,7 @@ import { Post } from 'src/app/core/models/posts/post.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-in-action',
@@ -15,6 +16,8 @@ export class InActionComponent implements OnInit {
   posts$: Observable<Post[]>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
+
+  appRoutes = PublicAppRoutes;
 
   constructor(
     private store$: Store<RootStoreState.State>

@@ -8,4 +8,8 @@
     <app-post-collection [posts]="posts$ | async"></app-post-collection>
   </div>
 
+  <div class="see-more-container" fxLayout="row" fxLayoutAlign="center center">
+    <a class="see-more-button" mat-raised-button color="primary" [routerLink]="appRoutes.BLOG">More Lessons</a>
+  </div>
+
 </div>

@@ -17,3 +17,31 @@
 .collection-container {
   @include collection-container-bounds;
 }
+
+.in-action-container {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.see-more-container {
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.see-more-button {
+  width: $desktop-button-width;
+  opacity: $inactive-item-opacity;
+}
+
+.see-more-button:hover {
+  opacity: $active-item-opacity;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  
+  .see-more-button {
+    width: $mobile-button-width;
+    opacity: $active-item-opacity;
+  }
+
+}
