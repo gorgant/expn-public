@@ -16,7 +16,7 @@ import { Router, NavigationEnd } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   title = 'Explearning';
-  appVersion = '1.2.0';
+  appVersion = '1.3.0';
 
   @ViewChild('sidenav') sidenav: MatSidenav;
 
