@@ -8,6 +8,8 @@ import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { withLatestFrom, map, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-check-out',
@@ -25,11 +27,20 @@ export class CheckOutComponent implements OnInit {
   constructor(
     private store$: Store<RootStoreState.State>,
     private router: Router,
+    private titleService: Title,
+    private analyticsService: AnalyticsService
   ) { }
 
   ngOnInit() {
+    this.configSeoAndAnalytics();
     this.initializeProductData();
     this.initializePublicUser();
+  }
+
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - Checkout`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private initializePublicUser() {

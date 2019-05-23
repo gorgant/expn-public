@@ -7,7 +7,7 @@ import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreAction
 import { withLatestFrom } from 'rxjs/operators';
 import { ProductStrings } from './core/models/products/product-strings.model';
 import { Product } from './core/models/products/product.model';
-import { Router, NavigationEnd } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -24,14 +24,15 @@ export class AppComponent implements OnInit {
     private uiService: UiService,
     private authService: AuthService,
     private store$: Store<RootStoreState.State>,
-    private router: Router,
+    private titleService: Title,
+    private metaService: Meta
   ) {}
 
   ngOnInit() {
     this.configureSideNav();
     this.configureAuthDetection();
     this.checkForOfflineProductData();
-    this.monitorRoutes();
+    this.configSeoAndAnalytics();
   }
 
   // Handles sideNav clicks
@@ -52,7 +53,7 @@ export class AppComponent implements OnInit {
 
   private configureAuthDetection() {
     this.authService.initAuthListener();
-    this.authService.authStatus
+    this.authService.authStatus$
     .pipe(
       withLatestFrom(
         this.store$.select(UserStoreSelectors.selectUserIsLoading),
@@ -84,13 +85,15 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private monitorRoutes() {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        (window as any).ga('set', 'page', event.urlAfterRedirects);
-        (window as any).ga('send', 'pageview');
-        console.log('Page change detected', event.urlAfterRedirects);
-      }
-    });
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(this.title);
+    this.metaService.addTags([
+      // tslint:disable-next-line:max-line-length
+      {name: 'keywords', content: 'speaking skills, importance of speaking skills, effective communication, what is effective communication, what is communication skills, effective communication techniques, public speaking techniques, interview strategies, mary daphne root'},
+      // tslint:disable-next-line:max-line-length
+      {name: 'description', content: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication'},
+      {name: 'author', content: 'Explearning, LLC'},
+    ]);
   }
+
 }

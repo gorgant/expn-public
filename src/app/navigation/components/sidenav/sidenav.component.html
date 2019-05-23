@@ -1,43 +1,43 @@
 <mat-nav-list>
 
-  <mat-list-item 
+  <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.HOME"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>home</mat-icon>
     <p mat-line>Home</p>
-  </mat-list-item>
+  </a>
 
-  <mat-list-item 
+  <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.ABOUT_ME"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>explore</mat-icon>
     <p mat-line>About Me</p>
-  </mat-list-item>
+  </a>
   
-  <mat-list-item 
+  <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.PRODUCTS"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>people</mat-icon>
     <p mat-line>Services</p>
-  </mat-list-item>
+</a>
   
-  <mat-list-item 
+  <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.BLOG"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>subscriptions</mat-icon>
     <p mat-line>Blog</p>
-  </mat-list-item>
+  </a>
 
-  <mat-list-item 
+  <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.CONTACT"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>chat_bubble</mat-icon>
     <p mat-line>Contact</p>
-  </mat-list-item>
+  </a>
 
 </mat-nav-list>

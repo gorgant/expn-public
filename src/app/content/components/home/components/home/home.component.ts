@@ -5,6 +5,8 @@ import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes
 import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -19,25 +21,21 @@ export class HomeComponent implements OnInit {
   heroData: PageHeroData;
   appRoutes = PublicAppRoutes;
 
-  constructor() { }
+  constructor(
+    private analyticsService: AnalyticsService,
+    private titleService: Title
+  ) { }
 
   ngOnInit() {
-
+    this.configSeoAndAnalytics();
     this.setProductPathsBasedOnEnvironment();
+    this.initializeHeroData();
+  }
 
-    const blogImageProps: ImageProps = {
-      src: PublicImagePaths.HOME,
-      sizes: null,
-      srcset: null,
-      width: null,
-    };
-
-    this.heroData = {
-      pageTitle: 'Communicate with Clarity and Purpose',
-      pageSubtitle: null,
-      imageProps: blogImageProps,
-      actionMessage: 'Learn More'
-    };
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - Communicate With Clarity`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private setProductPathsBasedOnEnvironment() {
@@ -54,6 +52,26 @@ export class HomeComponent implements OnInit {
         this.productIdList = SandboxProductIdList;
         break;
     }
+  }
+
+  private initializeHeroData() {
+    const imageProps: ImageProps = {
+      src: PublicImagePaths.HOME,
+      sizes: null,
+      srcset: null,
+      width: null,
+    };
+
+    this.heroData = {
+      pageTitle: 'Communicate with Clarity and Purpose',
+      pageSubtitle: null,
+      imageProps,
+      actionMessage: 'Learn More'
+    };
+  }
+
+  private configPageView() {
+    this.analyticsService.logPageViewWithCustomDimensions({});
   }
 
 }

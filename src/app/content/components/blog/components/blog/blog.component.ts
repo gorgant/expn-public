@@ -7,6 +7,8 @@ import { withLatestFrom, map } from 'rxjs/operators';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-blog',
@@ -22,15 +24,25 @@ export class BlogComponent implements OnInit {
   heroData: PageHeroData;
 
   constructor(
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private titleService: Title,
+    private analyticsService: AnalyticsService
   ) { }
 
   ngOnInit() {
+    this.configSeoAndAnalytics();
 
     this.initializeHeroData();
 
     this.initializePosts();
 
+
+  }
+
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - Blog`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private initializeHeroData() {

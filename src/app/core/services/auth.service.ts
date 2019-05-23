@@ -13,7 +13,7 @@ import { PublicAppRoutes } from '../models/routes-and-paths/app-routes.model';
 })
 export class AuthService {
 
-  authStatus = new Subject<string>();
+  authStatus$ = new Subject<string>();
   private ngUnsubscribe$: Subject<void> = new Subject();
 
   constructor(
@@ -67,7 +67,7 @@ export class AuthService {
   }
 
   private authSuccessActions(user: firebase.User): void {
-    this.authStatus.next(user.uid);
+    this.authStatus$.next(user.uid);
   }
 
   private preLogoutActions(): void {
@@ -80,6 +80,6 @@ export class AuthService {
   }
 
   private postLogoutActions(): void {
-    this.authStatus.next(null);
+    this.authStatus$.next(null);
   }
 }

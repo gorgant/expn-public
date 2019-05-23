@@ -3,6 +3,8 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
 import * as StripeDefs from 'stripe';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-purchase-confirmation',
@@ -14,11 +16,20 @@ export class PurchaseConfirmationComponent implements OnInit {
   purchaseData$: Observable<StripeDefs.charges.ICharge>;
 
   constructor(
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private titleService: Title,
+    private analyticsService: AnalyticsService
   ) { }
 
   ngOnInit() {
+    this.configSeoAndAnalytics();
     this.initializePurchaseData();
+  }
+
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - Purchase Confirmation`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private initializePurchaseData() {

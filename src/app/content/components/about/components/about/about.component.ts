@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-about',
@@ -12,10 +14,20 @@ export class AboutComponent implements OnInit {
 
   heroData: PageHeroData;
 
-  constructor() { }
+  constructor(
+    private titleService: Title,
+    private analyticsService: AnalyticsService
+  ) { }
 
   ngOnInit() {
+    this.configSeoAndAnalytics();
     this.initializeHeroData();
+  }
+
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - About Me`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private initializeHeroData() {

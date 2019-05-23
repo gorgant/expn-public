@@ -5,6 +5,8 @@ import { RootStoreState } from 'src/app/root-store';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { Product } from 'src/app/core/models/products/product.model';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-product-list',
@@ -16,11 +18,20 @@ export class ProductListComponent implements OnInit {
   products$: Observable<Product[]>;
 
   constructor(
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private titleService: Title,
+    private analyticsService: AnalyticsService
   ) { }
 
   ngOnInit() {
+    this.configSeoAndAnalytics();
     this.initializeProducts();
+  }
+
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics() {
+    this.titleService.setTitle(`Explearning - Services`);
+    this.analyticsService.logPageViewWithCustomDimensions();
   }
 
   private initializeProducts() {

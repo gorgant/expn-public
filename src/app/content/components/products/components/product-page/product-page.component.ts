@@ -13,6 +13,8 @@ import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/p
 import { withLatestFrom, map } from 'rxjs/operators';
 import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { environment } from 'src/environments/environment';
+import { Title } from '@angular/platform-browser';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-product-page',
@@ -24,6 +26,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   productId: string;
   product$: Observable<Product>;
   productLoaded: boolean;
+  private titleSet: boolean;
   productSubscription: Subscription;
 
   private productionEnvironment: boolean = environment.production;
@@ -37,12 +40,19 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
+    private titleService: Title,
+    private analyticsService: AnalyticsService
   ) { }
 
   ngOnInit() {
     this.setProductPathsBasedOnEnvironment();
     this.initializeProductData();
     this.initializePageComponents();
+  }
+
+  private configSeoAndAnalytics(title?: string) {
+    this.titleService.setTitle(`Explearning - ${title}`);
+    this.analyticsService.logPageViewWithCustomDimensions({});
   }
 
   private setProductPathsBasedOnEnvironment() {
@@ -87,6 +97,10 @@ export class ProductPageComponent implements OnInit, OnDestroy {
           if (!productsLoaded && !this.productLoaded) {
             console.log('No products in store, fetching from server', this.productId);
             this.store$.dispatch(new ProductStoreActions.SingleProductRequested({productId: this.productId}));
+          }
+          if (product && !this.titleSet) {
+            this.configSeoAndAnalytics(product.name); // Set page view once title is loaded
+            this.titleSet = true;
           }
           this.productLoaded = true; // Prevents loading from firing more than needed
           return product;

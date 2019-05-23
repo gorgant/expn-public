@@ -5,8 +5,9 @@ import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, Title } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
+import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-post',
@@ -20,6 +21,7 @@ export class PostComponent implements OnInit, OnDestroy {
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
   postLoaded: boolean;
+  titleSet: boolean;
   postSubscription: Subscription;
 
   heroData: PageHeroData;
@@ -32,14 +34,20 @@ export class PostComponent implements OnInit, OnDestroy {
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
+    private analyticsService: AnalyticsService,
+    private titleService: Title
   ) { }
 
   ngOnInit() {
     this.loadExistingPostData();
-
   }
 
 
+  // Add async data as needed and fire once loaded
+  private configSeoAndAnalytics(title?: string) {
+    this.titleService.setTitle(`Explearning - ${title}`);
+    this.analyticsService.logPageViewWithCustomDimensions();
+  }
 
   private loadExistingPostData() {
     // Check if id params are available
@@ -66,6 +74,10 @@ export class PostComponent implements OnInit, OnDestroy {
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
         this.postLoaded = true; // Prevents loading from firing more than needed
+        if (post && !this.titleSet) {
+          this.configSeoAndAnalytics(post.title); // Set page view once title is loaded
+          this.titleSet = true;
+        }
         return post;
       })
     );
