@@ -9,10 +9,8 @@ import { SubscriptionSource } from '../models/subscribers/subscription-source.mo
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { PublicFunctionNames } from '../models/routes-and-paths/fb-function-names';
 import { EmailSubData } from '../models/subscribers/email-sub-data.model';
-import { BillingService } from './billing.service';
 import { EmailSubscriber } from '../models/subscribers/email-subscriber.model';
 import { now } from 'moment';
-import { Order } from '../models/orders/order.model';
 import { ContactForm } from '../models/user/contact-form.model';
 import { NavigationStamp } from '../models/analytics/navigation-stamp.model';
 
@@ -25,7 +23,6 @@ export class UserService {
     private db: AngularFirestore,
     private authService: AuthService,
     private fns: AngularFireFunctions,
-    private billingService: BillingService
   ) { }
 
   fetchUserData(userId: string): Observable<PublicUser> {
@@ -128,8 +125,6 @@ export class UserService {
     const user: PublicUser = subData.user;
     const subSource: SubscriptionSource = subData.subSource;
     const email: string = user.billingDetails.email;
-    // If sub came from a purchase, add that order to the sub data
-    const lastOrder: Order = subData.stripeCharge ? this.billingService.convertStripeChargeToOrder(subData.stripeCharge, user) : null;
 
     const partialSubscriber: Partial<EmailSubscriber> = {
       id: email, // Set id to the user's email
@@ -137,9 +132,7 @@ export class UserService {
       active: true,
       modifiedDate: now(),
       lastSubSource: subSource,
-      lastOrder
       // Sub source array is handled on the admin depending on if subscriber already exists
-      // Order history is handled on the admin depending on if subscriber already exists
       // Created date is handled on the admin depending on if subscriber already exists
     };
 

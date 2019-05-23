@@ -146,7 +146,6 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     const emailSubData: EmailSubData = {
       user: this.publicUser,
       subSource: SubscriptionSource.PURCHASE,
-      stripeCharge
     };
     this.store$.dispatch( new UserStoreActions.SubscribeUserRequested({emailSubData}));
     console.log('Charge succeeded, closing payment loop and destroying stripe element');
