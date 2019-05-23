@@ -17,7 +17,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 })
 export class AppComponent implements OnInit {
   title = 'Explearning';
-  appVersion = '1.3.0';
+  appVersion = '1.4.0';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
