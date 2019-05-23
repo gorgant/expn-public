@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './purchase-confirmation.component.html',
   styleUrls: ['./purchase-confirmation.component.scss']
 })
-export class PurchaseConfirmationComponent implements OnInit {
+export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
 
   purchaseData$: Observable<StripeDefs.charges.ICharge>;
 
@@ -30,6 +30,7 @@ export class PurchaseConfirmationComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Purchase Confirmation`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializePurchaseData() {
@@ -37,5 +38,9 @@ export class PurchaseConfirmationComponent implements OnInit {
     this.purchaseData$ = this.store$.select(
       BillingStoreSelectors.selectStripeCharge
     ) as Observable<StripeDefs.charges.ICharge>;
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 }

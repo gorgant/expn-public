@@ -4,10 +4,11 @@ import { MatSidenav } from '@angular/material';
 import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreActions, UserStoreActions } from './root-store';
-import { withLatestFrom } from 'rxjs/operators';
+import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
 import { ProductStrings } from './core/models/products/product-strings.model';
 import { Product } from './core/models/products/product.model';
 import { Title, Meta } from '@angular/platform-browser';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +19,9 @@ export class AppComponent implements OnInit {
   title = 'Explearning';
   appVersion = '1.3.0';
 
+  private userAuthenticationRequested: boolean;
+  private userLoaded: boolean;
+
   @ViewChild('sidenav') sidenav: MatSidenav;
 
   constructor(
@@ -25,14 +29,43 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private store$: Store<RootStoreState.State>,
     private titleService: Title,
-    private metaService: Meta
+    private metaService: Meta,
+    private afs: AngularFirestore
   ) {}
 
   ngOnInit() {
+    this.setUserSessionId();
     this.configureSideNav();
     this.configureAuthDetection();
     this.checkForOfflineProductData();
     this.configSeoAndAnalytics();
+    this.initializePublicUser();
+  }
+
+  private setUserSessionId() {
+    const userSessionId = this.afs.createId();
+    this.store$.dispatch(new UserStoreActions.SetUserSessionId({userSessionId}));
+  }
+
+  private initializePublicUser() {
+    this.store$.select(UserStoreSelectors.selectUser)
+      .pipe(
+        takeWhile(() => !this.userLoaded),
+        withLatestFrom(
+          this.store$.select(UserStoreSelectors.selectUserLoaded)
+        ),
+        map(([user, userLoaded]) => {
+          if (!userLoaded && !this.userAuthenticationRequested) {
+            console.log('No user in store, dispatching authentication request');
+            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
+          }
+          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
+          if (user) {
+            this.userLoaded = true; // Mark user loaded to close the subscription
+          }
+          return user;
+        })
+      ).subscribe();
   }
 
   // Handles sideNav clicks

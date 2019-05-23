@@ -11,6 +11,7 @@ export interface State {
   subscribeSubmitted: boolean;
   contactFormProcessing: boolean;
   contactFormSubmitted: boolean;
+  userSessionId: string;
 }
 
 export const initialState: State = {
@@ -23,4 +24,5 @@ export const initialState: State = {
   subscribeSubmitted: false,
   contactFormProcessing: false,
   contactFormSubmitted: false,
+  userSessionId: null
 };

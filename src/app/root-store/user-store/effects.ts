@@ -107,4 +107,20 @@ export class UserStoreEffects {
         )
     )
   );
+
+  @Effect()
+  storeNavStampEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<userFeatureActions.StoreNavStampRequested>(
+      userFeatureActions.ActionTypes.STORE_NAV_STAMP_REQUESTED
+    ),
+    switchMap(action =>
+      this.userService.storeNavStamp(action.payload.user, action.payload.navStamp)
+        .pipe(
+          map(response => new userFeatureActions.StoreNavStampComplete()),
+          catchError(error => {
+            return of(new userFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

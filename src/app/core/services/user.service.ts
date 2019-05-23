@@ -14,6 +14,7 @@ import { EmailSubscriber } from '../models/subscribers/email-subscriber.model';
 import { now } from 'moment';
 import { Order } from '../models/orders/order.model';
 import { ContactForm } from '../models/user/contact-form.model';
+import { NavigationStamp } from '../models/analytics/navigation-stamp.model';
 
 @Injectable({
   providedIn: 'root'
@@ -54,10 +55,26 @@ export class UserService {
         return user.id;
       } )
       .catch(error => {
-        console.log('Error storing data in database');
-        return throwError(error).toPromise();
+        console.log('Error storing data in database', error);
+        return error;
       });
     return from(fbResponse);
+  }
+
+  storeNavStamp(user: PublicUser, navStamp: NavigationStamp): Observable<string> {
+    const navStampDoc = this.getNavStampDoc(user.id, navStamp.id);
+    // Use set here because may be generating a new user or updating existing user
+    const fbResponse = navStampDoc.set(navStamp, {merge: true})
+    .then(res => {
+      console.log('Nav stamp stored in database', navStamp);
+      return user.id;
+    } )
+    .catch(error => {
+      console.log('Error storing data in database', error);
+      return error;
+    });
+    return from(fbResponse);
+
   }
 
   // Add user subscription to admin database
@@ -136,6 +153,14 @@ export class UserService {
 
   private getUserColletion(): AngularFirestoreCollection<PublicUser> {
     return this.db.collection<PublicUser>(PublicCollectionPaths.PUBLIC_USERS);
+  }
+
+  private getNavStampDoc(userId: string, navStampId: string): AngularFirestoreDocument<NavigationStamp> {
+    return this.getNavStampCollection(userId).doc(navStampId);
+  }
+
+  private getNavStampCollection(userId: string): AngularFirestoreCollection<NavigationStamp> {
+    return this.getUserDoc(userId).collection<NavigationStamp>(PublicCollectionPaths.NAVIGATION_STAMPS);
   }
 
 

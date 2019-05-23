@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
@@ -8,7 +8,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './terms-and-conditions.component.html',
   styleUrls: ['./terms-and-conditions.component.scss']
 })
-export class TermsAndConditionsComponent implements OnInit {
+export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   appRoutes = PublicAppRoutes;
 
@@ -19,12 +19,17 @@ export class TermsAndConditionsComponent implements OnInit {
 
   ngOnInit() {
     this.configSeoAndAnalytics();
+    this.analyticsService.createNavStamp();
   }
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Terms and Conditions`);
     this.analyticsService.logPageViewWithCustomDimensions();
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

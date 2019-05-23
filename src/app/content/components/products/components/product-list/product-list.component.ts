@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
@@ -13,7 +13,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
 
   products$: Observable<Product[]>;
 
@@ -32,6 +32,7 @@ export class ProductListComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Services`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializeProducts() {
@@ -48,6 +49,10 @@ export class ProductListComponent implements OnInit {
         return products;
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

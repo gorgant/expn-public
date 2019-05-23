@@ -47,6 +47,7 @@ export class PostComponent implements OnInit, OnDestroy {
   private configSeoAndAnalytics(title?: string) {
     this.titleService.setTitle(`Explearning - ${title}`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private loadExistingPostData() {
@@ -129,6 +130,7 @@ export class PostComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.postSubscription) {
       this.postSubscription.unsubscribe();
+      this.analyticsService.closeNavStamp();
     }
   }
 

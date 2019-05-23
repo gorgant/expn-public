@@ -65,6 +65,15 @@ export function featureReducer(state = initialState, action: Actions): State {
         contactFormProcessing: false,
         contactFormSubmitted: true
       };
+    case ActionTypes.STORE_NAV_STAMP_COMPLETE:
+      return {
+        ...state,
+      };
+    case ActionTypes.SET_USER_SESSION_ID:
+      return {
+        ...state,
+        userSessionId: action.payload.userSessionId
+      };
 
     default: {
       return state;

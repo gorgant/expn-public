@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.scss']
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent implements OnInit, OnDestroy {
 
   posts$: Observable<Post[]>;
   error$: Observable<string>;
@@ -43,6 +43,7 @@ export class BlogComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Blog`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializeHeroData() {
@@ -83,6 +84,10 @@ export class BlogComponent implements OnInit {
     this.isLoading$ = this.store$.select(
       PostStoreSelectors.selectPostIsLoading
     );
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

@@ -3,6 +3,13 @@ import { DataLayerService, } from './data-layer.service';
 import { PartialCustomDimensionsSet } from '../../models/analytics/custom-dimensions-set.model';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { NavigationStamp } from '../../models/analytics/navigation-stamp.model';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { now } from 'moment';
+import { Store } from '@ngrx/store';
+import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
+import { withLatestFrom, takeWhile } from 'rxjs/operators';
+import { PublicUser } from '../../models/user/public-user.model';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({
@@ -10,10 +17,17 @@ import { Router } from '@angular/router';
 })
 export class AnalyticsService {
 
+  private tempNavStampData: NavigationStamp;
+  private navStampId: string;
+  private navStampCreated: boolean;
+  private tempUserData: PublicUser;
+
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
     private titleService: Title,
-    private router: Router
+    private router: Router,
+    private afs: AngularFirestore, // Used exclusively to generate an id
+    private store$: Store<RootStoreState.State>,
   ) { }
 
   /**
@@ -48,8 +62,46 @@ export class AnalyticsService {
     };
 
     (window as any).dataLayer.push(pageViewObject); // Push page view to datalayer
-    console.log('Pushed pageview to datalayer');
   }
 
+  createNavStamp() {
+    this.navStampCreated = false;
+    this.navStampId = this.afs.createId();
+
+    this.store$.select(UserStoreSelectors.selectUser)
+      .pipe(
+        takeWhile(() => !this.navStampCreated),
+        withLatestFrom(this.store$.select(UserStoreSelectors.selectUserSessionid)),
+      ).subscribe(([user, sessionId]) => {
+        if (user && sessionId) {
+          const navStamp: NavigationStamp = {
+            id: this.navStampId,
+            pagePath: this.router.url,
+            pageOpenTime: now(),
+            sessionId
+          };
+          this.store$.dispatch(new UserStoreActions.StoreNavStampRequested({user, navStamp}));
+          this.navStampCreated = true; // Closes the subscription
+
+          // Set temp instance variables
+          this.tempNavStampData = navStamp;
+          this.tempUserData = user;
+        }
+      });
+  }
+
+  closeNavStamp() {
+    const user = this.tempUserData;
+    const navStamp: NavigationStamp = {
+      ...this.tempNavStampData,
+      pageCloseTime: now(),
+      pageViewDuration: now() - this.tempNavStampData.pageOpenTime
+    };
+    this.store$.dispatch(new UserStoreActions.StoreNavStampRequested({user, navStamp}));
+
+    // Clear temp instance variables
+    this.tempNavStampData = null;
+    this.tempUserData = null;
+  }
 
 }

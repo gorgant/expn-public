@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
@@ -10,7 +10,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss']
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
 
@@ -28,6 +28,7 @@ export class ContactComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Contact Me`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializeHeroData() {
@@ -44,6 +45,10 @@ export class ContactComponent implements OnInit {
       imageProps: aboutImageProps,
       actionMessage: 'Get in Touch'
     };
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

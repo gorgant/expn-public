@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Product } from 'src/app/core/models/products/product.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
@@ -16,7 +16,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './check-out.component.html',
   styleUrls: ['./check-out.component.scss']
 })
-export class CheckOutComponent implements OnInit {
+export class CheckOutComponent implements OnInit, OnDestroy {
 
   product$: Observable<Product>;
   publicUser$: Observable<PublicUser>;
@@ -41,23 +41,24 @@ export class CheckOutComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Checkout`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializePublicUser() {
-    this.publicUser$ = this.store$.select(UserStoreSelectors.selectUser)
-      .pipe(
-        withLatestFrom(
-          this.store$.select(UserStoreSelectors.selectUserLoaded)
-        ),
-        map(([user, userLoaded]) => {
-          if (!userLoaded && !this.userAuthenticationRequested) {
-            console.log('No user in store, dispatching authentication request');
-            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
-          }
-          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
-          return user;
-        })
-      );
+    this.publicUser$ = this.store$.select(UserStoreSelectors.selectUser); // User initialized in app component
+      // .pipe(
+      //   withLatestFrom(
+      //     this.store$.select(UserStoreSelectors.selectUserLoaded)
+      //   ),
+      //   map(([user, userLoaded]) => {
+      //     if (!userLoaded && !this.userAuthenticationRequested) {
+      //       console.log('No user in store, dispatching authentication request');
+      //       this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
+      //     }
+      //     this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
+      //     return user;
+      //   })
+      // );
   }
 
   private initializeProductData() {
@@ -73,6 +74,10 @@ export class CheckOutComponent implements OnInit {
           this.router.navigate([PublicAppRoutes.HOME]);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

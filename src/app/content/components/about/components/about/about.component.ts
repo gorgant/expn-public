@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
@@ -10,13 +10,13 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss']
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
 
   constructor(
     private titleService: Title,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
   ) { }
 
   ngOnInit() {
@@ -28,6 +28,7 @@ export class AboutComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - About Me`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private initializeHeroData() {
@@ -45,6 +46,10 @@ export class AboutComponent implements OnInit {
       imageProps: aboutImageProps,
       actionMessage: 'Read More'
     };
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

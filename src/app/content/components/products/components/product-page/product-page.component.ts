@@ -53,6 +53,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   private configSeoAndAnalytics(title?: string) {
     this.titleService.setTitle(`Explearning - ${title}`);
     this.analyticsService.logPageViewWithCustomDimensions({});
+    this.analyticsService.createNavStamp();
   }
 
   private setProductPathsBasedOnEnvironment() {
@@ -147,6 +148,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     if (this.productSubscription) {
       this.productSubscription.unsubscribe();
     }
+    this.analyticsService.closeNavStamp();
   }
 
 }

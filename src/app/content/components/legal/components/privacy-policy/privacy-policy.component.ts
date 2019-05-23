@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
@@ -7,7 +7,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
   templateUrl: './privacy-policy.component.html',
   styleUrls: ['./privacy-policy.component.scss']
 })
-export class PrivacyPolicyComponent implements OnInit {
+export class PrivacyPolicyComponent implements OnInit, OnDestroy {
 
   constructor(
     private titleService: Title,
@@ -22,6 +22,11 @@ export class PrivacyPolicyComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Privacy Policy`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
+  }
+
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }

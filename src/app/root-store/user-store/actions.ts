@@ -3,6 +3,7 @@ import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { Product } from 'src/app/core/models/products/product.model';
 import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 import { ContactForm } from 'src/app/core/models/user/contact-form.model';
+import { NavigationStamp } from 'src/app/core/models/analytics/navigation-stamp.model';
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',
@@ -19,7 +20,10 @@ export enum ActionTypes {
   SUBSCRIBE_USER_REQUESTED = '[User] Subscribe User Requested',
   SUBSCRIBE_USER_COMPLETE = '[User] Subscribe User Complete',
   TRANSMIT_CONTACT_FORM_REQUESTED = '[User] Transmit Contact Form Requested',
-  TRANSMIT_CONTACT_FORM_COMPLETE = '[User] Transmit Contact Form Complete'
+  TRANSMIT_CONTACT_FORM_COMPLETE = '[User] Transmit Contact Form Complete',
+  STORE_NAV_STAMP_REQUESTED = '[User] Store Nav Stamp Requested',
+  STORE_NAV_STAMP_COMPLETE = '[User] Store Nav Stamp Complete',
+  SET_USER_SESSION_ID = '[User] Create User Session Id'
 }
 
 export class UserDataRequested implements Action {
@@ -76,6 +80,20 @@ export class TransmitContactFormComplete implements Action {
   readonly type = ActionTypes.TRANSMIT_CONTACT_FORM_COMPLETE;
 }
 
+export class StoreNavStampRequested implements Action {
+  readonly type = ActionTypes.STORE_NAV_STAMP_REQUESTED;
+  constructor(public payload: { user: PublicUser, navStamp: NavigationStamp }) {}
+}
+
+export class StoreNavStampComplete implements Action {
+  readonly type = ActionTypes.STORE_NAV_STAMP_COMPLETE;
+}
+
+export class SetUserSessionId implements Action {
+  readonly type = ActionTypes.SET_USER_SESSION_ID;
+  constructor(public payload: {userSessionId: string}) {}
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
@@ -87,5 +105,8 @@ PurgeCartData |
 SubscribeUserRequested |
 SubscribeUserComplete |
 TransmitContactFormRequested |
-TransmitContactFormComplete
+TransmitContactFormComplete |
+StoreNavStampRequested |
+StoreNavStampComplete |
+SetUserSessionId
 ;

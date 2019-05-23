@@ -40,8 +40,7 @@ export class SubscribeComponent implements OnInit {
 
   onSubmit() {
 
-    // Fetch user or create a new one if not yet authenticated
-    this.initializePublicUser()
+    this.store$.select(UserStoreSelectors.selectUser) // User initialized in app component
       .pipe(
         takeWhile(() => !this.emailSubmitted)
       )
@@ -77,22 +76,22 @@ export class SubscribeComponent implements OnInit {
       });
   }
 
-  private initializePublicUser() {
-    return this.store$.select(UserStoreSelectors.selectUser)
-      .pipe(
-        withLatestFrom(
-          this.store$.select(UserStoreSelectors.selectUserLoaded)
-        ),
-        map(([user, userLoaded]) => {
-          if (!userLoaded && !this.userAuthenticationRequested) {
-            console.log('No user in store, dispatching authentication request');
-            this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
-          }
-          this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
-          return user;
-        })
-      );
-  }
+  // private initializePublicUser() {
+  //   return this.store$.select(UserStoreSelectors.selectUser)
+  //     .pipe(
+  //       withLatestFrom(
+  //         this.store$.select(UserStoreSelectors.selectUserLoaded)
+  //       ),
+  //       map(([user, userLoaded]) => {
+  //         if (!userLoaded && !this.userAuthenticationRequested) {
+  //           console.log('No user in store, dispatching authentication request');
+  //           this.store$.dispatch(new AuthStoreActions.AuthenticationRequested());
+  //         }
+  //         this.userAuthenticationRequested = true; // Prevents auth from firing multiple times
+  //         return user;
+  //       })
+  //     );
+  // }
 
   private initializeSubscribeObservers() {
     this.subscribeProcessing$ = this.store$.select(UserStoreSelectors.selectSubscribeProcessing);

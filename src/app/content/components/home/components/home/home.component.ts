@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
@@ -13,7 +13,7 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
   private productionEnvironment: boolean = environment.production;
   productIdList;
@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
   private configSeoAndAnalytics() {
     this.titleService.setTitle(`Explearning - Communicate With Clarity`);
     this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.createNavStamp();
   }
 
   private setProductPathsBasedOnEnvironment() {
@@ -70,8 +71,8 @@ export class HomeComponent implements OnInit {
     };
   }
 
-  private configPageView() {
-    this.analyticsService.logPageViewWithCustomDimensions({});
+  ngOnDestroy() {
+    this.analyticsService.closeNavStamp();
   }
 
 }
