@@ -50,7 +50,7 @@ export function featureReducer(state = initialState, action: Actions): State {
     }
 
     case ActionTypes.FEATURED_POSTS_LOADED: {
-      return featureAdapter.addAll(
+      return featureAdapter.addMany(
         action.payload.posts, {
           ...state,
           isLoading: false,
