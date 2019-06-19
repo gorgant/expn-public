@@ -9,14 +9,15 @@
   font-size: 32px;
   font-weight: $font-weight-light;
   text-align: center;
-  margin-top: 32px;
-  margin-bottom: 32px;
+  margin-top: 16px;
+  margin-bottom: 16px;
   max-width: 1000px;
   padding: 16px;
 }
 
 .intro-text {
   font-weight: $font-weight-medium;
+  margin: 0;
 }
 
 .body-container {
@@ -82,8 +83,8 @@
   
   .header {
     font-size: 24px;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: 8px;
+    margin-bottom: 8px;
   }
   
   .intro-text {

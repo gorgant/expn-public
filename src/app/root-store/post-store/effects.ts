@@ -21,9 +21,14 @@ export class PostStoreEffects {
     mergeMap(action =>
       this.postService.fetchSinglePost(action.payload.postId)
         .pipe(
-          map(post => new postFeatureActions.SinglePostLoaded({ post })),
+          map(post => {
+            if (!post) {
+              throw new Error('Post not found');
+            }
+            return new postFeatureActions.SinglePostLoaded({ post });
+          }),
           catchError(error => {
-            return of(new postFeatureActions.LoadErrorDetected({ error }));
+            return of(new postFeatureActions.LoadErrorDetected({ error: error.message }));
           })
         )
     )

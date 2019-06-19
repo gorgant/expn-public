@@ -5,7 +5,7 @@ import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeHtml, Title } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, Title, Meta } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
@@ -35,7 +35,8 @@ export class PostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private analyticsService: AnalyticsService,
-    private titleService: Title
+    private titleService: Title,
+    private metaTagService: Meta
   ) { }
 
   ngOnInit() {
@@ -44,8 +45,15 @@ export class PostComponent implements OnInit, OnDestroy {
 
 
   // Add async data as needed and fire once loaded
-  private configSeoAndAnalytics(title?: string) {
-    this.titleService.setTitle(`Explearning - ${title}`);
+  private configSeoAndAnalytics(post: Post) {
+
+    const title = `Explearning - ${post.title}`;
+    const description = post.description;
+    const localImagePath = this.heroData.imageProps.src;
+    const keywords = post.keywords;
+    const type = 'article';
+
+    this.analyticsService.setSeoTags(title, description, localImagePath, keywords, type);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }
@@ -63,6 +71,7 @@ export class PostComponent implements OnInit, OnDestroy {
 
   // Triggered after params are fetched
   private getPost() {
+    this.error$ = this.store$.select(PostStoreSelectors.selectPostError);
     this.post$ = this.store$.select(PostStoreSelectors.selectPostById(this.postId))
     .pipe(
       withLatestFrom(
@@ -75,10 +84,6 @@ export class PostComponent implements OnInit, OnDestroy {
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
         this.postLoaded = true; // Prevents loading from firing more than needed
-        if (post && !this.titleSet) {
-          this.configSeoAndAnalytics(post.title); // Set page view once title is loaded
-          this.titleSet = true;
-        }
         return post;
       })
     );
@@ -125,6 +130,11 @@ export class PostComponent implements OnInit, OnDestroy {
       actionMessage: 'Read More',
       isPost: true
     };
+
+    if (post && !this.titleSet) {
+      this.configSeoAndAnalytics(post); // Set page view once title is loaded
+      this.titleSet = true;
+    }
   }
 
   ngOnDestroy() {

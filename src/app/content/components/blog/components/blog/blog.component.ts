@@ -7,7 +7,6 @@ import { withLatestFrom, map } from 'rxjs/operators';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
-import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
@@ -25,23 +24,24 @@ export class BlogComponent implements OnInit, OnDestroy {
 
   constructor(
     private store$: Store<RootStoreState.State>,
-    private titleService: Title,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
   ) { }
 
   ngOnInit() {
-    this.configSeoAndAnalytics();
-
     this.initializeHeroData();
-
+    this.configSeoAndAnalytics();
     this.initializePosts();
-
-
   }
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Explearning - Blog`);
+
+    const title = `Explearning - Blog`;
+    // tslint:disable-next-line:max-line-length
+    const description = `On Explearning's blog you have access to our complete library of free lessons on speaking skills and effective communication. From public speaking techniques to interview strategies and negotiation tactics, our goal is to make you the best communicator you can be.`;
+    const localImagePath = this.heroData.imageProps.src;
+
+    this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }
@@ -55,8 +55,9 @@ export class BlogComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: 'Explearning in Action',
-      pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
+      pageTitle: 'Explearning Blog',
+      pageSubtitle: `Access our complete library of free lessons on speaking skills and effective communication`,
+      // pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
       imageProps: blogImageProps,
       actionMessage: 'View Collection'
     };

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore } from '@angular/fire/firestore';
 import { Post } from '../models/posts/post.model';
 import { Observable, throwError } from 'rxjs';
-import { takeUntil, map, catchError } from 'rxjs/operators';
+import { takeUntil, map, catchError, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { UiService } from './ui.service';
 import { SharedCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
@@ -55,7 +55,7 @@ export class PostService {
     const postDoc = this.getPostDoc(postId);
     return postDoc.valueChanges()
       .pipe(
-        takeUntil(this.authService.unsubTrigger$),
+        take(1),
         map(post => post),
         catchError(error => {
           this.uiService.showSnackBar(error, null, 5000);

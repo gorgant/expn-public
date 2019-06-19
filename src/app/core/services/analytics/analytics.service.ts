@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { PartialCustomDimensionsSet } from '../../models/analytics/custom-dimensions-set.model';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NavigationStamp } from '../../models/analytics/navigation-stamp.model';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -10,6 +10,8 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { PublicUser } from '../../models/user/public-user.model';
+import { Location } from '@angular/common';
+import { metaTagDefaultKeywords } from '../../models/analytics/metatags.model';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({
@@ -25,9 +27,11 @@ export class AnalyticsService {
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
     private titleService: Title,
+    private metaTagService: Meta,
     private router: Router,
     private afs: AngularFirestore, // Used exclusively to generate an id
     private store$: Store<RootStoreState.State>,
+    private location: Location,
   ) { }
 
   /**
@@ -91,17 +95,77 @@ export class AnalyticsService {
   }
 
   closeNavStamp() {
-    const user = this.tempUserData;
-    const navStamp: NavigationStamp = {
-      ...this.tempNavStampData,
-      pageCloseTime: now(),
-      pageViewDuration: now() - this.tempNavStampData.pageOpenTime
-    };
-    this.store$.dispatch(new UserStoreActions.StoreNavStampRequested({user, navStamp}));
+    if (this.tempNavStampData && this.tempNavStampData.pageOpenTime) {
+      const user = this.tempUserData;
+      const navStamp: NavigationStamp = {
+        ...this.tempNavStampData,
+        pageCloseTime: now(),
+        pageViewDuration: now() - this.tempNavStampData.pageOpenTime
+      };
+      this.store$.dispatch(new UserStoreActions.StoreNavStampRequested({user, navStamp}));
+    }
 
     // Clear temp instance variables
     this.tempNavStampData = null;
     this.tempUserData = null;
   }
+
+  private fullUrlPath() {
+    const fullPath = this.location[`_platformStrategy`]._platformLocation.location.href;
+    console.log('Full url path', fullPath);
+    return fullPath;
+  }
+
+  private getFullImagePath(path: string) {
+    const origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    const imagePath = `${origin}/${path}`;
+    console.log('Image path', imagePath);
+    return imagePath;
+  }
+
+  setSeoTags(title: string, description: string, imagePath: string, keywords?: string, type?: string) {
+
+    const fullImagePath = this.getFullImagePath(imagePath);
+    const url = this.fullUrlPath();
+
+    this.titleService.setTitle(title);
+    this.metaTagService.updateTag({
+      name: 'description',
+      content: description
+    });
+    this.metaTagService.updateTag({
+      name: 'keywords',
+      content: keywords ? keywords : metaTagDefaultKeywords
+    });
+
+    // Social Media Tags
+    this.metaTagService.updateTag({
+      property: 'og:title',
+      content: title
+    });
+    this.metaTagService.updateTag({
+      property: 'og:description',
+      content: description
+    });
+    this.metaTagService.updateTag({
+      property: 'og:image',
+      content: fullImagePath
+    });
+    this.metaTagService.updateTag({
+      property: 'og:url',
+      content: url
+    });
+    this.metaTagService.updateTag({
+      property: 'og:type',
+      content: type ? type : 'website'
+    });
+    this.metaTagService.updateTag({
+      name: 'twitter:image:alt',
+      content: title
+    });
+
+  }
+
+
 
 }

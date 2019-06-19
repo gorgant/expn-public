@@ -6,7 +6,7 @@ import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/mode
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -23,18 +23,25 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private analyticsService: AnalyticsService,
-    private titleService: Title
+    private titleService: Title,
+    private metaTagService: Meta
   ) { }
 
   ngOnInit() {
+    this.initializeHeroData();
     this.configSeoAndAnalytics();
     this.setProductPathsBasedOnEnvironment();
-    this.initializeHeroData();
   }
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Explearning - Communicate With Clarity`);
+
+    const title = `Explearning - Communicate With Clarity`;
+    // tslint:disable-next-line:max-line-length
+    const description = `Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.`;
+    const localImagePath = this.heroData.imageProps.src;
+
+    this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }

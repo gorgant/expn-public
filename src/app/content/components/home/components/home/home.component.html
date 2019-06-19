@@ -1,8 +1,8 @@
 <div class="home-content-container" fxLayout="column" fxLayoutAlign="center center">
   
   <app-page-hero [heroData]="heroData">
-    <button class="hero-button" [routerLink]="[appRoutes.PRODUCT_INDIVIDUAL, productIdList.REMOTE_COACH, 'Remote-Coach']" mat-raised-button>Remote Coach</button>
-    <button class="hero-button" [routerLink]="[appRoutes.BLOG]" mat-raised-button>Free Lessons</button>
+    <a class="hero-button" [routerLink]="[appRoutes.PRODUCT_INDIVIDUAL, productIdList.REMOTE_COACH, 'Remote-Coach']" mat-raised-button>Remote Coach</a>
+    <a class="hero-button" [routerLink]="[appRoutes.BLOG]" mat-raised-button>Free Lessons</a>
   </app-page-hero>
 
   <app-feature-icons fxLayout="row" fxLayoutAlign="center center"></app-feature-icons>

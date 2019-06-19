@@ -13,7 +13,6 @@ import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/p
 import { withLatestFrom, map } from 'rxjs/operators';
 import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { environment } from 'src/environments/environment';
-import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
@@ -40,7 +39,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
-    private titleService: Title,
     private analyticsService: AnalyticsService
   ) { }
 
@@ -50,8 +48,13 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     this.initializePageComponents();
   }
 
-  private configSeoAndAnalytics(title?: string) {
-    this.titleService.setTitle(`Explearning - ${title}`);
+  private configSeoAndAnalytics(product: Product) {
+
+    const title = `Explearning - ${product.name}`;
+    const description = `${product.productCardData.tagline} ${product.productCardData.highlights.join('. ')}.`;
+    const localImagePath = this.heroData.imageProps.src;
+
+    this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions({});
     this.analyticsService.createNavStamp();
   }
@@ -81,8 +84,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
       this.productId = idParam;
       this.getProduct();
     }
-
-
   }
 
   // Triggered after params are fetched
@@ -98,10 +99,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
           if (!productsLoaded && !this.productLoaded) {
             console.log('No products in store, fetching from server', this.productId);
             this.store$.dispatch(new ProductStoreActions.SingleProductRequested({productId: this.productId}));
-          }
-          if (product && !this.titleSet) {
-            this.configSeoAndAnalytics(product.name); // Set page view once title is loaded
-            this.titleSet = true;
           }
           this.productLoaded = true; // Prevents loading from firing more than needed
           return product;
@@ -128,6 +125,11 @@ export class ProductPageComponent implements OnInit, OnDestroy {
       imageProps: product.heroImageProps,
       actionMessage: 'Learn More'
     };
+
+    if (product && !this.titleSet) {
+      this.configSeoAndAnalytics(product); // Set page view once title is loaded
+      this.titleSet = true;
+    }
   }
 
 

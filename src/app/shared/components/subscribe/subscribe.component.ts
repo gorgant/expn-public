@@ -39,6 +39,9 @@ export class SubscribeComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.email.value === '') {
+      return;
+    }
 
     this.store$.select(UserStoreSelectors.selectUser) // User initialized in app component
       .pipe(

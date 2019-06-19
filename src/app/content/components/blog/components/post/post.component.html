@@ -9,5 +9,9 @@
     </div>
   </div>
 </div>
+<div class="load-error" *ngIf="error$ | async as error" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+  <p>{{ error }}.</p>
+  <a routerLink="../..">Go back</a>
+</div>
 
   

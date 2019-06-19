@@ -9,6 +9,14 @@ import { ProductStrings } from './core/models/products/product-strings.model';
 import { Product } from './core/models/products/product.model';
 import { Title, Meta } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/firestore';
+import {
+  metaTagDefaultKeywords,
+  metaTagSiteName,
+  metaTagFbAppId,
+  metaTagTwitterHandle,
+  metaTagTwitterCardType,
+  metaTagAuthor
+} from './core/models/analytics/metatags.model';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +37,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private store$: Store<RootStoreState.State>,
     private titleService: Title,
-    private metaService: Meta,
+    private metaTagService: Meta,
     private afs: AngularFirestore
   ) {}
 
@@ -120,12 +128,16 @@ export class AppComponent implements OnInit {
 
   private configSeoAndAnalytics() {
     this.titleService.setTitle(this.title);
-    this.metaService.addTags([
+    this.metaTagService.addTags([
       // tslint:disable-next-line:max-line-length
-      {name: 'keywords', content: 'speaking skills, importance of speaking skills, effective communication, what is effective communication, what is communication skills, effective communication techniques, public speaking techniques, interview strategies, mary daphne root'},
+      { name: 'keywords', content: metaTagDefaultKeywords },
       // tslint:disable-next-line:max-line-length
-      {name: 'description', content: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication'},
-      {name: 'author', content: 'Explearning, LLC'},
+      { name: 'description', content: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication' },
+      { name: 'author', content: metaTagAuthor },
+      { property: 'og:site_name', content: metaTagSiteName },
+      { property: 'fb:app_id', content: metaTagFbAppId }, // Facebook analytics
+      { name: 'twitter:site', content: metaTagTwitterHandle }, // Twitter analytics
+      { name: 'twitter:card', content: metaTagTwitterCardType } // Twitter card display properties
     ]);
   }
 
