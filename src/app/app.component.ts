@@ -7,7 +7,7 @@ import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreAction
 import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
 import { ProductStrings } from './core/models/products/product-strings.model';
 import { Product } from './core/models/products/product.model';
-import { Title, Meta } from '@angular/platform-browser';
+import { Meta } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/firestore';
 import {
   metaTagDefaultKeywords,
@@ -27,7 +27,7 @@ import { AnalyticsService } from './core/services/analytics/analytics.service';
 })
 export class AppComponent implements OnInit {
   title = 'Explearning';
-  appVersion = '1.4.0';
+  appVersion = '1.5.0';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
