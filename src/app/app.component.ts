@@ -17,6 +17,8 @@ import {
   metaTagTwitterCardType,
   metaTagAuthor
 } from './core/models/analytics/metatags.model';
+import { PublicImagePaths } from './core/models/routes-and-paths/image-paths.model';
+import { AnalyticsService } from './core/services/analytics/analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -35,8 +37,8 @@ export class AppComponent implements OnInit {
   constructor(
     private uiService: UiService,
     private authService: AuthService,
+    private analyticsService: AnalyticsService,
     private store$: Store<RootStoreState.State>,
-    private titleService: Title,
     private metaTagService: Meta,
     private afs: AngularFirestore
   ) {}
@@ -127,7 +129,14 @@ export class AppComponent implements OnInit {
   }
 
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(this.title);
+
+    const title = `Explearning - Communicate With Clarity`;
+    // tslint:disable-next-line:max-line-length
+    const description = `Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.`;
+    const localImagePath = PublicImagePaths.HOME;
+
+    this.analyticsService.setSeoTags(title, description, localImagePath);
+
     this.metaTagService.addTags([
       // tslint:disable-next-line:max-line-length
       { name: 'keywords', content: metaTagDefaultKeywords },

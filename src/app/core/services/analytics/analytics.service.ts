@@ -112,14 +112,15 @@ export class AnalyticsService {
 
   private fullUrlPath() {
     const fullPath = this.location[`_platformStrategy`]._platformLocation.location.href;
-    console.log('Full url path', fullPath);
     return fullPath;
   }
 
   private getFullImagePath(path: string) {
+    if (path.includes('https://')) {
+      return path;
+    }
     const origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
     const imagePath = `${origin}/${path}`;
-    console.log('Image path', imagePath);
     return imagePath;
   }
 

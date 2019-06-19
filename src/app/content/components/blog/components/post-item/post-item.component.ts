@@ -12,6 +12,7 @@ export class PostItemComponent implements OnInit {
 
   @Input() post: Post;
   postTitle: string;
+  thumbnailSrc: string;
 
   appRoutes = PublicAppRoutes;
 
@@ -21,6 +22,7 @@ export class PostItemComponent implements OnInit {
 
   ngOnInit() {
     this.setUserFriendlyUrlString();
+    this.thumbnailSrc = this.post.imageProps.srcset.split(' ')[0]; // Get smallest image in the src set
   }
 
   private setUserFriendlyUrlString() {
