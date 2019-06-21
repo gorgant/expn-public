@@ -26,8 +26,8 @@ import { AnalyticsService } from './core/services/analytics/analytics.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Explearning';
-  appVersion = '1.5.0';
+  title = 'Explearning - Communicate With Clarity';
+  appVersion = '1.5.1';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
@@ -143,10 +143,10 @@ export class AppComponent implements OnInit {
       // tslint:disable-next-line:max-line-length
       { name: 'description', content: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication' },
       { name: 'author', content: metaTagAuthor },
+      { name: 'twitter:site', content: metaTagTwitterHandle }, // Twitter analytics
+      { name: 'twitter:card', content: metaTagTwitterCardType }, // Twitter card display properties
       { property: 'og:site_name', content: metaTagSiteName },
       { property: 'fb:app_id', content: metaTagFbAppId }, // Facebook analytics
-      { name: 'twitter:site', content: metaTagTwitterHandle }, // Twitter analytics
-      { name: 'twitter:card', content: metaTagTwitterCardType } // Twitter card display properties
     ]);
   }
 
