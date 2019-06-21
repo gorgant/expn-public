@@ -1,10 +1,8 @@
-<div>
-  <a [routerLink]="[appRoutes.BLOG, post.id, postTitle]" class="item" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
-    <div class="thumbnail">
-      <img appMatElevation class="post-image" [src]="thumbnailSrc" [alt]="post.title">
-    </div>
-    <div class="caption" [matTooltip]="post.title" matTooltipPosition="above" matTooltipShowDelay="500">
-        {{ post.title }}
-    </div>
+<div class="item" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+  <a class="thumbnail" [routerLink]="[appRoutes.BLOG, post.id, postTitle]">
+    <img appMatElevation class="post-image" [src]="thumbnailSrc" [alt]="post.title">
   </a>
+  <h2>
+    <a class="caption" [routerLink]="[appRoutes.BLOG, post.id, postTitle]" [matTooltip]="post.title" matTooltipPosition="above" matTooltipShowDelay="500">{{ post.title }}</a>
+  </h2>
 </div>

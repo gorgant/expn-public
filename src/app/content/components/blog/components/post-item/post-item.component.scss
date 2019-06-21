@@ -1,22 +1,30 @@
 @import "../../../../../variables";
 
+// Remove default h2 properties
+h2 {
+  margin: 0px;
+  font-weight: $font-weight-regular;
+}
+
 // Treated as a link for SEO purposes, so some of the caption styling, which is technically link text, happens here
 .item {
   width: 300px;
-  text-decoration: none;
-  color: black;
-  opacity: $opacity-high;
 }
 
 .item:hover {
   cursor: pointer;
-  .caption {
+  .caption, .thumbnail {
     opacity: $opacity-full;
   }
 }
 
 .thumbnail {
   width: 300px;
+  opacity: $opacity-high;
+}
+
+.thumbnail:hover {
+  opacity: $opacity-full;
 }
 
 .post-image {
@@ -25,6 +33,8 @@
 
 .caption {
   opacity: $opacity-high;
+  text-decoration: none;
+  color: black;
   font-size: 22px;
   text-align: center;
   position: relative;

@@ -5,7 +5,7 @@ import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeHtml, Title, Meta } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
@@ -35,8 +35,6 @@ export class PostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private analyticsService: AnalyticsService,
-    private titleService: Title,
-    private metaTagService: Meta
   ) { }
 
   ngOnInit() {
