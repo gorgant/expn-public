@@ -3,9 +3,12 @@
 // Custom brand font (converted at: https://onlinefontconverter.com/)
 @font-face {
   font-family: 'HarlowSolid';
-  src: url(assets/fonts/HarlowSolid.woff2) format('woff2'),
-       url(assets/fonts/HarlowSolid.woff) format('woff'),
-       url(assets/fonts/HarlowSolid.ttf) format('truetype');
+  font-display: swap; // Use system font until actual font loads
+  unicode-range: U+000-5FF; // Load only latin glyphs
+  src: local('HarlowSolid'),
+       url(/assets/fonts/HarlowSolid.woff2) format('woff2'),
+       url(/assets/fonts/HarlowSolid.woff) format('woff'),
+       url(/assets/fonts/HarlowSolid.ttf) format('truetype');
 }
 
 html, body { 
