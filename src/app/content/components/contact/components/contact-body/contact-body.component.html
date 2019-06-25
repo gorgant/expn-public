@@ -12,10 +12,10 @@
     <form class="contact-form" [formGroup]="contactForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px">
       <div class="name-and-email-container" fxLayout="column" fxLayoutAlign="center center" fxLayout.gt-sm="row" fxLayoutGap.gt-sm="32px">
         <mat-form-field>
-          <input class="name-input" matInput formControlName="name" type="text">
-          <mat-placeholder class="input-placeholder">Your Name</mat-placeholder>
-          <mat-error *ngFor="let validation of formValidationMessages.name">
-            <mat-error *ngIf="name.hasError(validation.type) && name.invalid && (name.dirty || name.touched)">{{ validation.message }}</mat-error>
+          <input class="name-input" matInput formControlName="firstName" type="text">
+          <mat-placeholder class="input-placeholder">First Name</mat-placeholder>
+          <mat-error *ngFor="let validation of formValidationMessages.firstName">
+            <mat-error *ngIf="firstName.hasError(validation.type) && firstName.invalid && (firstName.dirty || firstName.touched)">{{ validation.message }}</mat-error>
           </mat-error>
         </mat-form-field>
         <mat-form-field>

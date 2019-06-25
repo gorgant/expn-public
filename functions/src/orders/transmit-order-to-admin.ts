@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { Order } from '../../../shared-models/orders/order.model';
 import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
-import { adminProjectName } from '../environments/config';
+import { adminProjectId } from '../environments/config';
 import { AdminFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 const pubSub = new PubSub();
 
@@ -10,7 +10,7 @@ const publishOrderToAdminTopic = async (order: Order) => {
 
   console.log('Commencing order trasmission based on this data', order);
 
-  const adminProject = adminProjectName;;
+  const adminProject = adminProjectId;;
   console.log('Publishing to this project topic', adminProject);
   
   // Target topic in the admin PubSub (must add this project's service account to target project)

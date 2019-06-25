@@ -32,7 +32,7 @@ export class ContactBodyComponent implements OnInit {
 
   ngOnInit() {
     this.contactForm = this.fb.group({
-      name: ['', [Validators.required]],
+      firstName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       message: ['', [Validators.required]]
     });
@@ -49,11 +49,13 @@ export class ContactBodyComponent implements OnInit {
       .subscribe(user => {
         console.log('Checking for user to subscribe', user);
         if (user) {
+          const existingFirstName = user.stripeCustomerId && user.billingDetails.firstName;
           // Update the user's email address (or add to a new billing details object)
           const updatedUser: PublicUser = {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
+              firstName: existingFirstName ? existingFirstName : this.firstName.value, // Prefer an existing value if user has order history
               email: this.email.value
             } : {
               email: this.email.value
@@ -76,7 +78,7 @@ export class ContactBodyComponent implements OnInit {
           const contactFormData: ContactForm = {
             id: this.afs.createId(),
             createdDate: now(),
-            name: this.name.value,
+            name: this.firstName.value,
             email: this.email.value,
             message: this.message.value,
             publicUser: user
@@ -114,7 +116,7 @@ export class ContactBodyComponent implements OnInit {
   }
 
   // These getters are used for easy access in the HTML template
-  get name() { return this.contactForm.get('name'); }
+  get firstName() { return this.contactForm.get('firstName'); }
   get email() { return this.contactForm.get('email'); }
   get message() { return this.contactForm.get('message'); }
 

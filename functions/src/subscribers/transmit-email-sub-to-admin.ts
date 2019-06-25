@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscriber.model';
-import { adminProjectName } from '../environments/config';
+import { adminProjectId } from '../environments/config';
 import { AdminFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 
 const pubSub = new PubSub();
@@ -11,7 +11,7 @@ const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>)
 
   console.log('Commencing subscriber trasmission based on this data', subscriber);
 
-  const adminProject = adminProjectName;
+  const adminProject = adminProjectId;
   console.log('Publishing to this project topic', adminProject);
 
   // Target topic in the admin PubSub (must add this project's service account to target project)

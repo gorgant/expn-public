@@ -11,8 +11,15 @@
       fxLayoutAlign.gt-sm="start center"
       fxLayoutGap="16px">
     <mat-form-field color="accent">
+      <input color="accent" class="first-name-input" matInput formControlName="firstName">
+      <mat-placeholder class="input-placeholder">First Name</mat-placeholder>
+      <mat-error *ngFor="let validation of formValidationMessages.firstName">
+        <mat-error *ngIf="firstName.hasError(validation.type) && firstName.invalid && (firstName.dirty || firstName.touched)">{{ validation.message }}</mat-error>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field color="accent">
       <input color="accent" class="email-input" matInput formControlName="email" type="email">
-      <mat-placeholder class="input-placeholder">Your email</mat-placeholder>
+      <mat-placeholder class="input-placeholder">Your Email</mat-placeholder>
       <mat-error *ngFor="let validation of formValidationMessages.email">
         <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
       </mat-error>
@@ -27,6 +34,6 @@
     </button>
   </form>
   <div *ngIf="(subscribeSubmitted$ | async) && emailSubmitted" class="post-submit-message">
-    Thank you for signing up! Be sure to add @myexplearning.com to your trusted domains!
+    Thank you for signing up! Be sure to add hello@myexplearning.com to your trusted email contacts.
   </div>
 </div>

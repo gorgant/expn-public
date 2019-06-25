@@ -3,21 +3,21 @@ import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared
 
 export const currentEnvironmentType = functions.config().environment.type;
 
-const getAdminProjectName = (): string => {
-  let projectName: string;
+const getAdminProjectId = (): string => {
+  let projectId: string;
 
   switch (currentEnvironmentType) {
     case EnvironmentTypes.PRODUCTION:
-      projectName = PRODUCTION_APPS.adminApp.projectId
+      projectId = PRODUCTION_APPS.adminApp.projectId
       break;
     case EnvironmentTypes.SANDBOX:
-      projectName = SANDBOX_APPS.adminApp.projectId
+      projectId = SANDBOX_APPS.adminApp.projectId
       break;
     default:
-      projectName = SANDBOX_APPS.adminApp.projectId
+      projectId = SANDBOX_APPS.adminApp.projectId
       break;
   }
-  return projectName;
+  return projectId;
 }
 
-export const adminProjectName = getAdminProjectName();
+export const adminProjectId = getAdminProjectId();

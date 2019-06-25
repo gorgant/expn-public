@@ -8,7 +8,7 @@ const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 
 // ENV Variables
-export const stripeSecret = functions.config().stripe.secret;
+const stripeSecret: string = functions.config().stripe.secret;
 
 //Export Stripe
 export const stripe = new Stripe(stripeSecret);
