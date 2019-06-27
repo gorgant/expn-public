@@ -78,7 +78,7 @@ export class ContactBodyComponent implements OnInit {
           const contactFormData: ContactForm = {
             id: this.afs.createId(),
             createdDate: now(),
-            name: this.firstName.value,
+            firstName: this.firstName.value,
             email: this.email.value,
             message: this.message.value,
             publicUser: user
