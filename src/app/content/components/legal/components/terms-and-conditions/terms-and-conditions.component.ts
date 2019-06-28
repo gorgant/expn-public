@@ -24,7 +24,7 @@ export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Explearning - Terms and Conditions`);
+    this.titleService.setTitle(`Terms and Conditions - Explearning`);
     this.analyticsService.logPageViewWithCustomDimensions();
   }
 

@@ -45,7 +45,7 @@ export class PostComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics(post: Post) {
 
-    const title = `Explearning - ${post.title}`;
+    const title = `${post.title} - Explearning`;
     const description = post.description;
     const localImagePath = this.heroData.imageProps.src;
     const keywords = post.keywords;

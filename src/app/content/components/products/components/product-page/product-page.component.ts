@@ -11,8 +11,7 @@ import { testamonialsList } from 'src/app/core/models/forms-and-components/testa
 import { ActivatedRoute } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
-import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
-import { environment } from 'src/environments/environment';
+import { ProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 
 @Component({
@@ -28,8 +27,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   private titleSet: boolean;
   productSubscription: Subscription;
 
-  private productionEnvironment: boolean = environment.production;
-  productIdList;
+  productIdList = ProductIdList;
 
   heroData: PageHeroData;
   buyNowData: BuyNowBoxData;
@@ -43,14 +41,14 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.setProductPathsBasedOnEnvironment();
+    // this.setProductPathsBasedOnEnvironment();
     this.initializeProductData();
     this.initializePageComponents();
   }
 
   private configSeoAndAnalytics(product: Product) {
 
-    const title = `Explearning - ${product.name}`;
+    const title = `${product.name} - Explearning`;
     const description = `${product.productCardData.tagline} ${product.productCardData.highlights.join('. ')}.`;
     const localImagePath = this.heroData.imageProps.src;
 
@@ -58,23 +56,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     this.analyticsService.logPageViewWithCustomDimensions({});
     this.analyticsService.createNavStamp();
   }
-
-  private setProductPathsBasedOnEnvironment() {
-    switch (this.productionEnvironment) {
-      case true:
-        console.log('Setting productIdList to production');
-        this.productIdList = ProductionProductIdList;
-        break;
-      case false:
-        console.log('Setting productIdList to sandbox');
-        this.productIdList = SandboxProductIdList;
-        break;
-      default:
-        this.productIdList = SandboxProductIdList;
-        break;
-    }
-  }
-
 
   private initializeProductData() {
     // Check if id params are available

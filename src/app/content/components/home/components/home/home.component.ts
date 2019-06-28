@@ -2,11 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { ProductionProductIdList, SandboxProductIdList } from 'src/app/core/models/products/product-id-list.model';
+import { ProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -16,15 +15,13 @@ import { Title, Meta } from '@angular/platform-browser';
 export class HomeComponent implements OnInit, OnDestroy {
 
   private productionEnvironment: boolean = environment.production;
-  productIdList;
+  remoteCoachProductId: string;
 
   heroData: PageHeroData;
   appRoutes = PublicAppRoutes;
 
   constructor(
     private analyticsService: AnalyticsService,
-    private titleService: Title,
-    private metaTagService: Meta
   ) { }
 
   ngOnInit() {
@@ -50,14 +47,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     switch (this.productionEnvironment) {
       case true:
         console.log('Setting productIdList to production');
-        this.productIdList = ProductionProductIdList;
+        this.remoteCoachProductId = ProductIdList.REMOTE_COACH;
         break;
       case false:
         console.log('Setting productIdList to sandbox');
-        this.productIdList = SandboxProductIdList;
+        this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
         break;
       default:
-        this.productIdList = SandboxProductIdList;
+        this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
         break;
     }
   }

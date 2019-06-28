@@ -69,7 +69,8 @@ export class BillingService {
     // Ensure all key data is present
     const stripeChargeId: string = stripeCharge.id;
     const stripeCustomerId: string = stripeCharge.customer as string;
-    const name: string = (stripeCharge as any).billing_details.name; // Isn't in the type definitions but exists on the object
+    const firstName: string = user.billingDetails.firstName;
+    const lastName: string = user.billingDetails.lastName;
     const email: string = (stripeCharge as any).billing_details.email; // Isn't in the type definitions but exists on the object
     const publicUser: PublicUser = user;
     const productId: string = stripeCharge.metadata[StripeChargeMetadata.PRODUCT_ID];
@@ -84,7 +85,8 @@ export class BillingService {
       createdDate: now(),
       stripeChargeId,
       stripeCustomerId,
-      name,
+      firstName,
+      lastName,
       email,
       publicUser,
       productId,

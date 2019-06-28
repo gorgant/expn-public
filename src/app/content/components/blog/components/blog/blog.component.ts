@@ -36,7 +36,7 @@ export class BlogComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Explearning - Blog`;
+    const title = `Blog - Explearning`;
     // tslint:disable-next-line:max-line-length
     const description = `On Explearning's blog you have access to our complete library of free lessons on speaking skills and effective communication. From public speaking techniques to interview strategies and negotiation tactics, our goal is to make you the best communicator you can be.`;
     const localImagePath = this.heroData.imageProps.src;

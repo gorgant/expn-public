@@ -39,7 +39,7 @@ export class CheckOutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Explearning - Checkout`);
+    this.titleService.setTitle(`Checkout - Explearning`);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }

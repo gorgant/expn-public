@@ -28,7 +28,7 @@ export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Explearning - Purchase Confirmation`);
+    this.titleService.setTitle(`Purchase Confirmation - Explearning`);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }

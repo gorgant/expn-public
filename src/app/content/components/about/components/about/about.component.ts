@@ -24,7 +24,7 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    const title = `Explearning - About Me`;
+    const title = `About Me - Explearning`;
     // tslint:disable-next-line:max-line-length
     const description = `Speaking skills and effective communication are at the core of who we are. My job at Explearning is to empower you to be the best communicator you can be. I've been teaching and coaching communications for over ten years. I offer powerful, research-backed communications strategies to help you communicate with confidence, authenticity, and poise.`;
     const localImagePath = this.heroData.imageProps.src;
