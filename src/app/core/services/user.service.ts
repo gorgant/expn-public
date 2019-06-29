@@ -129,7 +129,6 @@ export class UserService {
     const partialSubscriber: Partial<EmailSubscriber> = {
       id: email, // Set id to the user's email
       publicUserData: user,
-      active: true,
       modifiedDate: now(),
       lastSubSource: subSource,
       // Sub source array is handled on the admin depending on if subscriber already exists
