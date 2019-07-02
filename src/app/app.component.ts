@@ -27,7 +27,7 @@ import { AnalyticsService } from './core/services/analytics/analytics.service';
 })
 export class AppComponent implements OnInit {
   title = 'Explearning - Communicate With Clarity';
-  appVersion = '1.6.3';
+  appVersion = '1.6.4';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
