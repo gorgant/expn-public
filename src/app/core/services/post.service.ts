@@ -65,7 +65,7 @@ export class PostService {
   }
 
   private getPostsCollection(): AngularFirestoreCollection<Post> {
-    return this.afs.collection<Post>(SharedCollectionPaths.POSTS, ref => ref.orderBy('publishedDate', 'desc'));
+    return this.afs.collection<Post>(SharedCollectionPaths.POSTS);
   }
 
   private getFeaturedPostsCollection(): AngularFirestoreCollection<Post> {

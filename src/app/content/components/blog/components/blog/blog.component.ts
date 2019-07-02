@@ -28,9 +28,9 @@ export class BlogComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.initializePosts();
     this.initializeHeroData();
     this.configSeoAndAnalytics();
-    this.initializePosts();
   }
 
   // Add async data as needed and fire once loaded
@@ -72,6 +72,7 @@ export class BlogComponent implements OnInit, OnDestroy {
       map(([posts, postsLoaded]) => {
         // Check if posts are loaded, if not fetch from server
         if (!postsLoaded) {
+          console.log('No posts loaded, loading those now');
           this.store$.dispatch(new PostStoreActions.AllPostsRequested());
         }
         return posts;
