@@ -79,6 +79,21 @@ export class BlogComponent implements OnInit, OnDestroy {
       })
     );
 
+    // this.posts$ = this.store$.select(PostStoreSelectors.selectFeaturedPosts)
+    // .pipe(
+    //   withLatestFrom(
+    //     this.store$.select(PostStoreSelectors.selectPostsLoaded),
+    //     this.store$.select(PostStoreSelectors.selectFeaturedPostsLoaded)
+    //   ),
+    //   map(([posts, postsLoaded, featuredPostsLoaded]) => {
+    //     if (!postsLoaded && !featuredPostsLoaded) {
+    //       console.log('No featured posts loaded, loading those now');
+    //       this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
+    //     }
+    //     return posts;
+    //   })
+    // );
+
     this.error$ = this.store$.select(
       PostStoreSelectors.selectPostError
     );

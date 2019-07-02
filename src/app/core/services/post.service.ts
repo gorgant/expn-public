@@ -65,7 +65,9 @@ export class PostService {
   }
 
   private getPostsCollection(): AngularFirestoreCollection<Post> {
-    return this.afs.collection<Post>(SharedCollectionPaths.POSTS);
+
+    // Googlebot can't ingest more than 15 in one go, will implement pagination to deal with this
+    return this.afs.collection<Post>(SharedCollectionPaths.POSTS, ref => ref.limit(15));
   }
 
   private getFeaturedPostsCollection(): AngularFirestoreCollection<Post> {
