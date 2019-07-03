@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { MatElevationDirective } from './directives/mat-elevation.directive';
 import { TestamonialComponent } from './components/testamonial/testamonial.component';
 import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-portrait.component';
+import { ScrollableDirective } from './directives/scrollable.directive';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
     MatElevationDirective,
     TestamonialComponent,
     AvatarPortraitComponent,
+    ScrollableDirective,
   ],
   imports: [
     CommonModule,
@@ -43,6 +45,7 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
     MatElevationDirective,
     TestamonialComponent,
     AvatarPortraitComponent,
+    ScrollableDirective
   ]
 })
 export class SharedModule { }

@@ -62,7 +62,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     const idParamName = 'id';
     const idParam = this.route.snapshot.params[idParamName];
     if (idParam) {
-      this.productId = idParam;
+      this.productId = idParam.toLowerCase(); // Remove any possible erroneous lowercasing (IDs are specifically set to lower case in admin)
       this.getProduct();
     }
   }

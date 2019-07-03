@@ -59,9 +59,9 @@ export class PostComponent implements OnInit, OnDestroy {
   private loadExistingPostData() {
     // Check if id params are available
     const idParamName = 'id';
-    const idParam = this.route.snapshot.params[idParamName];
+    const idParam: string = this.route.snapshot.params[idParamName];
     if (idParam) {
-      this.postId = idParam;
+      this.postId = idParam.toLowerCase(); // Remove any possible erroneous lowercasing (IDs are specifically set to lower case in admin)
       this.getPost();
       this.initializeHeroAndPostContent();
     }

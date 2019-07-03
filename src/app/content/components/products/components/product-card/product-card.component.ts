@@ -11,7 +11,7 @@ import { UiService } from 'src/app/core/services/ui.service';
 export class ProductCardComponent implements OnInit {
 
   @Input() product: Product;
-  productName: string;
+  productUrlHandle: string;
 
   appRoutes = PublicAppRoutes;
 
@@ -24,7 +24,7 @@ export class ProductCardComponent implements OnInit {
   }
 
   private setUserFriendlyUrlString() {
-    this.productName = this.uiService.convertToFriendlyUrlFormat(this.product.name);
+    this.productUrlHandle = this.uiService.convertToFriendlyUrlFormat(this.product.name);
   }
 
 }

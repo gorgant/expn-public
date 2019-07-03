@@ -10,7 +10,7 @@
     <ul fxLayout="row" fxLayoutGap="24px" class="nav-items">
       
       <li class="nav-list-item">
-          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.HOME">Home</a>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="appRoutes.HOME">Home</a>
       </li>
       
       <li class="nav-list-item">

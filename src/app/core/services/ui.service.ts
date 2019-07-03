@@ -73,7 +73,7 @@ export class UiService {
   }
 
   convertToFriendlyUrlFormat(stringWithSpaces: string): string {
-    return stringWithSpaces.split(' ').join('-');
+    return stringWithSpaces.split(' ').join('-').toLowerCase();
   }
 
 

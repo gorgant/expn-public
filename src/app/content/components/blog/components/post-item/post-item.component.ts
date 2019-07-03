@@ -11,7 +11,7 @@ import { UiService } from 'src/app/core/services/ui.service';
 export class PostItemComponent implements OnInit {
 
   @Input() post: Post;
-  postTitle: string;
+  postUrlHandle: string;
   thumbnailSrc: string;
 
   appRoutes = PublicAppRoutes;
@@ -26,7 +26,7 @@ export class PostItemComponent implements OnInit {
   }
 
   private setUserFriendlyUrlString() {
-    this.postTitle = this.uiService.convertToFriendlyUrlFormat(this.post.title);
+    this.postUrlHandle = this.uiService.convertToFriendlyUrlFormat(this.post.title);
   }
 
 }
