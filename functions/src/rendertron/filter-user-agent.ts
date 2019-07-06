@@ -1,37 +1,39 @@
 import * as functions from 'firebase-functions';
-// const express = require('express');
 import * as express from 'express';
 import * as nodeFedtch from 'node-fetch';
-// const fetchReq = require('node-fetch');
-// const url = require('url');
 import * as url from 'url';
+import { publicProjectId, currentEnvironmentType } from '../environments/config';
+import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
 const app = express();
 
+let appUrl: string;
 
-// You might instead set these as environment variables
-// I just want to make this example explicitly clear
-const appUrl = 'explearning-sandbox-public.firebaseapp.com';
-const renderUrl = 'https://render-tron.appspot.com/render';
+switch (currentEnvironmentType) {
+  case EnvironmentTypes.PRODUCTION:
+    appUrl = PRODUCTION_APPS.publicApp.websiteDomain;
+    break;
+  case EnvironmentTypes.SANDBOX:
+    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+    break;
+  default:
+    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+    break;
+}
 
 // Deploy your own instance of Rendertron for production
-// const renderUrl = 'your-rendertron-url';
+const renderUrl = `https://${publicProjectId}.appspot.com/render`;
 
 
 
-// Generates the URL 
+// Generates the URL using the correct public host domain (vs the request version which will point you to cloudfunctions.net)
 const generateUrl = (request: express.Request) => {
   const updatedUrl: string = url.format({
-    protocol: request.protocol,
+    protocol: 'https',
     host: appUrl,
     pathname: request.originalUrl
   });
   console.log('Generated this new URL', updatedUrl);
   return updatedUrl;
-  // return url.format({
-  //   protocol: request.protocol,
-  //   host: appUrl, 
-  //   pathname: request.originalUrl
-  // });
 }
 
   // List of bots to target, add more if you'd like
@@ -55,7 +57,13 @@ const detectBot = (userAgent: any) => {
     'vkshare',
     'facebot',
     'outbrain',
-    'w3c_validator'
+    'w3c_validator',
+    'quora link preview',
+    'rogerbot',
+    'showyoubot',
+    'telegramBot',
+    'vkshare',
+    'whatsapp',
   ]
 
 
@@ -110,19 +118,6 @@ app.get( '*', async (req: express.Request, res: express.Response) => {
 
     processRes(resBody);
 
-    // nodeFedtch.default(fullRendertronUrl)
-    //   .then(response => response.text())
-    //   .then(body => {
-
-    //     // Set the Vary header to cache the user agent, based on code from:
-    //     // https://github.com/justinribeiro/pwa-firebase-functions-botrender
-    //     res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
-    //     res.set('Vary', 'User-Agent');
-        
-    //     res.send(body.toString())
-      
-    // });
-
   } else {
 
     // Not a bot, fetch the regular Angular app
@@ -149,13 +144,6 @@ app.get( '*', async (req: express.Request, res: express.Response) => {
     
     processRes(resBody);
 
-    // // Not a bot, fetch the regular Angular app
-    // // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
-    // nodeFedtch.default(`https://${appUrl}`)
-    //   .then(response => response.text())
-    //   .then(body => {
-    //     res.send(body.toString());
-    //   })
   }
   
 });

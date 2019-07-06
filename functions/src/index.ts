@@ -21,3 +21,7 @@ export {
 export {
   filterUserAgent
 } from './rendertron/filter-user-agent';
+
+// export {
+//   rendertronMiddleware
+// } from './rendertron/rendertron-middleware';

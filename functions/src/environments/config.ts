@@ -8,16 +8,35 @@ const getAdminProjectId = (): string => {
 
   switch (currentEnvironmentType) {
     case EnvironmentTypes.PRODUCTION:
-      projectId = PRODUCTION_APPS.adminApp.projectId
+      projectId = PRODUCTION_APPS.adminApp.projectId;
       break;
     case EnvironmentTypes.SANDBOX:
-      projectId = SANDBOX_APPS.adminApp.projectId
+      projectId = SANDBOX_APPS.adminApp.projectId;
       break;
     default:
-      projectId = SANDBOX_APPS.adminApp.projectId
+      projectId = SANDBOX_APPS.adminApp.projectId;
       break;
   }
   return projectId;
 }
 
 export const adminProjectId = getAdminProjectId();
+
+const getPublicProjectId = (): string => {
+  let projectId: string;
+
+  switch (currentEnvironmentType) {
+    case EnvironmentTypes.PRODUCTION:
+      projectId = PRODUCTION_APPS.publicApp.projectId;
+      break;
+    case EnvironmentTypes.SANDBOX:
+      projectId = SANDBOX_APPS.publicApp.projectId;
+      break;
+    default:
+      projectId = SANDBOX_APPS.publicApp.projectId;
+      break;
+  }
+  return projectId;
+}
+
+export const publicProjectId = getPublicProjectId();
