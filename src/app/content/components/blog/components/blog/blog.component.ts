@@ -57,7 +57,6 @@ export class BlogComponent implements OnInit, OnDestroy {
     this.heroData = {
       pageTitle: 'Explearning Blog',
       pageSubtitle: `Access our complete library of free lessons on speaking skills and effective communication`,
-      // pageSubtitle: 'A collection of videos and blog posts focused on making you a better communicator',
       imageProps: blogImageProps,
       actionMessage: 'View Collection'
     };
@@ -78,21 +77,6 @@ export class BlogComponent implements OnInit, OnDestroy {
         return posts;
       })
     );
-
-    // this.posts$ = this.store$.select(PostStoreSelectors.selectFeaturedPosts)
-    // .pipe(
-    //   withLatestFrom(
-    //     this.store$.select(PostStoreSelectors.selectPostsLoaded),
-    //     this.store$.select(PostStoreSelectors.selectFeaturedPostsLoaded)
-    //   ),
-    //   map(([posts, postsLoaded, featuredPostsLoaded]) => {
-    //     if (!postsLoaded && !featuredPostsLoaded) {
-    //       console.log('No featured posts loaded, loading those now');
-    //       this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
-    //     }
-    //     return posts;
-    //   })
-    // );
 
     this.error$ = this.store$.select(
       PostStoreSelectors.selectPostError

@@ -16,7 +16,7 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "filterUserAgent"
+        "function": "puppeteerServer"
       }
     ]
   },
