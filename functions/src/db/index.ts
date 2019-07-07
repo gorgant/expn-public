@@ -1,3 +1,3 @@
 import { publicApp } from "../apps";
 
-export const adminFirestore = publicApp.firestore();
+export const publicFirestore = publicApp.firestore();

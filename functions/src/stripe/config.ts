@@ -1,9 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as Stripe from 'stripe';
-import { adminFirestore } from '../db';
+import { publicFirestore } from '../db';
 
 // Iniitialize Cloud Firestore Database
-export const db = adminFirestore;
+export const db = publicFirestore;
 const settings = { timestampsInSnapshots: true };
 db.settings(settings);
 

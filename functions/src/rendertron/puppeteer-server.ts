@@ -99,7 +99,7 @@ app.get( '*', async (req: express.Request, res: express.Response) => {
     const botUrl = generateUrl(req);
 
     console.log('Sending this url to puppeteer', botUrl);
-    const {html, ttRenderMs} = await puppeteerSsr(botUrl)
+    const {html, ttRenderMs} = await puppeteerSsr(botUrl, req)
       .catch(err => {
         console.log('Error with puppeteerSsr', err);
         return err;
