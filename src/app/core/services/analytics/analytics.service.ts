@@ -153,6 +153,10 @@ export class AnalyticsService {
       content: fullImagePath
     });
     this.metaTagService.updateTag({
+      property: 'og:image:alt',
+      content: title
+    });
+    this.metaTagService.updateTag({
       property: 'og:url',
       content: url
     });
