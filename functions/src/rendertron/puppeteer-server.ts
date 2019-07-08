@@ -4,9 +4,9 @@ import * as nodeFedtch from 'node-fetch';
 import * as url from 'url';
 import { currentEnvironmentType } from '../environments/config';
 import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
-import * as puppeteer from 'puppeteer';
+// import * as puppeteer from 'puppeteer';
 import { puppeteerSsr } from './puppeteer';
-let browserWSEndpoint: string;
+// let browserWSEndpoint: string;
 const app = express();
 
 let appUrl: string;
@@ -100,18 +100,18 @@ app.get( '*', async (req: express.Request, res: express.Response) => {
 
     const botUrl = generateUrl(req);
 
-    if (!browserWSEndpoint) {
-      const browser = await puppeteer.launch(
-        {
-          // No sandbox is required in cloud functions
-          args: ['--no-sandbox']
-        }
-      );
-      browserWSEndpoint = await browser.wsEndpoint();
-    }
+    // if (!browserWSEndpoint) {
+    //   const browser = await puppeteer.launch(
+    //     {
+    //       // No sandbox is required in cloud functions
+    //       args: ['--no-sandbox']
+    //     }
+    //   );
+    //   browserWSEndpoint = await browser.wsEndpoint();
+    // }
 
     console.log('Sending this url to puppeteer', botUrl);
-    const {html, ttRenderMs} = await puppeteerSsr(botUrl, req, browserWSEndpoint)
+    const {html, ttRenderMs} = await puppeteerSsr(botUrl, req)
       .catch(err => {
         console.log('Error with puppeteerSsr', err);
         return err;

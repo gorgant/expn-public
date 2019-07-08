@@ -10,9 +10,13 @@ const db = publicFirestore;
 // With additional tips from: https://medium.com/@ebidel/puppeteering-in-firebase-google-cloud-functions-76145c7662bd
 
 // Firebase can't handle back slashes
-const createFirebaseSafeUrl = (url: string): string => {
+const createOrReverseFirebaseSafeUrl = (url: string, reverse?: boolean): string => {
+  if (reverse) {
+    const urlWithSlashes = url.replace(/~1/g,'/') // Revert to normal url
+    return urlWithSlashes;
+  }
   const removedProtocol = url.split('//').pop() as string;
-  const replacedSlashes = removedProtocol.replace('/', '~1');
+  const replacedSlashes = removedProtocol.replace(/\//g,'~1');
   return replacedSlashes;
 }
 
@@ -22,14 +26,14 @@ const cachePage = async (url: string, request: express.Request, html: string) =>
   const userAgent = request.headers['user-agent'] ? `"user-agent":"${request.headers['user-agent']}"` : undefined;
   const vary = request.headers['vary'] ? `"vary":"${request.headers['vary']}"` : undefined;
   const contentType = request.headers['content-type'] ? `"content-type":"${request.headers['content-type']}"` : undefined;
-  const fbSafeUrl: string = createFirebaseSafeUrl(url);
+  const fbSafeUrl: string = createOrReverseFirebaseSafeUrl(url);
 
   const webpage: Webpage = {
     expires: now() + (1000 * 60 * 60 * 24 * 3), // Set expiry for three days
     headers: `{${userAgent ? `${userAgent}` : ''}${vary ? `,${vary}` : ''}${contentType ? `,${contentType}` : ''}}`,
     payload: html,
     saved: now(),
-    url: fbSafeUrl.replace('~1', '/') // Revert to normal url
+    url: createOrReverseFirebaseSafeUrl(fbSafeUrl, true) // Revert to normal url
   }
   
   
@@ -44,8 +48,8 @@ const cachePage = async (url: string, request: express.Request, html: string) =>
 }
 
 const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => {
-  console.log('Attempting to retrieve cached page with id: ', url);
-  const fbSafeUrl = createFirebaseSafeUrl(url);
+  const fbSafeUrl = createOrReverseFirebaseSafeUrl(url);
+  console.log('Attempting to retrieve cached page with id: ', fbSafeUrl);
   const pageDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).get()
     .catch(error => {
       console.log('Error fetching cached page doc', error)
@@ -64,17 +68,10 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
 /**
  * @param {string} url URL to prerender.
  * @param {request} request Request being processed by the server (used for caching headers)
- * @param {string} browserWSEndpoint Optional remote debugging URL. If
- *     provided, Puppeteer's reconnects to the browser instance. Otherwise,
- *     a new browser instance is launched.
  */
 
-export const puppeteerSsr = async (url: string, request: express.Request, browserWSEndpoint: string) => {
+export const puppeteerSsr = async (url: string, request: express.Request) => {
   
-  // if (RENDER_CACHE.has(url)) {
-  //   return {html: RENDER_CACHE.get(url), ttRenderMs: 0};
-  // }
-
   const cachedPage = await retrieveCachedPage(url);
 
   if (cachedPage) {
@@ -84,7 +81,15 @@ export const puppeteerSsr = async (url: string, request: express.Request, browse
 
   const start = Date.now();
 
-  const browser = await puppeteer.connect({browserWSEndpoint});
+  
+  const browser = await puppeteer.launch(
+        {
+          // No sandbox is required in cloud functions
+          args: ['--no-sandbox']
+        }
+      );
+  // const browser = await puppeteer.connect({browserWSEndpoint});
+
   const page = await browser.newPage();
   try {
 
@@ -113,14 +118,14 @@ export const puppeteerSsr = async (url: string, request: express.Request, browse
     console.log('Found page, waiting for selector to appear');
 
     // TODO: FIGURE OUT A DIFFERENT SELECTOR THAT APPLIES TO ALL PAGES, BEST TO MAKE A NEW ONE THAT CAN BE USED ON ALL OF THEM
-    await page.waitForSelector('.thumbnail'); // ensure .thumbnail class exists in the DOM.
+    await page.waitForSelector('.puppeteer-loaded'); // ensure .thumbnail class exists in the DOM.
   } catch (err) {
     console.error(err);
     throw new Error('page.goto/waitForSelector timed out.');
   }
 
   const html = await page.content(); // serialized HTML of page DOM.
-  console.log('Selector found, fetched this html');
+  console.log('Selector found, fetched this html', html);
   await browser.close();
 
   const ttRenderMs = Date.now() - start;
@@ -133,8 +138,11 @@ export const puppeteerSsr = async (url: string, request: express.Request, browse
       return error;
     });
 
-  console.log('Closing browser page');
-  await page.close(); // Close the page we opened here (not the browser, which gets reused).
+  await browser.close(); // Close the page we opened here (not the browser, which gets reused).
+  
+  // console.log('Closing browser page');
+  // await page.close(); // Close the page we opened here (not the browser, which gets reused).
+
 
   return {html, ttRenderMs};
 };
