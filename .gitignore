@@ -12,6 +12,7 @@
 
 #rendertron
 /rendertron
+/shellApp
 
 # profiling files
 chrome-profiler-events.json
