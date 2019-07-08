@@ -65,6 +65,25 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
   return undefined;
 }
 
+// const interceptRequest = async (page: puppeteer.Page) => {
+//   console.log('Attempting to intercept requests before loading page');
+//   // 1. Intercept network requests.
+//   await page.setRequestInterception(true);
+
+//   // TODO: SEE IF I CAN INTERCEPT THE LINGERING FIRESTORE XHR REQUEST THAT TAKES FOREVER TO RUN
+//   page.on('request', req => {
+//     // 2. Ignore requests for resources that don't produce DOM
+//     // (images, stylesheets, media).
+//     const whitelist = ['document', 'script', 'xhr', 'fetch'];
+//     if (!whitelist.includes(req.resourceType())) {
+//       return req.abort();
+//     }
+
+//     // 3. Pass through all other requests.
+//     return req.continue();
+//   });
+// }
+
 /**
  * @param {string} url URL to prerender.
  * @param {request} request Request being processed by the server (used for caching headers)
@@ -88,36 +107,16 @@ export const puppeteerSsr = async (url: string, request: express.Request) => {
           args: ['--no-sandbox']
         }
       );
-  // const browser = await puppeteer.connect({browserWSEndpoint});
-
   const page = await browser.newPage();
+  
   try {
 
-    console.log('Attempting to intercept requests before loading page');
-    // 1. Intercept network requests.
-    await page.setRequestInterception(true);
-
-    // TODO: SEE IF I CAN INTERCEPT THE LINGERING FIRESTORE XHR REQUEST THAT TAKES FOREVER TO RUN
-    page.on('request', req => {
-      // 2. Ignore requests for resources that don't produce DOM
-      // (images, stylesheets, media).
-      const whitelist = ['document', 'script', 'xhr', 'fetch'];
-      if (!whitelist.includes(req.resourceType())) {
-        return req.abort();
-      }
-
-      // 3. Pass through all other requests.
-      return req.continue();
-    });
+    // await interceptRequest(page);
 
     console.log('Attempting to go to page', url);
-    // networkidle0 waits for the network to be idle (no requests for 500ms).
-    // The page's JS has likely produced markup by this point, but wait longer
-    // if your site lazy loads, etc.
     await page.goto(url, {waitUntil: 'load'});
     console.log('Found page, waiting for selector to appear');
 
-    // TODO: FIGURE OUT A DIFFERENT SELECTOR THAT APPLIES TO ALL PAGES, BEST TO MAKE A NEW ONE THAT CAN BE USED ON ALL OF THEM
     await page.waitForSelector('.puppeteer-loaded'); // ensure .thumbnail class exists in the DOM.
   } catch (err) {
     console.error(err);
@@ -139,10 +138,6 @@ export const puppeteerSsr = async (url: string, request: express.Request) => {
     });
 
   await browser.close(); // Close the page we opened here (not the browser, which gets reused).
-  
-  // console.log('Closing browser page');
-  // await page.close(); // Close the page we opened here (not the browser, which gets reused).
-
 
   return {html, ttRenderMs};
 };
