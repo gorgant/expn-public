@@ -24,13 +24,11 @@ const createOrReverseFirebaseSafeUrl = (url: string, reverse?: boolean): string 
 const cachePage = async (url: string, request: express.Request, html: string) => {
   
   const userAgent = request.headers['user-agent'] ? `"user-agent":"${request.headers['user-agent']}"` : undefined;
-  const vary = request.headers['vary'] ? `"vary":"${request.headers['vary']}"` : undefined;
-  const contentType = request.headers['content-type'] ? `"content-type":"${request.headers['content-type']}"` : undefined;
   const fbSafeUrl: string = createOrReverseFirebaseSafeUrl(url);
 
   const webpage: Webpage = {
-    expires: now() + (1000 * 60 * 60 * 24 * 3), // Set expiry for three days
-    headers: `{${userAgent ? `${userAgent}` : ''}${vary ? `,${vary}` : ''}${contentType ? `,${contentType}` : ''}}`,
+    expires: now() + (1000 * 60 * 60 * 24 * 7), // Set expiry for seven days
+    headers: `{${userAgent ? `${userAgent}` : ''}}`,
     payload: html,
     saved: now(),
     url: createOrReverseFirebaseSafeUrl(fbSafeUrl, true) // Revert to normal url
@@ -87,11 +85,18 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
 /**
  * @param {string} url URL to prerender.
  * @param {request} request Request being processed by the server (used for caching headers)
+ * @param {cachUpdate} cachUpdate Indicates if this is an automated cache update from a chron job
  */
 
-export const puppeteerSsr = async (url: string, request: express.Request) => {
+export const puppeteerSsr = async (url: string, request: express.Request, cacheUpdate?: boolean) => {
   
-  const cachedPage = await retrieveCachedPage(url);
+  let cachedPage;
+
+  // Retrieve cached page if this isn't a cacheUpdate request
+  if (!cacheUpdate) {
+    cachedPage = await retrieveCachedPage(url);
+  }
+
 
   if (cachedPage) {
     console.log('Returning cached page payload', cachedPage.payload);
@@ -114,10 +119,11 @@ export const puppeteerSsr = async (url: string, request: express.Request) => {
     // await interceptRequest(page);
 
     console.log('Attempting to go to page', url);
+    page.setDefaultNavigationTimeout(40000); // Increase timeout to 40 seconds
     await page.goto(url, {waitUntil: 'load'});
     console.log('Found page, waiting for selector to appear');
 
-    await page.waitForSelector('.puppeteer-loaded'); // ensure .thumbnail class exists in the DOM.
+    await page.waitForSelector('.puppeteer-loaded'); // ensure .puppeteer-loaded class exists in the DOM.
   } catch (err) {
     console.error(err);
     throw new Error('page.goto/waitForSelector timed out.');

@@ -2,26 +2,11 @@ import * as functions from 'firebase-functions';
 import * as express from 'express';
 import * as nodeFedtch from 'node-fetch';
 import * as url from 'url';
-import { currentEnvironmentType } from '../environments/config';
-import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
-// import * as puppeteer from 'puppeteer';
+import { publicAppUrl } from '../environments/config';
 import { puppeteerSsr } from './puppeteer';
-// let browserWSEndpoint: string;
 const app = express();
 
-let appUrl: string;
-
-switch (currentEnvironmentType) {
-  case EnvironmentTypes.PRODUCTION:
-    appUrl = PRODUCTION_APPS.publicApp.websiteDomain;
-    break;
-  case EnvironmentTypes.SANDBOX:
-    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
-    break;
-  default:
-    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
-    break;
-}
+const appUrl = publicAppUrl;
 
 // Generates the URL using the correct public host domain (vs the request version which will point you to cloudfunctions.net)
 const generateUrl = (request: express.Request) => {
@@ -89,26 +74,43 @@ const detectHeadlessChrome = (userAgent: any) => {
   return false;
 }
 
+const detectGoogleBotBlogQuery = (userAgent: string, req: express.Request): boolean => {
+  const isBlogPost: boolean = req.originalUrl.includes('blog/') ? true : false;
+  const isGoogleBot: boolean = userAgent.toLowerCase().includes('googlebot') ? true : false;
+  if (isBlogPost && isGoogleBot) {
+    console.log('Google blog post inquiry detected');
+    return true;
+  }
+  return false;
+
+}
+
 app.get( '*', async (req: express.Request, res: express.Response) => {
 
   console.log('Request received with these headers', req.headers);
 
-  const isBot = detectBot(req.headers['user-agent']);
+  const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
+
+  const isBot = detectBot(userAgent);
   const isHeadless = detectHeadlessChrome(req.headers['user-agent']);
+  const isGoogleBotBlogQuery = detectGoogleBotBlogQuery(userAgent, req);
 
-  if (isBot) {
+  const botUrl = generateUrl(req);
 
-    const botUrl = generateUrl(req);
-
-    // if (!browserWSEndpoint) {
-    //   const browser = await puppeteer.launch(
-    //     {
-    //       // No sandbox is required in cloud functions
-    //       args: ['--no-sandbox']
-    //     }
-    //   );
-    //   browserWSEndpoint = await browser.wsEndpoint();
-    // }
+  // // If query params match, run the puppeteer update to refresh cache
+  // else if (req.query.updateWebCache) {
+  //   console.log('Cache update detected');
+  //   const {html, ttRenderMs} = await puppeteerSsr(botUrl, req, true) // Note this is a cache update
+  //     .catch(err => {
+  //       console.log('Error with puppeteerSsr', err);
+  //       return err;
+  //     });
+  //   res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
+  //   res.status(200).send(html); // Serve prerendered page as response.
+  // } 
+  
+  // If its a bot and not a blog post query, run puppeteer to get html
+  if (isBot && !isGoogleBotBlogQuery) {
 
     console.log('Sending this url to puppeteer', botUrl);
     const {html, ttRenderMs} = await puppeteerSsr(botUrl, req)
@@ -123,35 +125,43 @@ app.get( '*', async (req: express.Request, res: express.Response) => {
     res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
     res.status(200).send(html); // Serve prerendered page as response.
 
-  } else if (isHeadless) {
+  } 
+  
+  // // If this is a headless request, run standard logic
+  // else if (isHeadless) {
 
-    const headlessUrl = `https://${appUrl}`;
-    console.log('Fetching headless url', headlessUrl);
+  //   const fullStandardUrl = `https://${appUrl}`;
+  //   console.log('Fetching headless url', fullStandardUrl);
 
-    const urlResponse: nodeFedtch.Response = await nodeFedtch.default(headlessUrl)
-      .catch(err => {
-        console.log('Error fetching url response', err);
-        return err;
-      });
-    console.log('Fetched this url response', urlResponse);
+  //   const urlResponse: nodeFedtch.Response = await nodeFedtch.default(fullStandardUrl)
+  //     .catch(err => {
+  //       console.log('Error fetching url response', err);
+  //       return err;
+  //     });
+  //   console.log('Fetched this url response', urlResponse);
 
-    const resBody: string = await urlResponse.text()
-      .catch(err => {
-        console.log('Error fetching res body', err);
-        return err;
-      });
+  //   const resBody: string = await urlResponse.text()
+  //     .catch(err => {
+  //       console.log('Error fetching res body', err);
+  //       return err;
+  //     });
 
-    // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
-    const processRes = (body: string) => {
-      res.send(body.toString());
+  //   // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
+  //   const processRes = (body: string) => {
+  //     res.send(body.toString());
+  //   }
+    
+  //   processRes(resBody);
+
+  // } 
+  
+  // Fetch the regular Angular app
+  else {
+
+    if (isHeadless) {
+      console.log('Headless request detected');
     }
-    
-    processRes(resBody);
 
-  } else {
-
-    // Not a bot, fetch the regular Angular app
-    
     const fullStandardUrl = `https://${appUrl}`;
     console.log('Fetching standard url', fullStandardUrl);
 

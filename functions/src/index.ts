@@ -18,14 +18,14 @@ export {
   transmitContactFormToAdmin
 } from './contact-form/transmit-contact-form-to-admin';
 
-// export {
-//   filterUserAgent
-// } from './rendertron/filter-user-agent';
-
-// export {
-//   rendertronMiddleware
-// } from './rendertron/rendertron-middleware';
-
 export {
   puppeteerServer
-} from './rendertron/puppeteer-server';
+} from './puppeteer/puppeteer-server';
+
+export {
+  transmitWebpageUrlsToPuppeteer
+} from './puppeteer/transmit-webpage-urls-to-puppeteer';
+
+export {
+  updateWebpageCache
+} from './puppeteer/update-webpage-cache';

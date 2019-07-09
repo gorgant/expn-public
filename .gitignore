@@ -10,9 +10,9 @@
 # dependencies
 /node_modules
 
-#rendertron
-/rendertron
-/shellApp
+#app-engine
+/app-engine/node_modules
+/app-engine/build
 
 # profiling files
 chrome-profiler-events.json

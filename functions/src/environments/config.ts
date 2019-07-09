@@ -40,3 +40,22 @@ const getPublicProjectId = (): string => {
 }
 
 export const publicProjectId = getPublicProjectId();
+
+const getPublicAppUrl = (): string => {
+  let appUrl: string;
+
+  switch (currentEnvironmentType) {
+    case EnvironmentTypes.PRODUCTION:
+      appUrl = PRODUCTION_APPS.publicApp.websiteDomain;
+      break;
+    case EnvironmentTypes.SANDBOX:
+      appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+      break;
+    default:
+      appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+      break;
+  }
+  return appUrl
+}
+
+export const publicAppUrl = getPublicAppUrl();
