@@ -2,8 +2,9 @@ import * as puppeteer from 'puppeteer';
 import { publicFirestore } from '../db';
 import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { Webpage } from '../../../shared-models/ssr/webpage.model';
-import * as express from 'express';
 import { now } from 'moment';
+import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
+import { PuppeteerResponse } from '../../../shared-models/ssr/puppeteer-response';
 const db = publicFirestore;
 
 // Courtesy of: https://developers.google.com/web/tools/puppeteer/articles/ssr
@@ -21,9 +22,8 @@ const createOrReverseFirebaseSafeUrl = (url: string, reverse?: boolean): string 
 }
 
 // Store cache in Firebase for rapid access
-const cachePage = async (url: string, request: express.Request, html: string) => {
+const cachePage = async (url: string, userAgent: string, html: string) => {
   
-  const userAgent = request.headers['user-agent'] ? `"user-agent":"${request.headers['user-agent']}"` : undefined;
   const fbSafeUrl: string = createOrReverseFirebaseSafeUrl(url);
 
   const webpage: Webpage = {
@@ -82,36 +82,56 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
 //   });
 // }
 
+const exitWithCacheRespnse = (cachedPage: Webpage) => {
+  console.log('Returning cached page payload', cachedPage.payload);
+    const cacheResponse: PuppeteerResponse = {
+      html: cachedPage.payload,
+      ttRenderMs: 0
+    }
+  
+    return cacheResponse;
+}
+
+const exitWithEmptyRespnose = () => {
+  console.log('No cached page for Google bot, serving normally');
+  return {html: '', ttRenderMs: 0, emptyRespnse: true};
+}
+
 /**
  * @param {string} url URL to prerender.
- * @param {request} request Request being processed by the server (used for caching headers)
- * @param {cachUpdate} cachUpdate Indicates if this is an automated cache update from a chron job
+ * @param {express.Request} request Request being processed by the server (used for caching headers)
+ * @param {WebpageRequestType} requestType Dictates how the request should be handled by puppeteer
  */
 
-export const puppeteerSsr = async (url: string, request: express.Request, cacheUpdate?: boolean) => {
+export const puppeteerSsr = async (url: string, userAgent: string, requestType: WebpageRequestType): Promise<PuppeteerResponse> => {
   
   let cachedPage;
 
   // Retrieve cached page if this isn't a cacheUpdate request
-  if (!cacheUpdate) {
+  if (requestType !== WebpageRequestType.AUTO_CACHE) {
     cachedPage = await retrieveCachedPage(url);
   }
 
 
+  // If cached page exists, return that and end the function
   if (cachedPage) {
-    console.log('Returning cached page payload', cachedPage.payload);
-    return {html: cachedPage.payload, ttRenderMs: 0};
+    return exitWithCacheRespnse(cachedPage);
+  }
+
+  // If no cache and it's a Google Bot, abort with empty response and process as a human request
+  if (!cachedPage && requestType === WebpageRequestType.GOOGLE_BOT) {
+    return exitWithEmptyRespnose();
   }
 
   const start = Date.now();
 
   
   const browser = await puppeteer.launch(
-        {
-          // No sandbox is required in cloud functions
-          args: ['--no-sandbox']
-        }
-      );
+      {
+        // No sandbox is required in cloud functions
+        args: ['--no-sandbox']
+      }
+    );
   const page = await browser.newPage();
   
   try {
@@ -136,8 +156,7 @@ export const puppeteerSsr = async (url: string, request: express.Request, cacheU
   const ttRenderMs = Date.now() - start;
   console.info(`Headless rendered page in: ${ttRenderMs}ms`);
 
-  // RENDER_CACHE.set(url, html); // cache rendered page.
-  await cachePage(url, request, html)
+  await cachePage(url, userAgent, html)
     .catch(error => {
       console.log('Error caching page', error);
       return error;
@@ -145,5 +164,10 @@ export const puppeteerSsr = async (url: string, request: express.Request, cacheU
 
   await browser.close(); // Close the page we opened here (not the browser, which gets reused).
 
-  return {html, ttRenderMs};
+  const response: PuppeteerResponse = {
+    html,
+    ttRenderMs
+  }
+
+  return response;
 };

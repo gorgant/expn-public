@@ -4,7 +4,8 @@ import * as nodeFedtch from 'node-fetch';
 import * as url from 'url';
 import { publicAppUrl } from '../environments/config';
 import { puppeteerSsr } from './puppeteer';
-const app = express();
+import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
+import { PuppeteerResponse } from '../../../shared-models/ssr/puppeteer-response';
 
 const appUrl = publicAppUrl;
 
@@ -49,7 +50,6 @@ const detectBot = (userAgent: any) => {
     'whatsapp',
   ]
 
-
   // Return true if the user-agent header matches a bot namespace
   const agent = userAgent.toLowerCase();
 
@@ -74,116 +74,86 @@ const detectHeadlessChrome = (userAgent: any) => {
   return false;
 }
 
-const detectGoogleBotBlogQuery = (userAgent: string, req: express.Request): boolean => {
-  const isBlogPost: boolean = req.originalUrl.includes('blog/') ? true : false;
+const detectGoogleBot = (userAgent: string): boolean => {
   const isGoogleBot: boolean = userAgent.toLowerCase().includes('googlebot') ? true : false;
-  if (isBlogPost && isGoogleBot) {
-    console.log('Google blog post inquiry detected');
-    return true;
-  }
-  return false;
-
+  return isGoogleBot;
 }
 
-app.get( '*', async (req: express.Request, res: express.Response) => {
+const renderOnClient = async (userAgent: string, res: express.Response) => {
+  console.log('Rendering on client');
+
+  const isHeadless = detectHeadlessChrome(userAgent);
+
+  if (isHeadless) {
+    console.log('Headless request detected');
+  }
+
+  const fullStandardUrl = `https://${appUrl}`;
+  console.log('Fetching standard url', fullStandardUrl);
+
+  const urlResponse: nodeFedtch.Response = await nodeFedtch.default(fullStandardUrl)
+    .catch(err => {
+      console.log('Error fetching url response', err);
+      return err;
+    });
+  console.log('Fetched this url response', urlResponse);
+
+  const resBody: string = await urlResponse.text()
+    .catch(err => {
+      console.log('Error fetching res body', err);
+      return err;
+    });
+
+  // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
+  const processRes = (body: string) => {
+    res.send(body.toString());
+  }
+  
+  processRes(resBody);
+}
+
+const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, res: express.Response) => {
+
+  const isGoogleBot = detectGoogleBot(userAgent);
+  const requestType = isGoogleBot ? WebpageRequestType.GOOGLE_BOT : WebpageRequestType.OTHER_BOT;
+  const botUrl = generateUrl(req);
+
+  console.log('Sending this url to puppeteer', botUrl);
+  const puppeteerResponse: PuppeteerResponse = await puppeteerSsr(botUrl, userAgent, requestType)
+    .catch(err => {
+      console.log('Error with puppeteerSsr', err);
+      return err;
+    });
+  
+  // If response is empty, switch to rendering on client
+  if (puppeteerResponse.emptyResponse) {
+    await renderOnClient(userAgent, res);
+    return;
+  }
+
+  console.log('Pre-rendering with puppeteer response', puppeteerResponse.html);
+
+  // Add Server-Timing! See https://w3c.github.io/server-timing/.
+  res.set('Server-Timing', `Prerender;dur=${puppeteerResponse.ttRenderMs};desc="Headless render time (ms)"`);
+  res.status(200).send(puppeteerResponse.html); // Serve prerendered page as response.
+}
+
+
+
+
+/////// DEPLOYABLE FUNCTIONS ///////
+
+const app = express().get( '*', async (req: express.Request, res: express.Response) => {
 
   console.log('Request received with these headers', req.headers);
 
   const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
-
   const isBot = detectBot(userAgent);
-  const isHeadless = detectHeadlessChrome(req.headers['user-agent']);
-  const isGoogleBotBlogQuery = detectGoogleBotBlogQuery(userAgent, req);
 
-  const botUrl = generateUrl(req);
-
-  // // If query params match, run the puppeteer update to refresh cache
-  // else if (req.query.updateWebCache) {
-  //   console.log('Cache update detected');
-  //   const {html, ttRenderMs} = await puppeteerSsr(botUrl, req, true) // Note this is a cache update
-  //     .catch(err => {
-  //       console.log('Error with puppeteerSsr', err);
-  //       return err;
-  //     });
-  //   res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
-  //   res.status(200).send(html); // Serve prerendered page as response.
-  // } 
-  
-  // If its a bot and not a blog post query, run puppeteer to get html
-  if (isBot && !isGoogleBotBlogQuery) {
-
-    console.log('Sending this url to puppeteer', botUrl);
-    const {html, ttRenderMs} = await puppeteerSsr(botUrl, req)
-      .catch(err => {
-        console.log('Error with puppeteerSsr', err);
-        return err;
-      });
-
-    console.log('Retrieved this html from puppeteer', html);
-
-    // Add Server-Timing! See https://w3c.github.io/server-timing/.
-    res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
-    res.status(200).send(html); // Serve prerendered page as response.
-
-  } 
-  
-  // // If this is a headless request, run standard logic
-  // else if (isHeadless) {
-
-  //   const fullStandardUrl = `https://${appUrl}`;
-  //   console.log('Fetching headless url', fullStandardUrl);
-
-  //   const urlResponse: nodeFedtch.Response = await nodeFedtch.default(fullStandardUrl)
-  //     .catch(err => {
-  //       console.log('Error fetching url response', err);
-  //       return err;
-  //     });
-  //   console.log('Fetched this url response', urlResponse);
-
-  //   const resBody: string = await urlResponse.text()
-  //     .catch(err => {
-  //       console.log('Error fetching res body', err);
-  //       return err;
-  //     });
-
-  //   // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
-  //   const processRes = (body: string) => {
-  //     res.send(body.toString());
-  //   }
-    
-  //   processRes(resBody);
-
-  // } 
-  
-  // Fetch the regular Angular app
-  else {
-
-    if (isHeadless) {
-      console.log('Headless request detected');
-    }
-
-    const fullStandardUrl = `https://${appUrl}`;
-    console.log('Fetching standard url', fullStandardUrl);
-
-    const urlResponse: nodeFedtch.Response = await nodeFedtch.default(fullStandardUrl)
-      .catch(err => {
-        console.log('Error fetching url response', err);
-        return err;
-      });
-    console.log('Fetched this url response', urlResponse);
-
-    const resBody: string = await urlResponse.text()
-      .catch(err => {
-        console.log('Error fetching res body', err);
-        return err;
-      });
-
-    // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
-    const processRes = (body: string) => {
-      res.send(body.toString());
-    }
-    
-    processRes(resBody);
+  if (isBot) {
+    await preRenderWithPuppeteer(req, userAgent, res);
+  } else {
+    await renderOnClient(userAgent, res);
   }
   
 });
