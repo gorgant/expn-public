@@ -31,6 +31,8 @@ export function featureReducer(state = initialState, action: Actions): State {
       return {
         ...state,
         isLoading: false,
+        contactFormProcessing: false,
+        subscribeProcessing: false,
         error: action.payload.error
       };
     case ActionTypes.SET_CART_DATA:

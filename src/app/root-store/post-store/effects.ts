@@ -42,7 +42,12 @@ export class PostStoreEffects {
     switchMap(action =>
       this.postService.fetchAllPosts()
         .pipe(
-          map(posts => new postFeatureActions.AllPostsLoaded({ posts })),
+          map(posts => {
+            if (!posts) {
+              throw new Error('Posts not found');
+            }
+            return new postFeatureActions.AllPostsLoaded({ posts });
+          }),
           catchError(error => {
             return of(new postFeatureActions.LoadErrorDetected({ error }));
           })
@@ -58,7 +63,12 @@ export class PostStoreEffects {
     switchMap(action =>
       this.postService.fetchFeaturedPosts()
         .pipe(
-          map(posts => new postFeatureActions.FeaturedPostsLoaded({ posts })),
+          map(posts => {
+            if (!posts) {
+              throw new Error('Featured posts not found');
+            }
+            return new postFeatureActions.FeaturedPostsLoaded({ posts });
+          }),
           catchError(error => {
             return of(new postFeatureActions.LoadErrorDetected({ error }));
           })

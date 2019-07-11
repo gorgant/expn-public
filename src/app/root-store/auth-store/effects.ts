@@ -26,10 +26,13 @@ export class AuthStoreEffects {
         .pipe(
           // Load user data into the store
           tap(userData => {
+            if (!userData) {
+              throw new Error('User data not found');
+            }
             // Add or update user info in database (will trigger a subsequent user store update request in User Store)
             return this.store$.dispatch(new userFeatureActions.StoreUserDataRequested({userData}));
           }),
-          map(userCreds => new authFeatureActions.AuthenticationComplete()),
+          map(userData => new authFeatureActions.AuthenticationComplete()),
           catchError(error => {
             return of(new authFeatureActions.LoadErrorDetected({ error }));
           })

@@ -21,7 +21,12 @@ export class UiStoreEffects {
     switchMap(action =>
       this.uiService.fetchGeographicData()
         .pipe(
-          map(geographicData => new uiFeatureActions.GeographicDataLoaded({ geographicData })),
+          map(geographicData => {
+            if (!geographicData) {
+              throw new Error('Geographic data not found');
+            }
+            return new uiFeatureActions.GeographicDataLoaded({ geographicData });
+          }),
           catchError(error => {
             return of(new uiFeatureActions.LoadErrorDetected({ error }));
           })

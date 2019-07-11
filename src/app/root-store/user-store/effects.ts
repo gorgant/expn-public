@@ -25,7 +25,12 @@ export class UserStoreEffects {
     switchMap(action =>
       this.userService.fetchUserData(action.payload.userId)
         .pipe(
-          map(user => new userFeatureActions.UserDataLoaded({userData: user})),
+          map(user => {
+            if (!user) {
+              throw new Error('User not found');
+            }
+            return new userFeatureActions.UserDataLoaded({userData: user});
+          }),
           catchError(error => {
             return of(new userFeatureActions.LoadErrorDetected({ error }));
           })
@@ -42,12 +47,15 @@ export class UserStoreEffects {
       this.userService.storeUserData(action.payload.userData)
       .pipe(
         tap(userId => {
+          if (!userId) {
+            throw new Error('User ID not found');
+          }
           // After data is stored, fetch it to update user data in local store for immediate UI updates
           this.store$.dispatch(
             new userFeatureActions.UserDataRequested({userId})
           );
         }),
-        map(appUser => new userFeatureActions.StoreUserDataComplete()),
+        map(userId => new userFeatureActions.StoreUserDataComplete()),
         catchError(error => {
           return of(new userFeatureActions.LoadErrorDetected({ error }));
         })
@@ -62,7 +70,9 @@ export class UserStoreEffects {
     ),
     map(action => action.payload.productData),
     tap(productData => {
-      localStorage.setItem(ProductStrings.OFFLINE_PRODUCT_DATA, JSON.stringify(productData));
+      if (localStorage) {
+        localStorage.setItem(ProductStrings.OFFLINE_PRODUCT_DATA, JSON.stringify(productData));
+      }
     })
   );
 
@@ -72,7 +82,9 @@ export class UserStoreEffects {
       userFeatureActions.ActionTypes.PURGE_CART_DATA
     ),
     tap(() => {
-      localStorage.removeItem(ProductStrings.OFFLINE_PRODUCT_DATA);
+      if (localStorage && localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA)) {
+        localStorage.removeItem(ProductStrings.OFFLINE_PRODUCT_DATA);
+      }
     })
   );
 
@@ -84,7 +96,12 @@ export class UserStoreEffects {
     switchMap(action =>
       this.userService.publishEmailSubToAdminTopic(action.payload.emailSubData)
         .pipe(
-          map(response => new userFeatureActions.SubscribeUserComplete()),
+          map(response => {
+            if (!response) {
+              throw new Error('No response from subscribeUser function');
+            }
+            return new userFeatureActions.SubscribeUserComplete();
+          }),
           catchError(error => {
             return of(new userFeatureActions.LoadErrorDetected({ error }));
           })
@@ -100,7 +117,12 @@ export class UserStoreEffects {
     switchMap(action =>
       this.userService.publishContactFormToAdminTopic(action.payload.contactForm)
         .pipe(
-          map(response => new userFeatureActions.TransmitContactFormComplete()),
+          map(response => {
+            if (!response) {
+              throw new Error('No response from public contact form function');
+            }
+            return new userFeatureActions.TransmitContactFormComplete();
+          }),
           catchError(error => {
             return of(new userFeatureActions.LoadErrorDetected({ error }));
           })
@@ -116,7 +138,12 @@ export class UserStoreEffects {
     switchMap(action =>
       this.userService.storeNavStamp(action.payload.user, action.payload.navStamp)
         .pipe(
-          map(response => new userFeatureActions.StoreNavStampComplete()),
+          map(response => {
+            if (!response) {
+              throw new Error('No response from store nave stamp request');
+            }
+            return new userFeatureActions.StoreNavStampComplete();
+          }),
           catchError(error => {
             return of(new userFeatureActions.LoadErrorDetected({ error }));
           })

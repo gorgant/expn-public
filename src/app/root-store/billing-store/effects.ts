@@ -21,7 +21,12 @@ export class BillingStoreEffects {
     switchMap(action =>
       this.billingService.processPayment(action.payload.billingData)
         .pipe(
-          map(paymentResponse => new billingFeatureActions.ProcessPaymentComplete({paymentResponse})),
+          map(paymentResponse => {
+            if (!paymentResponse) {
+              throw new Error('Payment response not found');
+            }
+            return new billingFeatureActions.ProcessPaymentComplete({paymentResponse});
+          }),
           catchError(error => {
             return of(new billingFeatureActions.LoadErrorDetected({ error }));
           })
@@ -38,12 +43,16 @@ export class BillingStoreEffects {
     switchMap(action =>
       this.billingService.transmitOrderToAdmin(action.payload.stripeCharge, action.payload.user)
         .pipe(
-          map(paymentResponse => new billingFeatureActions.TransmitOrderToAdminComplete()),
+          map(paymentResponse => {
+            if (!paymentResponse) {
+              throw new Error('Payment response not found');
+            }
+            return new billingFeatureActions.TransmitOrderToAdminComplete();
+          }),
           catchError(error => {
             return of(new billingFeatureActions.LoadErrorDetected({ error }));
           })
         )
-
     )
   );
 

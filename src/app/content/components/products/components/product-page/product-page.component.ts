@@ -8,11 +8,12 @@ import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-pat
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
 import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { ProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-product-page',
@@ -23,6 +24,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
 
   productId: string;
   product$: Observable<Product>;
+  error$: Observable<string>;
+  errorSubscription: Subscription;
   productLoaded: boolean;
   private titleSet: boolean;
   productSubscription: Subscription;
@@ -37,12 +40,14 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    private router: Router
   ) { }
 
   ngOnInit() {
     // this.setProductPathsBasedOnEnvironment();
     this.initializeProductData();
+    this.handleProductError();
     this.initializePageComponents();
   }
 
@@ -85,6 +90,10 @@ export class ProductPageComponent implements OnInit, OnDestroy {
           return product;
         }),
       );
+
+    this.error$ = this.store$.select(
+      ProductStoreSelectors.selectProductError
+    );
   }
 
   private initializePageComponents() {
@@ -127,10 +136,24 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     this.testamonialData = testamonialsList;
   }
 
+  private handleProductError() {
+    this.error$.subscribe(error => {
+      if (error) {
+        this.router.navigate([PublicAppRoutes.PRODUCTS]);
+        console.log('Product load error, routing to blog');
+      }
+    });
+  }
+
   ngOnDestroy() {
     if (this.productSubscription) {
       this.productSubscription.unsubscribe();
     }
+
+    if (this.errorSubscription) {
+      this.errorSubscription.unsubscribe();
+    }
+
     this.analyticsService.closeNavStamp();
   }
 

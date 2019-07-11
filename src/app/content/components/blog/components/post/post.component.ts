@@ -4,10 +4,11 @@ import { Observable, Subscription } from 'rxjs';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-post',
@@ -19,6 +20,7 @@ export class PostComponent implements OnInit, OnDestroy {
   postId: string;
   post$: Observable<Post>;
   error$: Observable<string>;
+  errorSubscription: Subscription;
   isLoading$: Observable<boolean>;
   postLoaded: boolean;
   titleSet: boolean;
@@ -35,10 +37,12 @@ export class PostComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private analyticsService: AnalyticsService,
+    private router: Router
   ) { }
 
   ngOnInit() {
     this.loadExistingPostData();
+    this.handlePostError();
   }
 
 
@@ -135,11 +139,25 @@ export class PostComponent implements OnInit, OnDestroy {
     }
   }
 
+  private handlePostError() {
+    this.error$.subscribe(error => {
+      if (error) {
+        this.router.navigate([PublicAppRoutes.BLOG]);
+        console.log('Post load error, routing to blog');
+      }
+    });
+  }
+
   ngOnDestroy() {
     if (this.postSubscription) {
       this.postSubscription.unsubscribe();
-      this.analyticsService.closeNavStamp();
     }
+
+    if (this.errorSubscription) {
+      this.errorSubscription.unsubscribe();
+    }
+
+    this.analyticsService.closeNavStamp();
   }
 
 }

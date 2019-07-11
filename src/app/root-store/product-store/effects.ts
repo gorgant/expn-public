@@ -21,7 +21,12 @@ export class ProductStoreEffects {
     mergeMap(action =>
       this.productService.fetchSingleProduct(action.payload.productId)
         .pipe(
-          map(product => new productFeatureActions.SingleProductLoaded({ product })),
+          map(product => {
+            if (!product) {
+              throw new Error('Product not found');
+            }
+            return new productFeatureActions.SingleProductLoaded({ product });
+          }),
           catchError(error => {
             return of(new productFeatureActions.LoadErrorDetected({ error }));
           })
@@ -37,7 +42,12 @@ export class ProductStoreEffects {
     switchMap(action =>
       this.productService.fetchAllProducts()
         .pipe(
-          map(products => new productFeatureActions.AllProductsLoaded({ products })),
+          map(products => {
+            if (!products) {
+              throw new Error('Products not found');
+            }
+            return new productFeatureActions.AllProductsLoaded({ products });
+          }),
           catchError(error => {
             return of(new productFeatureActions.LoadErrorDetected({ error }));
           })
