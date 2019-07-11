@@ -50,7 +50,7 @@ export class SubscribeComponent implements OnInit {
       .subscribe(user => {
         console.log('Checking for user to subscribe', user);
         if (user) {
-          // Update the user's email address (or add to a new billing details object)
+          // Update the user's name and email address (or add to a new billing details object)
           const updatedUser: PublicUser = {
             ...user,
             billingDetails: user.billingDetails ? {
@@ -58,6 +58,7 @@ export class SubscribeComponent implements OnInit {
               firstName: this.firstName.value,
               email: this.email.value
             } : {
+              firstName: this.firstName.value,
               email: this.email.value
             }
           };

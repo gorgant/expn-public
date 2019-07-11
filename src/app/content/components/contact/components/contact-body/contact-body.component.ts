@@ -50,7 +50,7 @@ export class ContactBodyComponent implements OnInit {
         console.log('Checking for user to subscribe', user);
         if (user) {
           const existingFirstName = user.stripeCustomerId && user.billingDetails.firstName;
-          // Update the user's email address (or add to a new billing details object)
+          // Update the user's name and email address (or add to a new billing details object)
           const updatedUser: PublicUser = {
             ...user,
             billingDetails: user.billingDetails ? {
@@ -58,6 +58,7 @@ export class ContactBodyComponent implements OnInit {
               firstName: existingFirstName ? existingFirstName : this.firstName.value, // Prefer an existing value if user has order history
               email: this.email.value
             } : {
+              firstName: this.firstName.value,
               email: this.email.value
             }
           };

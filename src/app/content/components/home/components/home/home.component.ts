@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { ProductIdList } from 'src/app/core/models/products/product-id-list.model';
+import { ProductIdList, ProductUrlSlugList } from 'src/app/core/models/products/product-id-list.model';
 import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
@@ -16,6 +16,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private productionEnvironment: boolean = environment.production;
   remoteCoachProductId: string;
+  remoteCoachUrlSlug: string;
 
   heroData: PageHeroData;
   appRoutes = PublicAppRoutes;
@@ -48,13 +49,16 @@ export class HomeComponent implements OnInit, OnDestroy {
       case true:
         console.log('Setting productIdList to production');
         this.remoteCoachProductId = ProductIdList.REMOTE_COACH;
+        this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
         break;
       case false:
         console.log('Setting productIdList to sandbox');
         this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
+        this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
         break;
       default:
         this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
+        this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
         break;
     }
   }
