@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
 
-  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
   constructor(
     private uiService: UiService,

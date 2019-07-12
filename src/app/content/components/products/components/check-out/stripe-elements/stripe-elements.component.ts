@@ -35,7 +35,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
 
 
 
-  @ViewChild('cardElement') cardElement: ElementRef;
+  @ViewChild('cardElement', { static: true }) cardElement: ElementRef;
 
   stripe: stripe.Stripe;
   stripePublishableKey: string;
