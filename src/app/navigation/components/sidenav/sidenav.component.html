@@ -3,6 +3,7 @@
   <a mat-list-item 
     routerLinkActive="active-list-item"
     [routerLink]="appRoutes.HOME"
+    [routerLinkActiveOptions]="{exact: true}"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>home</mat-icon>
     <p mat-line>Home</p>
