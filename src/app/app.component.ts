@@ -15,7 +15,9 @@ import {
   metaTagFbAppId,
   metaTagTwitterHandle,
   metaTagTwitterCardType,
-  metaTagAuthor
+  metaTagAuthor,
+  metaTagDefaultTitle,
+  metaTagDefaultDescription
 } from './core/models/analytics/metatags.model';
 import { PublicImagePaths } from './core/models/routes-and-paths/image-paths.model';
 import { AnalyticsService } from './core/services/analytics/analytics.service';
@@ -26,7 +28,7 @@ import { AnalyticsService } from './core/services/analytics/analytics.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Explearning - Communicate With Clarity';
+  title = metaTagDefaultTitle;
   appVersion = '1.7.6';
 
   private userAuthenticationRequested: boolean;
@@ -130,9 +132,9 @@ export class AppComponent implements OnInit {
 
   private configSeoAndAnalytics() {
 
-    const title = `Explearning - Communicate With Clarity`;
+    const title = metaTagDefaultTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.`;
+    const description = metaTagDefaultDescription;
     const localImagePath = PublicImagePaths.HOME;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
@@ -141,7 +143,7 @@ export class AppComponent implements OnInit {
       // tslint:disable-next-line:max-line-length
       { name: 'keywords', content: metaTagDefaultKeywords },
       // tslint:disable-next-line:max-line-length
-      { name: 'description', content: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication' },
+      { name: 'description', content: description },
       { name: 'author', content: metaTagAuthor },
       { name: 'twitter:site', content: metaTagTwitterHandle }, // Twitter analytics
       { name: 'twitter:card', content: metaTagTwitterCardType }, // Twitter card display properties

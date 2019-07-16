@@ -60,8 +60,9 @@ app-page-hero {
   
   .text-container {
     font-size: $text-block-font-size;
-    padding-left: 16px;
-    padding-right: 16px;
+    // padding-left: 16px;
+    // padding-right: 16px;
+    padding: $text-block-padding;
     width: 100%;
     max-width: $text-block-max-width;
     
