@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { Post } from 'src/app/core/models/posts/post.model';
 import { UiService } from 'src/app/core/services/ui.service';
+import { Post } from 'shared-models/posts/post.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-post-item',

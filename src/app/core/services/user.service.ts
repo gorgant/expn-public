@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Observable, from, throwError } from 'rxjs';
-import { PublicUser } from '../models/user/public-user.model';
 import { map, takeUntil, catchError, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { PublicCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
-import { SubscriptionSource } from '../models/subscribers/subscription-source.model';
 import { AngularFireFunctions } from '@angular/fire/functions';
-import { PublicFunctionNames } from '../models/routes-and-paths/fb-function-names';
-import { EmailSubData } from '../models/subscribers/email-sub-data.model';
-import { EmailSubscriber } from '../models/subscribers/email-subscriber.model';
 import { now } from 'moment';
-import { ContactForm } from '../models/user/contact-form.model';
-import { NavigationStamp } from '../models/analytics/navigation-stamp.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
+import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
+import { EmailSubscriber } from 'shared-models/subscribers/email-subscriber.model';
+import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-names';
+import { ContactForm } from 'shared-models/user/contact-form.model';
+import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
+import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'

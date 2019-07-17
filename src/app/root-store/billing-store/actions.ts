@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
-import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
+import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
 
 export enum ActionTypes {
   PROCESS_PAYMENT_REQUESTED = '[Billing] Process Payment Requested',

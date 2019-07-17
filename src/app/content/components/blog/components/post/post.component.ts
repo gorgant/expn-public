@@ -1,14 +1,15 @@
 import { Component, OnInit, SecurityContext, OnDestroy } from '@angular/core';
-import { Post } from 'src/app/core/models/posts/post.model';
 import { Observable, Subscription } from 'rxjs';
-import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { Post } from 'shared-models/posts/post.model';
+import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-post',
@@ -49,7 +50,7 @@ export class PostComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics(post: Post) {
 
-    const title = `${post.title} - Explearning`;
+    const title = `${post.title} - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     const description = post.description;
     const localImagePath = this.heroData.imageProps.src;
     const keywords = post.keywords;

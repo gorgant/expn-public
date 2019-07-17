@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SUBSCRIBE_VALIDATION_MESSAGES } from '../../../core/models/forms-and-components/public-validation-messages.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions, UserStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import { takeWhile } from 'rxjs/operators';
-import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
-import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
+import { SUBSCRIBE_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
+import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 
 @Component({
   selector: 'app-subscribe',

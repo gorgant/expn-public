@@ -3,9 +3,9 @@ import { Subject, Observable, throwError, BehaviorSubject } from 'rxjs';
 import { MatSnackBarConfig, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { take, map, catchError } from 'rxjs/operators';
-import { GeographicData } from '../models/forms-and-components/geography/geographic-data.model';
-import { SharedCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
+import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'

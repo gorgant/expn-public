@@ -5,22 +5,13 @@ import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreActions, UserStoreActions } from './root-store';
 import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
-import { ProductStrings } from './core/models/products/product-strings.model';
-import { Product } from './core/models/products/product.model';
 import { Meta } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/firestore';
-import {
-  metaTagDefaultKeywords,
-  metaTagSiteName,
-  metaTagFbAppId,
-  metaTagTwitterHandle,
-  metaTagTwitterCardType,
-  metaTagAuthor,
-  metaTagDefaultTitle,
-  metaTagDefaultDescription
-} from './core/models/analytics/metatags.model';
-import { PublicImagePaths } from './core/models/routes-and-paths/image-paths.model';
 import { AnalyticsService } from './core/services/analytics/analytics.service';
+import { ProductStrings } from 'shared-models/products/product-strings.model';
+import { Product } from 'shared-models/products/product.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +19,7 @@ import { AnalyticsService } from './core/services/analytics/analytics.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = metaTagDefaultTitle;
+  title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
   appVersion = '1.7.6';
 
   private userAuthenticationRequested: boolean;
@@ -132,23 +123,23 @@ export class AppComponent implements OnInit {
 
   private configSeoAndAnalytics() {
 
-    const title = metaTagDefaultTitle;
+    const title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagDefaultDescription;
+    const description = metaTagDefaults.explearningPublic.metaTagDefaultDescription;
     const localImagePath = PublicImagePaths.HOME;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
 
     this.metaTagService.addTags([
       // tslint:disable-next-line:max-line-length
-      { name: 'keywords', content: metaTagDefaultKeywords },
+      { name: 'keywords', content: metaTagDefaults.explearningPublic.metaTagDefaultKeywords },
       // tslint:disable-next-line:max-line-length
       { name: 'description', content: description },
-      { name: 'author', content: metaTagAuthor },
-      { name: 'twitter:site', content: metaTagTwitterHandle }, // Twitter analytics
-      { name: 'twitter:card', content: metaTagTwitterCardType }, // Twitter card display properties
-      { property: 'og:site_name', content: metaTagSiteName },
-      { property: 'fb:app_id', content: metaTagFbAppId }, // Facebook analytics
+      { name: 'author', content: metaTagDefaults.explearningPublic.metaTagAuthor },
+      { name: 'twitter:site', content: metaTagDefaults.explearningPublic.metaTagTwitterHandle }, // Twitter analytics
+      { name: 'twitter:card', content: metaTagDefaults.explearningPublic.metaTagTwitterCardType }, // Twitter card display properties
+      { property: 'og:site_name', content: metaTagDefaults.explearningPublic.metaTagSiteName },
+      { property: 'fb:app_id', content: metaTagDefaults.explearningPublic.metaTagFbAppId }, // Facebook analytics
     ]);
   }
 

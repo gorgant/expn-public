@@ -1,5 +1,5 @@
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { Product } from 'src/app/core/models/products/product.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { Product } from 'shared-models/products/product.model';
 
 export interface State {
   user: PublicUser | null;

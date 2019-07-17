@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TestamonialData } from 'src/app/core/models/forms-and-components/testamonial-data.model';
+import { TestamonialData } from 'shared-models/forms-and-components/testamonial-data.model';
 
 @Component({
   selector: 'app-testamonial',

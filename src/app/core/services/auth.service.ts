@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { from, Observable, Subject, throwError } from 'rxjs';
 import { now } from 'moment';
-import { PublicAppRoutes } from '../models/routes-and-paths/app-routes.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Injectable({
   providedIn: 'root'

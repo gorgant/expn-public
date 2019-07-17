@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { ImageProps } from 'src/app/core/models/images/image-props.model';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
-import { Title, Meta } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
+import { ImageProps } from 'shared-models/images/image-props.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-contact',
@@ -15,8 +15,6 @@ export class ContactComponent implements OnInit, OnDestroy {
   heroData: PageHeroData;
 
   constructor(
-    private titleService: Title,
-    private metaTagService: Meta,
     private analyticsService: AnalyticsService
   ) { }
 
@@ -28,7 +26,7 @@ export class ContactComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Contact Me - Explearning`;
+    const title = `Contact Me - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `Get in touch with the Explearning team using this contact form. We welcome questions, suggestions, and any thoughtful input. Let us know if there is anything else we can do to help you improve your speaking and communication skills!`;
     const localImagePath = this.heroData.imageProps.src;

@@ -2,12 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { Post } from 'src/app/core/models/posts/post.model';
 import { withLatestFrom, map } from 'rxjs/operators';
-import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
-import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { Post } from 'shared-models/posts/post.model';
+import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
+import { ImageProps } from 'shared-models/images/image-props.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-blog',
@@ -36,7 +37,7 @@ export class BlogComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Blog - Explearning`;
+    const title = `Blog - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `On Explearning's blog you have access to our complete library of free lessons on speaking skills and effective communication. From public speaking techniques to interview strategies and negotiation tactics, our goal is to make you the best communicator you can be.`;
     const localImagePath = this.heroData.imageProps.src;

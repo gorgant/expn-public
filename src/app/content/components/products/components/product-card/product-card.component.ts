@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Product } from 'src/app/core/models/products/product.model';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { UiService } from 'src/app/core/services/ui.service';
+import { Product } from 'shared-models/products/product.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-product-card',

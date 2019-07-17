@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore } from '@angular/fire/firestore';
-import { Post } from '../models/posts/post.model';
 import { Observable, throwError } from 'rxjs';
 import { takeUntil, map, catchError, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { UiService } from './ui.service';
-import { SharedCollectionPaths } from '../models/routes-and-paths/fb-collection-paths';
+import { Post } from 'shared-models/posts/post.model';
+import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'

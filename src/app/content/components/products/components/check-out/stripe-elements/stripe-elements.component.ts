@@ -1,21 +1,21 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { Product } from 'src/app/core/models/products/product.model';
 import { Observable } from 'rxjs';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors, BillingStoreActions, UserStoreActions } from 'src/app/root-store';
-import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { StripeChargeData } from 'src/app/core/models/billing/stripe-charge-data.model';
 import * as StripeDefs from 'stripe';
 import { AbstractControl } from '@angular/forms';
-import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
 import { Router } from '@angular/router';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
-import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
 import { environment } from 'src/environments/environment';
-import { ProductionStripePublishableKeys, SandboxStripePublishableKeys } from 'src/app/core/models/environments/env-vars.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { Product } from 'shared-models/products/product.model';
+import { StripeError } from 'shared-models/billing/stripe-error.model';
+import { ProductionStripePublishableKeys, SandboxStripePublishableKeys } from 'shared-models/environments/env-vars.model';
+import { BillingDetails } from 'shared-models/billing/billing-details.model';
+import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
+import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
+import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-stripe-elements',

@@ -1,4 +1,4 @@
-import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
+import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
 
 export interface State {
   isOnline: boolean;

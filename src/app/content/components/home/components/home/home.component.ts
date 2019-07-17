@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { ProductIdList, ProductUrlSlugList } from 'src/app/core/models/products/product-id-list.model';
-import { ImageProps } from 'src/app/core/models/images/image-props.model';
 import { environment } from 'src/environments/environment';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
+import { ImageProps } from 'shared-models/images/image-props.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-home',
@@ -34,9 +35,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Explearning - Communicate With Clarity`;
+    const title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.`;
+    const description = metaTagDefaults.explearningPublic.metaTagDefaultDescription;
     const localImagePath = this.heroData.imageProps.src;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);

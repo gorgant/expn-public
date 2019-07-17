@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import * as StripeDefs from 'stripe';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-purchase-confirmation',
@@ -28,7 +29,7 @@ export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Purchase Confirmation - Explearning`);
+    this.titleService.setTitle(`Purchase Confirmation - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }

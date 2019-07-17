@@ -1,11 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { BuyNowBoxData } from 'src/app/core/models/products/buy-now-box-data.model';
-import { PublicIconPaths } from 'src/app/core/models/routes-and-paths/icon-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreActions } from 'src/app/root-store';
-import { Product } from 'src/app/core/models/products/product.model';
 import { Router } from '@angular/router';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
+import { Product } from 'shared-models/products/product.model';
+import { PublicIconPaths } from 'shared-models/routes-and-paths/icon-paths.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-buy-now-box',

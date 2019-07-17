@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UiService } from 'src/app/core/services/ui.service';
 import { Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-header',
@@ -15,6 +16,7 @@ export class HeaderComponent implements OnInit {
   @ViewChild('matButton', { static: false }) matButton;
   activeUrl$: Observable<string>;
   appRoutes = PublicAppRoutes;
+  siteName = metaTagDefaults.explearningPublic.metaTagSiteName;
 
   constructor(
     private uiService: UiService,

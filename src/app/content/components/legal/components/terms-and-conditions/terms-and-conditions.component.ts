@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-terms-and-conditions',
@@ -24,7 +25,7 @@ export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Terms and Conditions - Explearning`);
+    this.titleService.setTitle(`Terms and Conditions - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
     this.analyticsService.logPageViewWithCustomDimensions();
   }
 

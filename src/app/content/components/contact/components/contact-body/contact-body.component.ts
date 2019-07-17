@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CONTACT_VALIDATION_MESSAGES } from 'src/app/core/models/forms-and-components/public-validation-messages.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, AuthStoreActions, UserStoreActions } from 'src/app/root-store';
 import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
-import { SubscriptionSource } from 'src/app/core/models/subscribers/subscription-source.model';
-import { ContactForm } from 'src/app/core/models/user/contact-form.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
+import { CONTACT_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
+import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
+import { ContactForm } from 'shared-models/user/contact-form.model';
 
 @Component({
   selector: 'app-contact-body',

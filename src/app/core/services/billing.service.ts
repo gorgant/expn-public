@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, take, tap } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
-import { StripeChargeData } from '../models/billing/stripe-charge-data.model';
 import * as Stripe from 'stripe';
-import { PublicFunctionNames } from '../models/routes-and-paths/fb-function-names';
-import { Order } from '../models/orders/order.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
-import { StripeChargeMetadata } from '../models/billing/stripe-object-metadata.model';
-import { PublicUser } from '../models/user/public-user.model';
+import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
+import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-names';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { Order } from 'shared-models/orders/order.model';
+import { StripeChargeMetadata } from 'shared-models/billing/stripe-object-metadata.model';
 
 @Injectable({
   providedIn: 'root'

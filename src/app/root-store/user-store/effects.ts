@@ -6,8 +6,8 @@ import * as userFeatureActions from './actions';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { UserService } from 'src/app/core/services/user.service';
 import { RootStoreState } from '..';
-import { Product } from 'src/app/core/models/products/product.model';
-import { ProductStrings } from 'src/app/core/models/products/product-strings.model';
+import { Product } from 'shared-models/products/product.model';
+import { ProductStrings } from 'shared-models/products/product-strings.model';
 
 @Injectable()
 export class UserStoreEffects {

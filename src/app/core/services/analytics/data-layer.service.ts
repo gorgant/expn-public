@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CustomDimensionsSet, PartialCustomDimensionsSet } from '../../models/analytics/custom-dimensions-set.model';
-import { DataLayerCustomDimensions } from '../../models/analytics/data-layer-custom-dimensions.model';
 import { environment } from 'src/environments/environment';
+import { CustomDimensionsSet, PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
+import { DataLayerCustomDimensions } from 'shared-models/analytics/data-layer-custom-dimensions.model';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({

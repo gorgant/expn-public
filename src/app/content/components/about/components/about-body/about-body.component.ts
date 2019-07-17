@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { environment } from 'src/environments/environment';
-import { ProductIdList, ProductUrlSlugList } from 'src/app/core/models/products/product-id-list.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
 
 @Component({
   selector: 'app-about-body',

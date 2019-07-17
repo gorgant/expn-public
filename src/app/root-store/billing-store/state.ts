@@ -1,5 +1,5 @@
 import * as Stripe from 'stripe';
-import { StripeError } from 'src/app/core/models/billing/stripe-error.model';
+import { StripeError } from 'shared-models/billing/stripe-error.model';
 
 export interface State {
   paymentProcessing: boolean;

@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Product } from 'src/app/core/models/products/product.model';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
-import { RootStoreState, UserStoreSelectors, AuthStoreActions } from 'src/app/root-store';
+import { RootStoreState, UserStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { withLatestFrom, map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
+import { Product } from 'shared-models/products/product.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-check-out',
@@ -39,7 +40,7 @@ export class CheckOutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    this.titleService.setTitle(`Checkout - Explearning`);
+    this.titleService.setTitle(`Checkout - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }

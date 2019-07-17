@@ -1,9 +1,10 @@
 import { Action } from '@ngrx/store';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { Product } from 'src/app/core/models/products/product.model';
-import { EmailSubData } from 'src/app/core/models/subscribers/email-sub-data.model';
-import { ContactForm } from 'src/app/core/models/user/contact-form.model';
-import { NavigationStamp } from 'src/app/core/models/analytics/navigation-stamp.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { Product } from 'shared-models/products/product.model';
+import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
+import { ContactForm } from 'shared-models/user/contact-form.model';
+import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
+
 
 export enum ActionTypes {
   USER_DATA_REQUESTED = '[User] User Data Requested',

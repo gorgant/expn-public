@@ -1,9 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import {
-  BILLING_VALIDATION_MESSAGES,
-} from 'src/app/core/models/forms-and-components/public-validation-messages.model';
-import { Product } from 'src/app/core/models/products/product.model';
 import { Store } from '@ngrx/store';
 import {
   RootStoreState,
@@ -16,10 +12,12 @@ import {
 } from 'src/app/root-store';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { withLatestFrom, map, take } from 'rxjs/operators';
-import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
-import { PublicUser } from 'src/app/core/models/user/public-user.model';
-import { BillingDetails } from 'src/app/core/models/billing/billing-details.model';
-import { Country } from 'src/app/core/models/forms-and-components/geography/country.model';
+import { Product } from 'shared-models/products/product.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
+import { BILLING_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
+import { Country } from 'shared-models/forms-and-components/geography/country.model';
+import { BillingDetails } from 'shared-models/billing/billing-details.model';
 
 @Component({
   selector: 'app-purchase-data-form',

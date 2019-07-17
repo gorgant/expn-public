@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
-import { PartialCustomDimensionsSet } from '../../models/analytics/custom-dimensions-set.model';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { NavigationStamp } from '../../models/analytics/navigation-stamp.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
-import { PublicUser } from '../../models/user/public-user.model';
 import { Location } from '@angular/common';
-import { metaTagDefaultKeywords } from '../../models/analytics/metatags.model';
+import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
+import { PublicUser } from 'shared-models/user/public-user.model';
+import { PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({
@@ -136,7 +136,7 @@ export class AnalyticsService {
     });
     this.metaTagService.updateTag({
       name: 'keywords',
-      content: keywords ? keywords : metaTagDefaultKeywords
+      content: keywords ? keywords : metaTagDefaults.explearningPublic.metaTagDefaultKeywords
     });
 
     // Social Media Tags

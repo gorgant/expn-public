@@ -1,19 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { PageHeroData } from 'src/app/core/models/forms-and-components/page-hero-data.model';
-import { BuyNowBoxData } from 'src/app/core/models/products/buy-now-box-data.model';
-import { TestamonialData } from 'src/app/core/models/forms-and-components/testamonial-data.model';
 import { Observable, Subscription } from 'rxjs';
-import { Product } from 'src/app/core/models/products/product.model';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
-import { testamonialsList } from 'src/app/core/models/forms-and-components/testamonials.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map } from 'rxjs/operators';
-import { ProductIdList } from 'src/app/core/models/products/product-id-list.model';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
+import { Product } from 'shared-models/products/product.model';
+import { ProductIdList } from 'shared-models/products/product-id-list.model';
+import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
+import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
+import { TestamonialData } from 'shared-models/forms-and-components/testamonial-data.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { testamonialsList } from 'shared-models/forms-and-components/testamonials.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-product-page',
@@ -53,7 +54,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
 
   private configSeoAndAnalytics(product: Product) {
 
-    const title = `${product.name} - Explearning`;
+    const title = `${product.name} - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     const description = `${product.productCardData.tagline} ${product.productCardData.highlights.join('. ')}.`;
     const localImagePath = this.heroData.imageProps.src;
 

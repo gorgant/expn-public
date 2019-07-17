@@ -1,8 +1,8 @@
 import { State } from './state';
 import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
-import { Country } from 'src/app/core/models/forms-and-components/geography/country.model';
-import { GeographicData } from 'src/app/core/models/forms-and-components/geography/geographic-data.model';
-import { UsState } from 'src/app/core/models/forms-and-components/geography/us-state.model';
+import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
+import { Country } from 'shared-models/forms-and-components/geography/country.model';
+import { UsState } from 'shared-models/forms-and-components/geography/us-state.model';
 
 const getError = (state: State): any => state.error;
 const getIsOnline = (state: State): boolean => state.isOnline;

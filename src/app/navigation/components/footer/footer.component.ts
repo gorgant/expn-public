@@ -1,10 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { PublicAppRoutes } from 'src/app/core/models/routes-and-paths/app-routes.model';
-import { SocialUrls } from 'src/app/core/models/routes-and-paths/social-urls.model';
 import { Observable } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
 import { now } from 'moment';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { SocialUrls } from 'shared-models/routes-and-paths/social-urls.model';
+import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-footer',
@@ -15,6 +16,7 @@ export class FooterComponent implements OnInit {
 
   @Input() appVersion: string;
   showAppVersion = false;
+  companyName = metaTagDefaults.explearningPublic.metaTagSiteName;
 
   activeUrl$: Observable<string>;
   appRoutes = PublicAppRoutes;

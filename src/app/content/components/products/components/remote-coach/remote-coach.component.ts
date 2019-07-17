@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PublicImagePaths } from 'src/app/core/models/routes-and-paths/image-paths.model';
+import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 
 
 @Component({

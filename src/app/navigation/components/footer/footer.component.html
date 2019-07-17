@@ -90,7 +90,7 @@
   </div>
   <div class="footer-base" fxLayout="column" fxLayoutAlign="center center">
     <div class="legal-container" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
-      <div class="copyright" (click)="toggleShowAppVersion()">&copy; Explearning, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</div>
+      <div class="copyright" (click)="toggleShowAppVersion()">&copy; {{ companyName }}, LLC, All Rights Reserved {{ currentDate | date: 'yyyy' }}</div>
       <!-- <div class="legal-spacer">|</div> -->
       <a class="legal-link" [routerLink]="appRoutes.PRIVACY_POLICY">Privacy Policy</a>
       <!-- <div class="legal-spacer">|</div> -->
