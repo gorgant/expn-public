@@ -8,13 +8,13 @@ const getAdminProjectId = (): string => {
 
   switch (currentEnvironmentType) {
     case EnvironmentTypes.PRODUCTION:
-      projectId = PRODUCTION_APPS.adminApp.projectId;
+      projectId = PRODUCTION_APPS.explearningAdminApp.projectId;
       break;
     case EnvironmentTypes.SANDBOX:
-      projectId = SANDBOX_APPS.adminApp.projectId;
+      projectId = SANDBOX_APPS.explearningAdminApp.projectId;
       break;
     default:
-      projectId = SANDBOX_APPS.adminApp.projectId;
+      projectId = SANDBOX_APPS.explearningAdminApp.projectId;
       break;
   }
   return projectId;
@@ -27,13 +27,13 @@ const getPublicProjectId = (): string => {
 
   switch (currentEnvironmentType) {
     case EnvironmentTypes.PRODUCTION:
-      projectId = PRODUCTION_APPS.publicApp.projectId;
+      projectId = PRODUCTION_APPS.explearningPublicApp.projectId;
       break;
     case EnvironmentTypes.SANDBOX:
-      projectId = SANDBOX_APPS.publicApp.projectId;
+      projectId = SANDBOX_APPS.explearningPublicApp.projectId;
       break;
     default:
-      projectId = SANDBOX_APPS.publicApp.projectId;
+      projectId = SANDBOX_APPS.explearningPublicApp.projectId;
       break;
   }
   return projectId;
@@ -46,13 +46,13 @@ const getPublicAppUrl = (): string => {
 
   switch (currentEnvironmentType) {
     case EnvironmentTypes.PRODUCTION:
-      appUrl = PRODUCTION_APPS.publicApp.websiteDomain;
+      appUrl = PRODUCTION_APPS.explearningPublicApp.websiteDomain;
       break;
     case EnvironmentTypes.SANDBOX:
-      appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+      appUrl = SANDBOX_APPS.explearningPublicApp.websiteDomain;
       break;
     default:
-      appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+      appUrl = SANDBOX_APPS.explearningPublicApp.websiteDomain;
       break;
   }
   return appUrl

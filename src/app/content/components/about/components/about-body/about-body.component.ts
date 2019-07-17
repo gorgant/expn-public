@@ -35,17 +35,17 @@ export class AboutBodyComponent implements OnInit {
       case true:
         console.log('Setting productIdList to production');
         // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
+        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
         break;
       case false:
         console.log('Setting productIdList to sandbox');
         // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
+        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
         break;
       default:
         console.log('Setting productIdList to sandbox');
         // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
+        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
         break;
     }
   }

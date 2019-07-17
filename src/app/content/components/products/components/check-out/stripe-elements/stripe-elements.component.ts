@@ -10,12 +10,12 @@ import { environment } from 'src/environments/environment';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { Product } from 'shared-models/products/product.model';
 import { StripeError } from 'shared-models/billing/stripe-error.model';
-import { ProductionStripePublishableKeys, SandboxStripePublishableKeys } from 'shared-models/environments/env-vars.model';
 import { BillingDetails } from 'shared-models/billing/billing-details.model';
 import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { StripePublishableKeys } from 'shared-models/environments/env-vars.model';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -61,14 +61,14 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     switch (this.productionEnvironment) {
       case true:
         console.log('Setting publishable key to production');
-        this.stripePublishableKey = ProductionStripePublishableKeys.PUBLISHABLE;
+        this.stripePublishableKey = StripePublishableKeys.production;
         break;
       case false:
         console.log('Setting publishable key to sandbox');
-        this.stripePublishableKey = SandboxStripePublishableKeys.PUBLISHABLE;
+        this.stripePublishableKey = StripePublishableKeys.sandbox;
         break;
       default:
-        this.stripePublishableKey = SandboxStripePublishableKeys.PUBLISHABLE;
+        this.stripePublishableKey = StripePublishableKeys.sandbox;
         break;
     }
   }

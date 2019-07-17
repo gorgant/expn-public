@@ -10,13 +10,13 @@ let appUrl: string;
 
 switch (currentEnvironmentType) {
   case EnvironmentTypes.PRODUCTION:
-    appUrl = PRODUCTION_APPS.publicApp.websiteDomain;
+    appUrl = PRODUCTION_APPS.explearningPublicApp.websiteDomain;
     break;
   case EnvironmentTypes.SANDBOX:
-    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+    appUrl = SANDBOX_APPS.explearningPublicApp.websiteDomain;
     break;
   default:
-    appUrl = SANDBOX_APPS.publicApp.websiteDomain;
+    appUrl = SANDBOX_APPS.explearningPublicApp.websiteDomain;
     break;
 }
 

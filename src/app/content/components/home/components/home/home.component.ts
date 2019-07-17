@@ -49,16 +49,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     switch (this.productionEnvironment) {
       case true:
         console.log('Setting productIdList to production');
-        this.remoteCoachProductId = ProductIdList.REMOTE_COACH;
+        this.remoteCoachProductId = ProductIdList.EXPLEARNING_REMOTE_COACH;
         this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
         break;
       case false:
         console.log('Setting productIdList to sandbox');
-        this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
+        this.remoteCoachProductId = ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH;
         this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
         break;
       default:
-        this.remoteCoachProductId = ProductIdList.SANDBOX_REMOTE_COACH;
+        this.remoteCoachProductId = ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH;
         this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
         break;
     }
