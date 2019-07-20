@@ -8,6 +8,7 @@ import { SUBSCRIBE_VALIDATION_MESSAGES } from 'shared-models/forms-and-component
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
+import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 
 @Component({
   selector: 'app-subscribe',
@@ -22,6 +23,7 @@ export class SubscribeComponent implements OnInit {
   subscribeProcessing$: Observable<boolean>;
   subscribeSubmitted$: Observable<boolean>;
   emailSubmitted: boolean;
+  senderEmail: string = EmailSenderAddresses.EXPLEARNING_DEFAULT;
 
   constructor(
     private fb: FormBuilder,

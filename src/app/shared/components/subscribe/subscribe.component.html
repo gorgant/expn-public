@@ -34,6 +34,6 @@
     </button>
   </form>
   <div *ngIf="(subscribeSubmitted$ | async) && emailSubmitted" class="post-submit-message">
-    Thank you for signing up! Be sure to add hello@myexplearning.com to your trusted email contacts.
+    Please check your inbox for a confirmation email from {{ senderEmail }}. If it isn't there, be sure to check your spam folder and add that address to your trusted contacts.
   </div>
 </div>
