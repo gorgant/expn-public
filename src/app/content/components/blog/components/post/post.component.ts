@@ -1,4 +1,4 @@
-import { Component, OnInit, SecurityContext, OnDestroy } from '@angular/core';
+import { Component, OnInit, SecurityContext, OnDestroy, Renderer2, Inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
@@ -10,6 +10,8 @@ import { Post } from 'shared-models/posts/post.model';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-post',
@@ -32,20 +34,25 @@ export class PostComponent implements OnInit, OnDestroy {
   sanitizedPostBody: SafeHtml;
   videoHtml: SafeHtml;
 
+  productionEnvironment: boolean;
+  origin: string;
+  sanitizedSubscribeButtonContent: SafeHtml;
+
 
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private analyticsService: AnalyticsService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document: Document
   ) { }
 
   ngOnInit() {
     this.loadExistingPostData();
     this.handlePostError();
   }
-
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics(post: Post) {
@@ -110,18 +117,72 @@ export class PostComponent implements OnInit, OnDestroy {
           this.sanitizedPostBody = this.sanitizer.sanitize(SecurityContext.HTML, post.content);
           if (post.videoUrl) {
             this.configureVideoUrl(post.videoUrl);
+            this.initSubscribeButton();
           }
         }
       });
   }
 
+  private setYouTubeIframeOriginBasedOnEnvironment(): string {
+    switch (this.productionEnvironment) {
+      case true:
+        this.origin = PRODUCTION_APPS.explearningPublicApp.websiteDomain;
+        break;
+      case false:
+        this.origin = SANDBOX_APPS.explearningPublicApp.websiteDomain;
+        break;
+      default:
+        this.origin = SANDBOX_APPS.explearningPublicApp.websiteDomain;
+        break;
+    }
+    return this.origin;
+  }
+
   private configureVideoUrl(videoUrl: string) {
     const videoId = videoUrl.split('/').pop();
-    // tslint:disable-next-line:max-line-length
-    const embedHtml = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    const baseEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+    // See video parameters here: https://developers.google.com/youtube/player_parameters
+    const videoParameters = {
+      rel: 0,
+      origin: `${this.setYouTubeIframeOriginBasedOnEnvironment()}`,
+      fs: 1,
+    };
+
+    // Courtesy of https://stackoverflow.com/a/12040639/6572208
+    const urlParameters = Object.keys(videoParameters).map((key) => {
+      return [key, videoParameters[key]].map(encodeURIComponent).join('=');
+        }).join('&');
+
+    const updatedUrl = `${baseEmbedUrl}?${urlParameters}`;
+
+    const embedHtml = `
+      <iframe
+        src="${updatedUrl}"
+        frameborder="0"
+        allowfullscreen
+        allow="
+          accelerometer;
+          encrypted-media;
+          gyroscope;
+          picture-in-picture"
+      ></iframe>
+    `;
     const safeVideoLink = this.sanitizer.bypassSecurityTrustHtml(embedHtml);
     this.videoHtml = safeVideoLink;
     console.log('video data loaded', this.videoHtml);
+  }
+
+  // https://developers.google.com/youtube/subscribe/
+  private initSubscribeButton() {
+    const script = this.renderer.createElement('script');
+    // script.src = 'https://apis.google.com/js/platform.js';
+    this.renderer.setProperty(script, 'type', 'text/javascript');
+    this.renderer.setProperty(script, 'src', 'https://apis.google.com/js/platform.js');
+    this.renderer.setProperty(script, 'async', 'true');
+    this.renderer.setProperty(script, 'charset', 'utf-8');
+    this.renderer.appendChild(this.document.body, script);
+    console.log('subscribe script appended');
   }
 
   private initializeHeroData(post: Post) {

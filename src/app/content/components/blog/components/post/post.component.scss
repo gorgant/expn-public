@@ -40,7 +40,15 @@ app-page-hero {
     width: 100%;
     max-width: 1000px;
   }
-  
+
+  .subscribe-button-container {
+    width: 100%;
+  }
+
+  .subscribe-caption {
+    font-style: italic;
+  }
+
   // Courtesy of https://jameshfisher.com/2017/08/30/how-do-i-make-a-full-width-iframe/
   .video-body {
     width: 100%;
