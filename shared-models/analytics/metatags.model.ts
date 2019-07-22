@@ -11,9 +11,9 @@ export const metaTagDefaults = {
     metaTagTwitterCardType: 'summary_large_image'
   },
   explearningPublic: {
-    metaTagDefaultTitle: 'Explearning - Communicate With Clarity',
+    metaTagDefaultTitle: 'Explearning - Enrich Your Life Through Better Communication',
     // tslint:disable-next-line:max-line-length
-    metaTagDefaultDescription: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.',
+    metaTagDefaultDescription: 'A richer life begins with better communication. Equip yourself for personal and professional success by improving your speaking skills and communication skills using our research-backed techniques. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more.',
     metaTagAuthor: 'Explearning, LLC',
     // tslint:disable-next-line:max-line-length
     metaTagDefaultKeywords: 'speaking skills, importance of speaking skills, effective communication, what is effective communication, what is communication skills, effective communication techniques, public speaking techniques, interview strategies, mary daphne root',
