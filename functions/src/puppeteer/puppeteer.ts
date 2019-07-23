@@ -28,7 +28,7 @@ const cachePage = async (url: string, userAgent: string, html: string) => {
 
   const webpage: Webpage = {
     expires: now() + (1000 * 60 * 60 * 24 * 7), // Set expiry for seven days
-    headers: `{${userAgent ? `${userAgent}` : ''}}`,
+    userAgent,
     payload: html,
     saved: now(),
     url: createOrReverseFirebaseSafeUrl(fbSafeUrl, true) // Revert to normal url

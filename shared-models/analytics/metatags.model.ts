@@ -6,14 +6,14 @@ export const metaTagDefaults = {
     metaTagAuthor: 'Mary Daphne, LLC',
     metaTagDefaultKeywords: 'mary daphne, personal brand, personal development, self improvement, be more confident',
     metaTagSiteName: 'Mary Daphne',
-    metaTagFbAppId: '',
+    metaTagFbAppId: '2361383644073374',
     metaTagTwitterHandle: '@MaryDaphne',
     metaTagTwitterCardType: 'summary_large_image'
   },
   explearningPublic: {
-    metaTagDefaultTitle: 'Explearning - Enrich Your Life Through Better Communication',
+    metaTagDefaultTitle: 'Explearning - Communicate With Clarity',
     // tslint:disable-next-line:max-line-length
-    metaTagDefaultDescription: 'A richer life begins with better communication. Equip yourself for personal and professional success by improving your speaking skills and communication skills using our research-backed techniques. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more.',
+    metaTagDefaultDescription: 'Improve your speaking skills and communication skills with research-backed techniques to ensure effective communication. We teach you public speaking techniques, interview strategies, negotiation tactics, and much more. Our goal is to make you the best communicator you can be.',
     metaTagAuthor: 'Explearning, LLC',
     // tslint:disable-next-line:max-line-length
     metaTagDefaultKeywords: 'speaking skills, importance of speaking skills, effective communication, what is effective communication, what is communication skills, effective communication techniques, public speaking techniques, interview strategies, mary daphne root',
