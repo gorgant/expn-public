@@ -28,7 +28,7 @@ export class AboutComponent implements OnInit, OnDestroy {
     const title = `About Me - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `Speaking skills and effective communication are at the core of who we are. My goal is to equip you for personal and professional success by improving your speaking skills and communication skills using our research-backed techniques. With an Ed.M from Columbia University, I've been teaching and coaching communications for over ten years.`;
-    const localImagePath = this.heroData.imageProps.src;
+    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();

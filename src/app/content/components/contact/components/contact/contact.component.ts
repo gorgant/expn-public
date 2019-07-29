@@ -29,7 +29,7 @@ export class ContactComponent implements OnInit, OnDestroy {
     const title = `Contact Me - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `Get in touch with the Explearning team using this contact form. We welcome questions, suggestions, and any thoughtful input. Let us know if there is anything else we can do to help you improve your speaking and communication skills!`;
-    const localImagePath = this.heroData.imageProps.src;
+    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();

@@ -40,7 +40,7 @@ export class BlogComponent implements OnInit, OnDestroy {
     const title = `Blog - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `On Explearning's blog you have access to our complete library of free lessons on speaking skills and effective communication. From public speaking techniques to interview strategies and negotiation tactics, our goal is to make you the best communicator you can be.`;
-    const localImagePath = this.heroData.imageProps.src;
+    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();

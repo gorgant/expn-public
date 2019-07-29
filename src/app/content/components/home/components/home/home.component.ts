@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
     // tslint:disable-next-line:max-line-length
     const description = metaTagDefaults.explearningPublic.metaTagDefaultDescription;
-    const localImagePath = this.heroData.imageProps.src;
+    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
 
     this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();

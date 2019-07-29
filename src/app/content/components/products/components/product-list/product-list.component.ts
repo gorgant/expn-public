@@ -35,9 +35,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
     const title = `Services - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     // tslint:disable-next-line:max-line-length
     const description = `${metaTagDefaults.explearningPublic.metaTagSiteName} offers a variety of services to help you improve your speaking skills and communication skills. From professional communications coaching to high quality web courses, our goal is to make you the best communicator you can be.`;
-    const image = PublicImagePaths.HOME;
+    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
 
-    this.analyticsService.setSeoTags(title, description, image);
+    this.analyticsService.setSeoTags(title, description, localImagePath);
     this.analyticsService.logPageViewWithCustomDimensions();
     this.analyticsService.createNavStamp();
   }
