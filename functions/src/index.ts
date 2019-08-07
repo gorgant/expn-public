@@ -29,3 +29,7 @@ export {
 export {
   updateWebpageCache
 } from './puppeteer/update-webpage-cache';
+
+export {
+  purgeInactiveUsers
+} from './users/purge-inactive-users';
