@@ -19,9 +19,7 @@ const isExpiredUser = async (user: admin.auth.UserRecord): Promise<boolean> => {
 
   const expirationPeriod = 1000 * 60 * 60 * 24 * 14; // 14 days
   const lastSignIn = Date.parse(user.metadata.lastSignInTime);
-  console.log(`Scanning this user ${user}`);
   if (lastSignIn < now() - expirationPeriod) {
-    console.log(`Expired user detected, last sign in was ${lastSignIn}`);
     return true;
   }
   return false;
@@ -32,7 +30,7 @@ const scanUsers = async (nextPageToken?: string) => {
 
   console.log('Scanning users with this token', nextPageToken);
 
-  const publicUserList = await publicApp.auth().listUsers(1000, nextPageToken);
+  const publicUserList = await publicApp.auth().listUsers(50, nextPageToken);
 
   const deleteQualifiedUsersRequests = publicUserList.users.map( async(user) => {
     const userExpired: boolean = await isExpiredUser(user)
