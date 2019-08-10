@@ -7,4 +7,5 @@ export interface PodcastEpisode {
   author: string;
   description: string;
   imageUrl: string;
+  modifiedDate: number;
 }

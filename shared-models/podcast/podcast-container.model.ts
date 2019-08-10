@@ -5,4 +5,5 @@ export interface PodcastContainer {
   description: string;
   imageUrl: string;
   authorWebsite: string;
+  modifiedDate: number;
 }

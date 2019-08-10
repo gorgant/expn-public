@@ -7,6 +7,7 @@ import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/f
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
 import { createOrReverseFirebaseSafeUrl, convertHoursMinSecToMill } from '../global-helpers';
+import { now } from 'moment';
 
 const db = publicFirestore;
 
@@ -55,6 +56,7 @@ const fetchPodcastFeed = async() => {
           description: podcastDescription,
           imageUrl: podcastImageUrl,
           authorWebsite,
+          modifiedDate: now()
         }
 
         // Parse Podcast Episodes
@@ -79,7 +81,8 @@ const fetchPodcastFeed = async() => {
             duration: episodeDuration,
             author: episodeAuthor,
             description: episodeDescription,
-            imageUrl: episodeImageUrl
+            imageUrl: episodeImageUrl,
+            modifiedDate: now()
           }
 
           return podcastEpisode;
@@ -101,7 +104,6 @@ const fetchPodcastFeed = async() => {
 
 // Cache the podcast along with the episodes as a subcollection of the podcast
 const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpisode[]) => {
-
 
   const podcastColletionRef = db.collection(PublicCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
   const episodeCollectionRef = podcastColletionRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
@@ -135,8 +137,15 @@ const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpis
 
 /////// DEPLOYABLE FUNCTIONS ///////
 
+// This fires every day based on chron job
 export const updatePodcastFeedCache = functions.https.onRequest( async (req, resp) => {
-  console.log('Get podcast feed request detected');
+  console.log('Get podcast feed request detected with these headers', req.headers);
+
+  // Verify request is from chron job
+  if (req.headers['user-agent'] !== 'Google-Cloud-Scheduler') {
+    console.log('Invalid request, ending operation');
+    return;
+  }
 
   const {podcast, episodes} = await fetchPodcastFeed()
     .catch(err => {
