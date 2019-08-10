@@ -35,6 +35,14 @@
 
   <a mat-list-item 
     routerLinkActive="active-list-item"
+    [routerLink]="appRoutes.PODCAST"
+    (click)="onToggleSideNav()">
+    <mat-icon mat-list-icon>headset</mat-icon>
+    <p mat-line>Podcast</p>
+  </a>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
     [routerLink]="appRoutes.CONTACT"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>chat_bubble</mat-icon>

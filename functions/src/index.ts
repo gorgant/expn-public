@@ -33,3 +33,7 @@ export {
 export {
   purgeInactiveUsers
 } from './users/purge-inactive-users';
+
+export {
+  updatePodcastFeedCache
+} from './podcast/update-podcast-feed-cache';

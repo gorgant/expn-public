@@ -5,21 +5,11 @@ import { Webpage } from '../../../shared-models/ssr/webpage.model';
 import { now } from 'moment';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { PuppeteerResponse } from '../../../shared-models/ssr/puppeteer-response';
+import { createOrReverseFirebaseSafeUrl } from '../global-helpers';
 const db = publicFirestore;
 
 // Courtesy of: https://developers.google.com/web/tools/puppeteer/articles/ssr
 // With additional tips from: https://medium.com/@ebidel/puppeteering-in-firebase-google-cloud-functions-76145c7662bd
-
-// Firebase can't handle back slashes
-const createOrReverseFirebaseSafeUrl = (url: string, reverse?: boolean): string => {
-  if (reverse) {
-    const urlWithSlashes = url.replace(/~1/g,'/') // Revert to normal url
-    return urlWithSlashes;
-  }
-  const removedProtocol = url.split('//').pop() as string;
-  const replacedSlashes = removedProtocol.replace(/\//g,'~1');
-  return replacedSlashes;
-}
 
 // Store cache in Firebase for rapid access
 const cachePage = async (url: string, userAgent: string, html: string) => {

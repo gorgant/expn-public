@@ -6,9 +6,9 @@ import { publicProjectId, publicAppUrl } from '../environments/config';
 import { PublicFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import { Post } from '../../../shared-models/posts/post.model';
-import { convertToFriendlyUrlFormat } from './helpers';
 import { Product } from '../../../shared-models/products/product.model';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
+import { convertToFriendlyUrlFormat } from '../global-helpers';
 
 const db = publicFirestore;
 const appUrl = publicAppUrl;
