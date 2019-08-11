@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { take, tap, catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-import { AngularFireFunctions } from '@angular/fire/functions';
-import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-names';
+import { catchError, takeUntil, map } from 'rxjs/operators';
+import { throwError, Observable } from 'rxjs';
+import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
+import { UiService } from './ui.service';
+import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 
 @Injectable({
   providedIn: 'root'
@@ -11,50 +13,74 @@ import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-
 export class PodcastService {
 
   constructor(
-    private http: HttpClient,
-    private fns: AngularFireFunctions,
+    private afs: AngularFirestore,
+    private authService: AuthService,
+    private uiService: UiService,
   ) { }
 
-  // fetchPodcastList(): Observable<{}> {
-  //   const httpOptions = {
-  //     headers: new HttpHeaders({
-  //       // 'Content-Type':  'application/rss+xml',
-  //       'Access-Control-Allow-Origin': '*',
-  //       // Accept: 'application/rss+xml'
-  //     })
-  //   };
-  //   const podcastList = this.http.get(PodcastPaths.EXPLEARNING_PRIMARY, httpOptions)
-  //     .pipe(
-  //       switchMap(podcastXml => {
-  //         const parsedXmlPromise = new Promise<{}>((res, rej) => {
-  //           xml2js.parseString(podcastXml, (err, result) => {
-  //             console.log(result);
-  //             res(result);
-  //           });
-  //         });
+  fetchPodcastContainer(podcastId) {
+    const podcastDoc = this.getPodcastContainerDoc(podcastId);
+    return podcastDoc.valueChanges()
+      .pipe(
+        takeUntil(this.authService.unsubTrigger$),
+        map(podcast => {
+          console.log('Fetched this podcast', podcast);
+          return podcast;
+        }),
+        catchError(error => {
+          this.uiService.showSnackBar(error, null, 5000);
+          return throwError(error);
+        })
+      );
+  }
 
-  //         return from(parsedXmlPromise);
-  //       })
-  //     );
+  fetchAllPodcastEpisodes(podcastId: string): Observable<PodcastEpisode[]> {
+    const episodeCollection = this.getEpisodesCollection(podcastId);
+    return episodeCollection.valueChanges()
+      .pipe(
+        takeUntil(this.authService.unsubTrigger$),
+        map(episodes => {
+          console.log('Fetched all episodes', episodes);
+          return episodes;
+        }),
+        catchError(error => {
+          console.log('Error getting episodes', error);
+          this.uiService.showSnackBar(error, null, 5000);
+          return throwError(error);
+        })
+      );
+  }
 
-  //   return podcastList;
-  // }
+  fetchSinglePodcastEpisode(podcastId: string, episodeId: string): Observable<PodcastEpisode> {
+    const episodeDoc = this.getEpisodeDoc(podcastId, episodeId);
+    return episodeDoc.valueChanges()
+      .pipe(
+        takeUntil(this.authService.unsubTrigger$),
+        map(episode => {
+          console.log('Fetched this episode', episode);
+          return episode;
+        }),
+        catchError(error => {
+          this.uiService.showSnackBar(error, null, 5000);
+          return throwError(error);
+        })
+      );
+  }
 
-  // getPodcastFeed() {
-  //   const podcastHttpCall = this.fns.httpsCallable(PublicFunctionNames.UPDATE_PODCAST_FEED_CACHE);
-  //   podcastHttpCall('')
-  //     .pipe(
-  //       take(1),
-  //       tap(response => console.log('Podcast fetch sent', response)),
-  //       catchError(error => {
-  //         console.log('Error fetching podcast', error);
-  //         return throwError(error);
-  //       })
-  //     ).subscribe();
-  // }
+  private getPodcastContainerCollection(): AngularFirestoreCollection<PodcastEpisode> {
+    return this.afs.collection<PodcastEpisode>(PublicCollectionPaths.PODCAST_FEED_CACHE);
+  }
 
-  fetchPodcastFeed() {
-    // TODO: fetch data from firebase cache collection
+  private getPodcastContainerDoc(podcastId: string): AngularFirestoreDocument<PodcastEpisode> {
+    return this.getPodcastContainerCollection().doc<PodcastEpisode>(podcastId);
+  }
+
+  private getEpisodesCollection(podcastId: string): AngularFirestoreCollection<PodcastEpisode> {
+    return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(PublicCollectionPaths.PODCAST_FEED_EPISODES);
+  }
+
+  private getEpisodeDoc(podcastId: string, episodeId: string): AngularFirestoreDocument<PodcastEpisode> {
+    return this.getEpisodesCollection(podcastId).doc<PodcastEpisode>(episodeId);
   }
 
 }

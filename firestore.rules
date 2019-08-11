@@ -24,6 +24,16 @@ service cloud.firestore {
       }
     }
 
+    match /podcastFeedCache/{podcastId} {
+      // Anyone can read podcasts
+      allow read;
+      match /podcastFeedEpisodes/{episodeId} {
+        allow read;
+      }
+    }
+
+    
+
     /// FUNCTIONS ///
     
     // True if the user is authenticated

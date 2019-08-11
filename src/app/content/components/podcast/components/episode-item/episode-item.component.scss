@@ -1,0 +1,62 @@
+@import "../../../../../variables";
+
+.item-container {
+  width: 100%;
+  max-width: 800px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.episode-image {
+  width: 100%;
+  height: auto;
+  min-width: 90px;
+  max-width: 150px;
+  // max-height: 150px;
+}
+
+// Remove default h2 properties
+h2 {
+  margin: 0px;
+  font-weight: $font-weight-medium;
+  font-size: 1em;
+}
+
+.title {
+  text-decoration: none;
+  color: black;
+  font-size: 1em;
+  @include line-clamp(2);
+}
+
+.title:hover {
+  color: $primary;
+}
+
+.info {
+  font-size: 0.8em;
+}
+
+.description {
+  font-size: 0.9em;
+  @include line-clamp(3);
+}
+
+.play-button {
+  font-size: 2.5em;
+}
+
+.play-button:hover {
+  cursor: pointer;
+  color: $primary;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  h2 {
+    font-weight: $font-weight-regular;
+  }
+
+  .play-button {
+    font-size: 2em;
+  }
+}

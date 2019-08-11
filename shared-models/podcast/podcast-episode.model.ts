@@ -8,4 +8,5 @@ export interface PodcastEpisode {
   description: string;
   imageUrl: string;
   modifiedDate: number;
+  blogPostId: string;
 }

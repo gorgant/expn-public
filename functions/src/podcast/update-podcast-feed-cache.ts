@@ -6,7 +6,7 @@ import { publicFirestore } from '../db';
 import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { createOrReverseFirebaseSafeUrl, convertHoursMinSecToMill } from '../global-helpers';
+import { convertHoursMinSecToMill } from '../global-helpers';
 import { now } from 'moment';
 
 const db = publicFirestore;
@@ -14,7 +14,7 @@ const db = publicFirestore;
 // Fetch aqi data for a specific city
 const fetchPodcastFeed = async() => {
 
-  const requestUrl = PodcastPaths.EXPLEARNING_PRIMARY;
+  const requestUrl = PodcastPaths.EXPLEARNING_RSS_FEED;
 
   const requestPromise = new Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}>(async (resolve, reject) => {
 
@@ -42,8 +42,8 @@ const fetchPodcastFeed = async() => {
         
         // Parse Podcast Container
         const podcastObject = rawJson.rss.channel[0];
-        const podcastRssUrl = podcastObject['atom:link'][0].$.href;
-        const podcastId = createOrReverseFirebaseSafeUrl(podcastRssUrl);
+        const podcastRssUrl = podcastObject['atom:link'][0].$.href as string;
+        const podcastId = podcastRssUrl.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
         const podcastTitle = podcastObject.title[0];
         const podcastDescription = podcastObject.description[0];
         const podcastImageUrl = podcastObject.image[0].url[0];
@@ -63,15 +63,17 @@ const fetchPodcastFeed = async() => {
         const rawEpisodeArray = podcastObject.item as any[];
 
         const podcastEpisodeArray = rawEpisodeArray.map(rawEpisode => {
-
+          
           const episodeUrl = rawEpisode.link[0];
-          const episodeId = createOrReverseFirebaseSafeUrl(episodeUrl);
+          console.log('About to parse this object', rawEpisode.guid[0].$);
+          const episodeId = (rawEpisode.guid[0]._ as string).split('tracks/')[1];
           const episodeTitle = rawEpisode.title[0];
           const episodePubDate = Date.parse(rawEpisode.pubDate[0]);
           const episodeDuration = convertHoursMinSecToMill(rawEpisode['itunes:duration'][0]);
           const episodeAuthor = rawEpisode['itunes:author'][0];
           const episodeDescription = rawEpisode.description[0];
           const episodeImageUrl = rawEpisode['itunes:image'][0].$.href;
+          const episodeBlogPostId = (episodeDescription as string).split('@~')[1];
 
           const podcastEpisode: PodcastEpisode = {
             id: episodeId,
@@ -82,7 +84,8 @@ const fetchPodcastFeed = async() => {
             author: episodeAuthor,
             description: episodeDescription,
             imageUrl: episodeImageUrl,
-            modifiedDate: now()
+            modifiedDate: now(),
+            blogPostId: episodeBlogPostId
           }
 
           return podcastEpisode;

@@ -1,5 +1,3 @@
-<p>podcast-body works!</p>
-<!-- <p *ngIf="podcastList$ | async as podcastList">
-  {{ podcastList }}
-</p> -->
-<button mat-raised-button color="primary" (click)="onGetPodcastFeed()">Fetch Podcast List</button>
+<div class="episodes-container" fxLayoutGap="16px">
+  <app-episode-item *ngFor="let episode of podcastList$ | async" [episode]="episode"></app-episode-item>
+</div>
