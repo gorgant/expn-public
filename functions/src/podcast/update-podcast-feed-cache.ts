@@ -3,16 +3,34 @@ import { PodcastPaths } from '../../../shared-models/podcast/podcast-paths.model
 import * as xml2js from 'xml2js'; // Also requires stream and timers packages
 import * as functions from 'firebase-functions';
 import { publicFirestore } from '../db';
-import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
+import { PublicCollectionPaths, SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { convertHoursMinSecToMill } from '../global-helpers';
+import { convertHoursMinSecToMill, convertToFriendlyUrlFormat } from '../global-helpers';
 import { now } from 'moment';
+import { Post } from '../../../shared-models/posts/post.model';
 
 const db = publicFirestore;
 
+const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
+  const postsCollectionRef = db.collection(SharedCollectionPaths.POSTS);
+  const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get();
+  
+  // Handle situation where no matching post is found
+  if (matchingPostQuerySnapshot.empty) {
+    console.log('No matching post found for this episodeUrl', episodeUrl);
+    return;
+  }
+
+  const matchingPost = matchingPostQuerySnapshot.docs[0].data() as Post; // Should only be one matching item
+  const postId = matchingPost.id as string;
+  const postHandle = convertToFriendlyUrlFormat(matchingPost.title);
+
+  return {postId, postHandle};
+}
+
 // Fetch aqi data for a specific city
-const fetchPodcastFeed = async() => {
+const fetchPodcastFeed = async () => {
 
   const requestUrl = PodcastPaths.EXPLEARNING_RSS_FEED;
 
@@ -62,10 +80,9 @@ const fetchPodcastFeed = async() => {
         // Parse Podcast Episodes
         const rawEpisodeArray = podcastObject.item as any[];
 
-        const podcastEpisodeArray = rawEpisodeArray.map(rawEpisode => {
+        const podcastEpisodeArrayPromise = rawEpisodeArray.map(async rawEpisode => {
           
           const episodeUrl = rawEpisode.link[0];
-          console.log('About to parse this object', rawEpisode.guid[0].$);
           const episodeId = (rawEpisode.guid[0]._ as string).split('tracks/')[1];
           const episodeTitle = rawEpisode.title[0];
           const episodePubDate = Date.parse(rawEpisode.pubDate[0]);
@@ -73,7 +90,14 @@ const fetchPodcastFeed = async() => {
           const episodeAuthor = rawEpisode['itunes:author'][0];
           const episodeDescription = rawEpisode.description[0];
           const episodeImageUrl = rawEpisode['itunes:image'][0].$.href;
-          const episodeBlogPostId = (episodeDescription as string).split('@~')[1];
+          let episodeBlogPostId = '';
+          let episodeBlogPostUrlHandle = '';
+          
+          const blogPostData = await fetchBlogPostIdAndHandle(episodeUrl);
+          if (blogPostData) {
+            episodeBlogPostId = blogPostData.postId;
+            episodeBlogPostUrlHandle = blogPostData.postHandle;
+          }
 
           const podcastEpisode: PodcastEpisode = {
             id: episodeId,
@@ -85,11 +109,15 @@ const fetchPodcastFeed = async() => {
             description: episodeDescription,
             imageUrl: episodeImageUrl,
             modifiedDate: now(),
-            blogPostId: episodeBlogPostId
+            blogPostId: episodeBlogPostId,
+            blogPostUrlHandle: episodeBlogPostUrlHandle
           }
 
           return podcastEpisode;
         })
+
+        const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise);
+        
 
         resolve({podcast, episodes: podcastEpisodeArray});
       })
@@ -108,11 +136,11 @@ const fetchPodcastFeed = async() => {
 // Cache the podcast along with the episodes as a subcollection of the podcast
 const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpisode[]) => {
 
-  const podcastColletionRef = db.collection(PublicCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
-  const episodeCollectionRef = podcastColletionRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
+  const podcastDocRef = db.collection(PublicCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
+  const episodeCollectionRef = podcastDocRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
 
   // Cache the podcast
-  const cachPodcastRes = await podcastColletionRef.set(podcast)
+  const cachPodcastRes = await podcastDocRef.set(podcast)
     .catch(error => {
       console.log('Error connecting to firebase', error);
       return error;

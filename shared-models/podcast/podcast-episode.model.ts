@@ -9,4 +9,5 @@ export interface PodcastEpisode {
   imageUrl: string;
   modifiedDate: number;
   blogPostId: string;
+  blogPostUrlHandle: string;
 }

@@ -12,19 +12,11 @@ export class EpisodeItemComponent implements OnInit {
 
   @Input() episode: PodcastEpisode;
 
-  blogPostHandle: string;
-
   appRoutes = PublicAppRoutes;
 
-  constructor(
-    private uiService: UiService
-  ) { }
+  constructor( ) { }
 
   ngOnInit() {
-    this.blogPostHandle = this.uiService.convertToFriendlyUrlFormat(this.episode.title);
   }
-
-  // TODO: When user clicks on a podcast, expand to show the webplayer using ngIf
-  // OR: have it route to the blog (would need to put episode GUID into blog post)
 
 }

@@ -33,6 +33,7 @@ export class PostComponent implements OnInit, OnDestroy {
 
   sanitizedPostBody: SafeHtml;
   videoHtml: SafeHtml;
+  podcastEpisodeHtml: SafeHtml;
 
   productionEnvironment: boolean;
   origin: string;
@@ -118,6 +119,7 @@ export class PostComponent implements OnInit, OnDestroy {
           if (post.videoUrl) {
             this.configureVideoUrl(post.videoUrl);
             this.initSubscribeButton();
+            this.configureSoundCloudPlayer();
           }
         }
       });
@@ -159,6 +161,7 @@ export class PostComponent implements OnInit, OnDestroy {
     const embedHtml = `
       <iframe
         src="${updatedUrl}"
+        class="youtube-iframe"
         frameborder="0"
         allowfullscreen
         allow="
@@ -183,6 +186,53 @@ export class PostComponent implements OnInit, OnDestroy {
     this.renderer.setProperty(script, 'charset', 'utf-8');
     this.renderer.appendChild(this.document.body, script);
     console.log('subscribe script appended');
+  }
+
+  // TODO: Display the SoundCloud embedded player using the podcastepisodeurl against the podcast store to get the episode GUID to build url
+  private configureSoundCloudPlayer() {
+    const podcastEpisodeId = this.getPodcastEpisodeId();
+    const baseEmbedUrl = `https://w.soundcloud.com/player/`;
+
+    // See video parameters here: https://developers.google.com/youtube/player_parameters
+    const episodeParameters = {
+      url: `https%3A//api.soundcloud.com/tracks/${podcastEpisodeId}`,
+      color: `%23ff5500`,
+      auto_play: `false`,
+      hide_related: `false`,
+      show_comments: `true`,
+      show_user: `true`,
+      show_reposts: `false`,
+      show_teaser: `true`
+    };
+
+    // Courtesy of https://stackoverflow.com/a/12040639/6572208
+    const urlParameters = Object.keys(episodeParameters).map((key) => {
+      return [key, episodeParameters[key]].map(encodeURIComponent).join('=');
+        }).join('&');
+
+    const updatedUrl = `${baseEmbedUrl}?${urlParameters}`;
+
+    const embedHtml = `
+      <iframe
+        class="soundcloud-iframe"
+        width="100%"
+        height="166"
+        scrolling="no"
+        frameborder="no"
+        allow="autoplay"
+        src="${updatedUrl}"
+      ></iframe>
+    `;
+
+    const safePodcastEpisodeLink = this.sanitizer.bypassSecurityTrustHtml(embedHtml);
+    this.podcastEpisodeHtml = safePodcastEpisodeLink;
+    console.log('soundcloud data loaded', this.videoHtml);
+  }
+
+  // TODO: Use store selector to get the podcast episode
+  private getPodcastEpisodeId(): string {
+    return `657968765`;
+
   }
 
   private initializeHeroData(post: Post) {
