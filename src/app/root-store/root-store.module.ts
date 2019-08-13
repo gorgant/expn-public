@@ -13,6 +13,7 @@ import { CustomSerializer } from '../core/utils/router-state-serializer';
 import { UiStoreModule } from './ui-store';
 import { ProductStoreModule } from './product-store';
 import { BillingStoreModule } from './billing-store';
+import { PodcastStoreModule } from './podcast-store';
 
 @NgModule({
   declarations: [],
@@ -24,6 +25,7 @@ import { BillingStoreModule } from './billing-store';
     ProductStoreModule,
     UiStoreModule,
     BillingStoreModule,
+    PodcastStoreModule,
     StoreModule.forRoot({}, {metaReducers}),
     EffectsModule.forRoot([]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],

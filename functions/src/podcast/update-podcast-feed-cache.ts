@@ -6,7 +6,7 @@ import { publicFirestore } from '../db';
 import { PublicCollectionPaths, SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { convertHoursMinSecToMill, convertToFriendlyUrlFormat } from '../global-helpers';
+import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
 
@@ -83,7 +83,8 @@ const fetchPodcastFeed = async () => {
         const podcastEpisodeArrayPromise = rawEpisodeArray.map(async rawEpisode => {
           
           const episodeUrl = rawEpisode.link[0];
-          const episodeId = (rawEpisode.guid[0]._ as string).split('tracks/')[1];
+          const episodeId = createOrReverseFirebaseSafeUrl(episodeUrl);
+          const episodeGuid = (rawEpisode.guid[0]._ as string).split('tracks/')[1];
           const episodeTitle = rawEpisode.title[0];
           const episodePubDate = Date.parse(rawEpisode.pubDate[0]);
           const episodeDuration = convertHoursMinSecToMill(rawEpisode['itunes:duration'][0]);
@@ -101,6 +102,7 @@ const fetchPodcastFeed = async () => {
 
           const podcastEpisode: PodcastEpisode = {
             id: episodeId,
+            guid: episodeGuid,
             title: episodeTitle,
             pubDate: episodePubDate,
             episodeUrl,

@@ -6,5 +6,6 @@ export * from './user-store';
 export * from './post-store';
 export * from './ui-store';
 export * from './billing-store';
+export * from './podcast-store';
 
 export { RootStoreState, RootStoreModule };

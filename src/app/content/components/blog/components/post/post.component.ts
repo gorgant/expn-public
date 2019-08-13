@@ -1,7 +1,7 @@
 import { Component, OnInit, SecurityContext, OnDestroy, Renderer2, Inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
+import { RootStoreState, PostStoreSelectors, PostStoreActions, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
@@ -12,6 +12,9 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
 import { DOCUMENT } from '@angular/common';
+import { UiService } from 'src/app/core/services/ui.service';
+import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
+import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 
 @Component({
   selector: 'app-post',
@@ -28,6 +31,8 @@ export class PostComponent implements OnInit, OnDestroy {
   postLoaded: boolean;
   titleSet: boolean;
   postSubscription: Subscription;
+
+  podcastEpisodeLoaded: boolean;
 
   heroData: PageHeroData;
 
@@ -47,7 +52,8 @@ export class PostComponent implements OnInit, OnDestroy {
     private analyticsService: AnalyticsService,
     private router: Router,
     private renderer: Renderer2,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private uiService: UiService,
   ) { }
 
   ngOnInit() {
@@ -119,7 +125,10 @@ export class PostComponent implements OnInit, OnDestroy {
           if (post.videoUrl) {
             this.configureVideoUrl(post.videoUrl);
             this.initSubscribeButton();
-            this.configureSoundCloudPlayer();
+          }
+          if (post.podcastEpisodeUrl) {
+            console.log('Podcast url', post.podcastEpisodeUrl);
+            this.configureSoundCloudPlayer(post.podcastEpisodeUrl);
           }
         }
       });
@@ -188,51 +197,77 @@ export class PostComponent implements OnInit, OnDestroy {
     console.log('subscribe script appended');
   }
 
-  // TODO: Display the SoundCloud embedded player using the podcastepisodeurl against the podcast store to get the episode GUID to build url
-  private configureSoundCloudPlayer() {
-    const podcastEpisodeId = this.getPodcastEpisodeId();
-    const baseEmbedUrl = `https://w.soundcloud.com/player/`;
+  private configureSoundCloudPlayer(podcastEpisodeUrl: string) {
 
-    // See video parameters here: https://developers.google.com/youtube/player_parameters
-    const episodeParameters = {
-      url: `https%3A//api.soundcloud.com/tracks/${podcastEpisodeId}`,
-      color: `%23ff5500`,
-      auto_play: `false`,
-      hide_related: `false`,
-      show_comments: `true`,
-      show_user: `true`,
-      show_reposts: `false`,
-      show_teaser: `true`
-    };
+    // Fetch episode data to load into player
+    this.getPodcastEpisode(podcastEpisodeUrl).subscribe(episode => {
+      if (!episode) {
+        return;
+      }
+      const podcastEpisodeGuid = episode.guid;
+      const baseEmbedUrl = `https://w.soundcloud.com/player/`;
 
-    // Courtesy of https://stackoverflow.com/a/12040639/6572208
-    const urlParameters = Object.keys(episodeParameters).map((key) => {
-      return [key, episodeParameters[key]].map(encodeURIComponent).join('=');
-        }).join('&');
+      // See video parameters here: https://developers.google.com/youtube/player_parameters
+      const episodeParameters = {
+        url: `https%3A//api.soundcloud.com/tracks/${podcastEpisodeGuid}`,
+        color: `%23ff5500`,
+        auto_play: `false`,
+        hide_related: `false`,
+        show_comments: `true`,
+        show_user: `true`,
+        show_reposts: `false`,
+        show_teaser: `true`
+      };
 
-    const updatedUrl = `${baseEmbedUrl}?${urlParameters}`;
+      // Courtesy of https://stackoverflow.com/a/12040639/6572208
+      // Create url parameter string
+      const urlParameters = Object.keys(episodeParameters).map((key) => {
+        return [key, episodeParameters[key]].map(encodeURIComponent).join('=');
+          }).join('&');
 
-    const embedHtml = `
-      <iframe
-        class="soundcloud-iframe"
-        width="100%"
-        height="166"
-        scrolling="no"
-        frameborder="no"
-        allow="autoplay"
-        src="${updatedUrl}"
-      ></iframe>
-    `;
+      const updatedUrl = `${baseEmbedUrl}?${urlParameters}`;
 
-    const safePodcastEpisodeLink = this.sanitizer.bypassSecurityTrustHtml(embedHtml);
-    this.podcastEpisodeHtml = safePodcastEpisodeLink;
-    console.log('soundcloud data loaded', this.videoHtml);
+      const embedHtml = `
+        <iframe
+          class="soundcloud-iframe"
+          width="100%"
+          height="166"
+          scrolling="no"
+          frameborder="no"
+          allow="autoplay"
+          src="${updatedUrl}"
+        ></iframe>
+      `;
+
+      const safePodcastEpisodeLink = this.sanitizer.bypassSecurityTrustHtml(embedHtml);
+      this.podcastEpisodeHtml = safePodcastEpisodeLink;
+      console.log('soundcloud data loaded', this.podcastEpisodeHtml);
+
+    });
+
   }
 
-  // TODO: Use store selector to get the podcast episode
-  private getPodcastEpisodeId(): string {
-    return `657968765`;
+  private getPodcastEpisode(podcastEpisodeUrl: string): Observable<PodcastEpisode> {
+    const podcastId = PodcastPaths.EXPLEARNING_RSS_FEED.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
+    const episodeId = this.uiService.createOrReverseFirebaseSafeUrl(podcastEpisodeUrl);
 
+    const podcastEpisode$ = this.store$.select(PodcastStoreSelectors.selectEpisodeById(episodeId))
+      .pipe(
+        withLatestFrom(
+          this.store$.select(PodcastStoreSelectors.selectEpisodesLoaded)
+        ),
+        map(([episode, episodesLoaded]) => {
+          // Check if items are loaded, if not fetch from server
+          if (!episodesLoaded && !this.podcastEpisodeLoaded) {
+            console.log('No episode in store, fetching from server', episodeId);
+            this.store$.dispatch(new PodcastStoreActions.SingleEpisodeRequested({podcastId, episodeId}));
+          }
+          this.podcastEpisodeLoaded = true; // Prevents loading from firing more than needed
+          return episode;
+        })
+      );
+
+    return podcastEpisode$;
   }
 
   private initializeHeroData(post: Post) {

@@ -1,5 +1,6 @@
 export interface PodcastEpisode {
   id: string;
+  guid: string;
   title: string;
   pubDate: number;
   episodeUrl: string;
