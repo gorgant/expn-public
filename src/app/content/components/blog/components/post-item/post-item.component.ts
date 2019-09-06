@@ -11,7 +11,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 export class PostItemComponent implements OnInit {
 
   @Input() post: Post;
-  postUrlHandle: string;
+  postUrlSlug: string;
   thumbnailSrc: string;
 
   appRoutes = PublicAppRoutes;
@@ -26,7 +26,7 @@ export class PostItemComponent implements OnInit {
   }
 
   private setUserFriendlyUrlString() {
-    this.postUrlHandle = this.uiService.convertToFriendlyUrlFormat(this.post.title);
+    this.postUrlSlug = this.uiService.convertToFriendlyUrlFormat(this.post.title);
   }
 
 }
