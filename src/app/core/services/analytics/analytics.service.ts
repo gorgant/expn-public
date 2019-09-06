@@ -153,6 +153,10 @@ export class AnalyticsService {
       content: fullImagePath
     });
     this.metaTagService.updateTag({
+      property: 'og:image:secure_url',
+      content: fullImagePath
+    });
+    this.metaTagService.updateTag({
       property: 'og:image:alt',
       content: title
     });
@@ -164,9 +168,37 @@ export class AnalyticsService {
       property: 'og:type',
       content: type ? type : 'website'
     });
+
+    // Twitter Tags
+    this.metaTagService.updateTag({
+      name: 'twitter:title',
+      content: title,
+    });
+    this.metaTagService.updateTag({
+      name: 'twitter:description',
+      content: description,
+    });
+    this.metaTagService.updateTag({
+      name: 'twitter:image:src',
+      content: fullImagePath,
+    });
     this.metaTagService.updateTag({
       name: 'twitter:image:alt',
       content: title
+    });
+
+    // Google+ Tags
+    this.metaTagService.updateTag({
+      itemprop: 'name',
+      content: title
+    });
+    this.metaTagService.updateTag({
+      itemprop: 'description',
+      content: description
+    });
+    this.metaTagService.updateTag({
+      itemprop: 'image',
+      content: fullImagePath
     });
 
   }

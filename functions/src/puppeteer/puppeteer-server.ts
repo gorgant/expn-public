@@ -43,6 +43,7 @@ const detectBot = (userAgent: any) => {
     'outbrain',
     'w3c_validator',
     'quora link preview',
+    'quora-bot/1.0',
     'rogerbot',
     'showyoubot',
     'telegramBot',
