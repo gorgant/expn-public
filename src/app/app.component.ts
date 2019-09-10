@@ -17,7 +17,7 @@ import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 })
 export class AppComponent implements OnInit {
   title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
-  appVersion = '1.8.1';
+  appVersion = '1.8.2';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
