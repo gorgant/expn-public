@@ -76,7 +76,9 @@ export class PodcastService {
   }
 
   private getEpisodesCollection(podcastId: string): AngularFirestoreCollection<PodcastEpisode> {
-    return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(PublicCollectionPaths.PODCAST_FEED_EPISODES);
+    return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(
+      PublicCollectionPaths.PODCAST_FEED_EPISODES, ref => ref.where('blogPostUrlHandle', '>', '0') // This query confirms field exists
+    );
   }
 
   private getEpisodeDoc(podcastId: string, episodeId: string): AngularFirestoreDocument<PodcastEpisode> {

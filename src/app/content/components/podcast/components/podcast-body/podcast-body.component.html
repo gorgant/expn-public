@@ -1,5 +1,5 @@
-<div class="episodes-container" fxLayout="column" fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
-  <div *ngFor="let episode of podcastList$ | async">
-    <app-episode-item *ngIf="episode.blogPostUrlHandle" [episode]="episode"></app-episode-item>
+<div class="episode-list-container" fxLayout="column" fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+  <div class="episode-container" *ngFor="let episode of podcastList$ | async">
+    <app-episode-item [episode]="episode"></app-episode-item>
   </div>
 </div>

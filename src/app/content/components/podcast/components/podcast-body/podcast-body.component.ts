@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { PodcastService } from 'src/app/core/services/podcast.service';
 import { Observable } from 'rxjs';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
 import { UiService } from 'src/app/core/services/ui.service';
+import { Store } from '@ngrx/store';
+import { RootStoreState, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
+import { withLatestFrom, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-podcast-body',
@@ -15,17 +17,30 @@ export class PodcastBodyComponent implements OnInit {
   podcastList$: Observable<PodcastEpisode[]>;
 
   constructor(
-    private podcastService: PodcastService,
+    private store$: Store<RootStoreState.State>,
     private uiService: UiService
   ) { }
 
   ngOnInit() {
-    const podcastId = PodcastPaths.EXPLEARNING_RSS_FEED.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
-    this.podcastList$ = this.podcastService.fetchAllPodcastEpisodes(podcastId);
+    this.initializePodcast();
   }
 
-  onGetPodcastFeed() {
+  private initializePodcast() {
+    this.podcastList$ = this.store$.select(PodcastStoreSelectors.selectAllEpisodes)
+    .pipe(
+      withLatestFrom(
+        this.store$.select(PodcastStoreSelectors.selectEpisodesLoaded)
+      ),
+      map(([episodes, episodesLoaded]) => {
+        // Check if items are loaded, if not fetch from server
+        if (!episodesLoaded) {
+          console.log('No episodes loaded, loading those now');
+          const podcastId: string = this.uiService.getPodcastId(PodcastPaths.EXPLEARNING_RSS_FEED);
+          this.store$.dispatch(new PodcastStoreActions.AllEpisodesRequested({podcastId}));
+        }
+        return episodes;
+      })
+    );
 
   }
-
 }

@@ -88,5 +88,9 @@ export class UiService {
     return replacedSlashes;
   }
 
+  getPodcastId = (podcastRssUrl: string): string => {
+    return podcastRssUrl.split('users:')[1].split('/')[0];
+  }
+
 
 }
