@@ -15,6 +15,7 @@ import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.mod
 import { testamonialsList } from 'shared-models/forms-and-components/testamonials.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { UiService } from 'src/app/core/services/ui.service';
 
 @Component({
   selector: 'app-product-page',
@@ -42,7 +43,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
     private analyticsService: AnalyticsService,
-    private router: Router
+    private router: Router,
+    private uiService: UiService
   ) { }
 
   ngOnInit() {
@@ -57,10 +59,12 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     const title = `${product.name} - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
     const description = `${product.productCardData.tagline} ${product.productCardData.highlights.join('. ')}.`;
     const localImagePath = this.heroData.imageProps.src;
+    const productSlug = this.uiService.convertToFriendlyUrlFormat(product.name);
+    const canonicalUrlPath = `${PublicAppRoutes.PRODUCTS}/${product.id}/${productSlug}`;
 
-    this.analyticsService.setSeoTags(title, description, localImagePath);
-    this.analyticsService.logPageViewWithCustomDimensions({});
-    this.analyticsService.createNavStamp();
+    this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private initializeProductData() {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
-import { Location } from '@angular/common';
+import { Location, DOCUMENT } from '@angular/common';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
@@ -24,6 +24,8 @@ export class AnalyticsService {
   private navStampCreated: boolean;
   private tempUserData: PublicUser;
 
+  private canonicalLink: HTMLLinkElement;
+
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
     private titleService: Title,
@@ -32,6 +34,7 @@ export class AnalyticsService {
     private afs: AngularFirestore, // Used exclusively to generate an id
     private store$: Store<RootStoreState.State>,
     private location: Location,
+    @Inject(DOCUMENT) private domDoc: Document
   ) { }
 
   /**
@@ -40,7 +43,7 @@ export class AnalyticsService {
    * @customDimensions custom dimensions to push to data layer
    * @overridePath optional override the page view url sent to GTM
    */
-  logPageViewWithCustomDimensions(customDimensions?: PartialCustomDimensionsSet, overridePath?: string) {
+  logPageViewWithCustomDimensions(overridePath: string, customDimensions?: PartialCustomDimensionsSet) {
     if (!customDimensions) {
       customDimensions = {};
     }
@@ -55,20 +58,22 @@ export class AnalyticsService {
 
   private logPageView(overridePath: string) {
 
-    const url = this.router.url;
+    const path = this.router.url; // Will include parameters
     const title = this.titleService.getTitle();
+    const fullUrl = this.getFulllUrl(path);
 
     // Create page view object
     const pageViewObject = {
       event: 'virtualPageview',
-      virtualPagePath: overridePath || url,
-      virtualPageTitle: overridePath || title,
+      virtualPagePath: overridePath || path, // Prefer overridePath to avoid parameters
+      virtualPageTitle: title,
+      virtualPageLocation: fullUrl
     };
 
     (window as any).dataLayer.push(pageViewObject); // Push page view to datalayer
   }
 
-  createNavStamp() {
+  createNavStamp(path: string) {
     this.navStampCreated = false;
     this.navStampId = this.afs.createId();
 
@@ -78,9 +83,12 @@ export class AnalyticsService {
         withLatestFrom(this.store$.select(UserStoreSelectors.selectUserSessionid)),
       ).subscribe(([user, sessionId]) => {
         if (user && sessionId) {
+
+          const fullUrl = this.getFulllUrl(this.router.url); // Path with any potential params
           const navStamp: NavigationStamp = {
             id: this.navStampId,
-            pagePath: this.router.url,
+            pagePath: path,
+            pageLocation: fullUrl,
             pageOpenTime: now(),
             sessionId
           };
@@ -110,8 +118,16 @@ export class AnalyticsService {
     this.tempUserData = null;
   }
 
-  private fullUrlPath() {
-    const fullPath = this.location[`_platformStrategy`]._platformLocation.location.href;
+  private getFulllUrl(path: string) {
+    const origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    let fullPath: string;
+
+    // Handle possible preceding slash
+    if (path.charAt(0) === '/') {
+      fullPath = `${origin}${path}`;
+    } else {
+      fullPath = `${origin}/${path}`;
+    }
     return fullPath;
   }
 
@@ -124,10 +140,11 @@ export class AnalyticsService {
     return imagePath;
   }
 
-  setSeoTags(title: string, description: string, imagePath: string, keywords?: string, type?: string) {
+  setSeoTags(title: string, description: string, imagePath: string, urlPath: string, keywords?: string, type?: string) {
 
     const fullImagePath = this.getFullImagePath(imagePath);
-    const url = this.fullUrlPath();
+    // const url = this.fullUrlPath();
+    const canonicalUrl = this.getFulllUrl(urlPath);
 
     this.titleService.setTitle(title);
     this.metaTagService.updateTag({
@@ -162,7 +179,7 @@ export class AnalyticsService {
     });
     this.metaTagService.updateTag({
       property: 'og:url',
-      content: url
+      content: canonicalUrl
     });
     this.metaTagService.updateTag({
       property: 'og:type',
@@ -188,18 +205,33 @@ export class AnalyticsService {
     });
 
     // Google+ Tags
+    // These require the selector to be specified, otherwise forms duplicate
     this.metaTagService.updateTag({
       itemprop: 'name',
       content: title
-    });
+    },
+    `itemprop='name'`
+    );
     this.metaTagService.updateTag({
       itemprop: 'description',
       content: description
-    });
+    },
+    `itemprop='description'`
+    );
     this.metaTagService.updateTag({
       itemprop: 'image',
       content: fullImagePath
-    });
+    },
+    `itemprop='image'`
+    );
+
+    // Set canonical link (create and append new one if doesn't exist)
+    if (!this.canonicalLink) {
+      this.canonicalLink = this.domDoc.createElement('link');
+      this.canonicalLink.setAttribute('rel', 'canonical');
+      this.domDoc.head.appendChild(this.canonicalLink);
+    }
+    this.canonicalLink.setAttribute('href', canonicalUrl);
 
   }
 

@@ -39,10 +39,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:max-line-length
     const description = metaTagDefaults.explearningPublic.metaTagDefaultDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const canonicalUrlPath = PublicAppRoutes.HOME;
 
-    this.analyticsService.setSeoTags(title, description, localImagePath);
-    this.analyticsService.logPageViewWithCustomDimensions();
-    this.analyticsService.createNavStamp();
+    this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private setProductPathsBasedOnEnvironment() {

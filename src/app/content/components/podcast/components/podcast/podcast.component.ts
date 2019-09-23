@@ -4,6 +4,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-podcast',
@@ -30,10 +31,11 @@ export class PodcastComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:max-line-length
     const description = `Get our lastest communications strategies in audio form from our weekly Explearning podcast. Available on all the major directories, including Soundlcoud, iTunes, Google Podcast, Spotify, and more.`;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const canonicalUrlPath = PublicAppRoutes.PODCAST;
 
-    this.analyticsService.setSeoTags(title, description, localImagePath);
-    this.analyticsService.logPageViewWithCustomDimensions();
-    this.analyticsService.createNavStamp();
+    this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private initializeHeroData() {

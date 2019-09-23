@@ -20,13 +20,16 @@ export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.configSeoAndAnalytics();
-    this.analyticsService.createNavStamp();
   }
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
+
+    const canonicalUrlPath = PublicAppRoutes.TERMS_AND_CONDITIONS;
+
     this.titleService.setTitle(`Terms and Conditions - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
-    this.analyticsService.logPageViewWithCustomDimensions();
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   ngOnDestroy() {

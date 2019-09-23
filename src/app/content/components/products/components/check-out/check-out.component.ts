@@ -40,9 +40,12 @@ export class CheckOutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
+
+    const canonicalUrlPath = PublicAppRoutes.CHECKOUT;
+
     this.titleService.setTitle(`Checkout - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
-    this.analyticsService.logPageViewWithCustomDimensions();
-    this.analyticsService.createNavStamp();
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private initializePublicUser() {

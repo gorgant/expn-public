@@ -4,6 +4,7 @@ import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-contact',
@@ -30,10 +31,11 @@ export class ContactComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:max-line-length
     const description = `Get in touch with the Explearning team using this contact form. We welcome questions, suggestions, and any thoughtful input. Let us know if there is anything else we can do to help you improve your speaking and communication skills!`;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const canonicalUrlPath = PublicAppRoutes.CONTACT;
 
-    this.analyticsService.setSeoTags(title, description, localImagePath);
-    this.analyticsService.logPageViewWithCustomDimensions();
-    this.analyticsService.createNavStamp();
+    this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private initializeHeroData() {

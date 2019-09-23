@@ -69,10 +69,12 @@ export class PostComponent implements OnInit, OnDestroy {
     const localImagePath = this.heroData.imageProps.src;
     const keywords = post.keywords;
     const type = 'article';
+    const postSlug = this.uiService.convertToFriendlyUrlFormat(post.title);
+    const canonicalUrlPath = `${PublicAppRoutes.BLOG}/${post.id}/${postSlug}`;
 
-    this.analyticsService.setSeoTags(title, description, localImagePath, keywords, type);
-    this.analyticsService.logPageViewWithCustomDimensions();
-    this.analyticsService.createNavStamp();
+    this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath, keywords, type);
+    this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
+    this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
   private loadExistingPostData() {
