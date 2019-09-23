@@ -113,6 +113,27 @@ const renderOnClient = async (userAgent: string, res: express.Response) => {
   processRes(resBody);
 }
 
+// Prevent arbitrary server requests from unknown domains
+const validateServerRequest = (request: express.Request) => {
+
+  // Check that host domain is cloudfunctions.net
+  const hostDomain: string = request.hostname.split('.')[request.hostname.split('.').length-2];
+  if (hostDomain !== 'cloudfunctions') {
+    console.log('Invalid host domain', hostDomain);
+    return false;
+  }
+
+  // Check that proxy host is valid
+  const proxyHost: string = request.headers['x-forwarded-host'] as string;
+  if (proxyHost !== appUrl) {
+    console.log('Invalid proxy host', proxyHost);  
+    return false;
+  }
+
+  console.log(`Is valid request with this hostDomain ${hostDomain} and this proxyHost ${proxyHost}`);
+  return true;
+}
+
 const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, res: express.Response) => {
 
   const isGoogleBot = detectGoogleBot(userAgent);
@@ -150,8 +171,9 @@ const app = express().get( '*', async (req: express.Request, res: express.Respon
 
   const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
   const isBot = detectBot(userAgent);
+  const isValidRequest = validateServerRequest(req);
 
-  if (isBot) {
+  if (isBot && isValidRequest) {
     await preRenderWithPuppeteer(req, userAgent, res);
   } else {
     await renderOnClient(userAgent, res);
