@@ -178,6 +178,15 @@ const app = express().get( '*', async (req: express.Request, res: express.Respon
   } else {
     await renderOnClient(userAgent, res);
   }
+
+  // const isHeadless = detectHeadlessChrome(userAgent);
+
+  // if (isHeadless) {
+  //   await renderOnClient(userAgent, res);
+  // } else {
+  //   await preRenderWithPuppeteer(req, userAgent, res);
+  // }
+
   
 });
 

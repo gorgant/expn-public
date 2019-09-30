@@ -53,26 +53,64 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
   return undefined;
 }
 
-// const interceptRequest = async (page: puppeteer.Page) => {
-//   console.log('Attempting to intercept requests before loading page');
-//   // 1. Intercept network requests.
-//   await page.setRequestInterception(true);
+const interceptRequest = async (page: puppeteer.Page) => {
+  console.log('Attempting to intercept requests before loading page');
+  // 1. Intercept network requests.
+  await page.setRequestInterception(true);
 
-//   // TODO: SEE IF I CAN INTERCEPT THE LINGERING FIRESTORE XHR REQUEST THAT TAKES FOREVER TO RUN
-//   page.on('request', req => {
-//     // 2. Ignore requests for resources that don't produce DOM
-//     // (images, stylesheets, media).
-//     const whitelist = ['document', 'script', 'xhr', 'fetch'];
-//     if (!whitelist.includes(req.resourceType())) {
-//       return req.abort();
+  // TODO: SEE IF I CAN INTERCEPT THE LINGERING FIRESTORE XHR REQUEST THAT TAKES FOREVER TO RUN
+  page.on('request', req => {
+    // 2. Ignore requests for resources that don't produce DOM
+    // (images, stylesheets, media).
+    const whitelist = ['document', 'script', 'xhr', 'fetch'];
+    if (!whitelist.includes(req.resourceType())) {
+      return req.abort();
+    }
+
+    // 3. Pass through all other requests.
+    return req.continue();
+  });
+}
+
+// // THIS AND THE INLINERESOURCES CODE ARE NOT NECESSARY
+// const stylesheetContents: any = {};
+
+// const stashLocalStylesheets = async(url: string, page: puppeteer.Page) => {
+//   console.log('Stashing local stylesheets');
+//   // 1. Stash the responses of local stylesheets.
+//   page.on('response', async resp => {
+//     console.log('Page response detected', resp);
+//     console.log('Programatic url', resp.url());
+//     const responseUrl = resp.url();
+//     const sameOrigin = responseUrl === url;
+//     const isStylesheet = resp.request().resourceType() === 'stylesheet';
+//     // const respResourceType = (resp as any)['_request']['_resourceType'] as string;
+//     // const isStylesheet = respResourceType === 'stylesheet';
+//     if (sameOrigin && isStylesheet) {
+//       console.log('Is stylesheet');
+//       stylesheetContents[responseUrl] = await resp.text();
 //     }
-
-//     // 3. Pass through all other requests.
-//     return req.continue();
 //   });
 // }
 
-const exitWithCacheRespnse = (cachedPage: Webpage) => {
+// const inlineResources = async(page: puppeteer.Page) => {
+//   console.log('Attempting to inline critical resources like stylesheets');
+//   // 2. Inline the CSS.
+//   // Replace stylesheets in the page with their equivalent <style>.
+//   await page.$$eval('link[rel="stylesheet"]', (links, content) => {
+//     links.forEach(link => {
+//       const thisLink = link as HTMLLinkElement; // Added for type certainty
+//       const cssText = content[thisLink.href];
+//       if (cssText) {
+//         const style = document.createElement('style');
+//         style.textContent = cssText;
+//         thisLink.replaceWith(style);
+//       }
+//     });
+//   }, stylesheetContents);
+// }
+
+const exitWithCacheResponse = (cachedPage: Webpage) => {
   console.log('Returning cached page payload', cachedPage.payload);
     const cacheResponse: PuppeteerResponse = {
       html: cachedPage.payload,
@@ -82,7 +120,7 @@ const exitWithCacheRespnse = (cachedPage: Webpage) => {
     return cacheResponse;
 }
 
-const exitWithEmptyRespnose = () => {
+const exitWithEmptyResponse = () => {
   console.log('No cached page for Google bot, serving normally');
   return {html: '', ttRenderMs: 0, emptyRespnse: true};
 }
@@ -105,12 +143,12 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
 
   // If cached page exists, return that and end the function
   if (cachedPage) {
-    return exitWithCacheRespnse(cachedPage);
+    return exitWithCacheResponse(cachedPage);
   }
 
   // If no cache and it's a Google Bot, abort with empty response and process as a human request
   if (!cachedPage && requestType === WebpageRequestType.GOOGLE_BOT) {
-    return exitWithEmptyRespnose();
+    return exitWithEmptyResponse();
   }
 
   const start = Date.now();
@@ -126,7 +164,7 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
   
   try {
 
-    // await interceptRequest(page);
+    await interceptRequest(page);
 
     console.log('Attempting to go to page', url);
     page.setDefaultNavigationTimeout(40000); // Increase timeout to 40 seconds
@@ -134,6 +172,7 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
     console.log('Found page, waiting for selector to appear');
 
     await page.waitForSelector('.puppeteer-loaded'); // ensure .puppeteer-loaded class exists in the DOM.
+
   } catch (err) {
     console.error(err);
     throw new Error('page.goto/waitForSelector timed out.');
