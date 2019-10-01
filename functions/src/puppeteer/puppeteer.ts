@@ -53,6 +53,8 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
   return undefined;
 }
 
+
+// This listener intercepts all incoming requests to screen out unwanted behavior
 const interceptRequest = async (page: puppeteer.Page) => {
   console.log('Attempting to intercept requests before loading page');
   // 1. Intercept network requests.
@@ -64,6 +66,17 @@ const interceptRequest = async (page: puppeteer.Page) => {
     // (images, stylesheets, media).
     const whitelist = ['document', 'script', 'xhr', 'fetch'];
     if (!whitelist.includes(req.resourceType())) {
+      return req.abort();
+    }
+
+    // Don't load Google Analytics lib requests so pageviews aren't 2x.
+    const blacklist = ['www.google-analytics.com', '/gtag/js', 'ga.js', 'analytics.js', 'gtm.js', 'stripe.com', 'youtube.com', 'doubleclick.net', 'stripe.network'];
+    let blacklistItem;
+    if (blacklist.find(regex => {
+      blacklistItem = req.url().match(regex);
+      return req.url().match(regex) as any;
+    })) {
+      console.log('Preventing google analytics request', blacklistItem);
       return req.abort();
     }
 
@@ -157,7 +170,13 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
   const browser = await puppeteer.launch(
       {
         // No sandbox is required in cloud functions
-        args: ['--no-sandbox']
+        args: ['--no-sandbox'],
+        defaultViewport: {
+          width: 375,
+          height: 667,
+          isMobile: true,
+          hasTouch: true
+        }
       }
     );
   const page = await browser.newPage();
@@ -180,7 +199,8 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
 
   const html = await page.content(); // serialized HTML of page DOM.
   console.log('Selector found, fetched this html', html);
-  await browser.close();
+  
+  await browser.close(); // Close out browser to preserve memory
 
   const ttRenderMs = Date.now() - start;
   console.info(`Headless rendered page in: ${ttRenderMs}ms`);
@@ -190,8 +210,6 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
       console.log('Error caching page', error);
       return error;
     });
-
-  await browser.close(); // Close the page we opened here (not the browser, which gets reused).
 
   const response: PuppeteerResponse = {
     html,

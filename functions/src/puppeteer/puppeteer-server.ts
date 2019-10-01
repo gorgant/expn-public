@@ -6,6 +6,8 @@ import { publicAppUrl } from '../environments/config';
 import { puppeteerSsr } from './puppeteer';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { PuppeteerResponse } from '../../../shared-models/ssr/puppeteer-response';
+import { UAParser } from 'ua-parser-js';
+import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
 
 const appUrl = publicAppUrl;
 
@@ -16,11 +18,10 @@ const generateUrl = (request: express.Request) => {
     host: appUrl,
     pathname: request.originalUrl
   });
-  console.log('Generated this new URL', updatedUrl);
   return updatedUrl;
 }
 
-  // List of bots to target, add more if you'd like
+// List of bots to target, add more if you'd like
 const detectBot = (userAgent: any) => {
 
   const bots = [
@@ -89,6 +90,7 @@ const renderOnClient = async (userAgent: string, res: express.Response) => {
     console.log('Headless request detected');
   }
 
+  // For some reason, only need the root directory here (rather than the sub directory of the queried url)
   const fullStandardUrl = `https://${appUrl}`;
   console.log('Fetching standard url', fullStandardUrl);
 
@@ -111,6 +113,7 @@ const renderOnClient = async (userAgent: string, res: express.Response) => {
   }
   
   processRes(resBody);
+  console.log('Client res sent');
 }
 
 // Prevent arbitrary server requests from unknown domains
@@ -134,14 +137,38 @@ const validateServerRequest = (request: express.Request) => {
   return true;
 }
 
+const validateUrlPath = (request: express.Request): boolean => {
+  
+  const targetUrl = generateUrl(request);
+  
+
+  const contentUrlArray: string[] = Object.values(PublicAppRoutes).map(pageSlugWithSlashPrefix => {
+    const pageUrl: string = `https://${appUrl}${pageSlugWithSlashPrefix}`;
+    
+    // Exclude the home page route to prevent universal matches
+    if (pageSlugWithSlashPrefix === '') {
+      return 'home page invalid';
+    }
+    return pageUrl;
+  });
+  
+  // Check if target URL includes a valid content path
+  if (contentUrlArray.find(regex => targetUrl.includes(regex))) {
+    return true;
+  }
+  console.log('Invalid path', targetUrl);
+  return false;
+
+}
+
 const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, res: express.Response) => {
 
   const isGoogleBot = detectGoogleBot(userAgent);
   const requestType = isGoogleBot ? WebpageRequestType.GOOGLE_BOT : WebpageRequestType.OTHER_BOT;
-  const botUrl = generateUrl(req);
+  const targetUrl = generateUrl(req);
 
-  console.log('Sending this url to puppeteer', botUrl);
-  const puppeteerResponse: PuppeteerResponse = await puppeteerSsr(botUrl, userAgent, requestType)
+  console.log('Sending this url to puppeteer', targetUrl);
+  const puppeteerResponse: PuppeteerResponse = await puppeteerSsr(targetUrl, userAgent, requestType)
     .catch(err => {
       console.log('Error with puppeteerSsr', err);
       return err;
@@ -158,6 +185,21 @@ const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, r
   // Add Server-Timing! See https://w3c.github.io/server-timing/.
   res.set('Server-Timing', `Prerender;dur=${puppeteerResponse.ttRenderMs};desc="Headless render time (ms)"`);
   res.status(200).send(puppeteerResponse.html); // Serve prerendered page as response.
+  console.log('Pupp res sent');
+}
+
+const detectMobileDevice = (userAgent: string): boolean => {
+  
+  // const uaParser = new parser.UAParser();
+  const uaParser = new UAParser(userAgent);
+  const parserResult = uaParser.getResult();
+  console.log('UA Parser response', parserResult);
+  const deviceType = parserResult.device.type;
+  console.log('Detected device', deviceType);
+  if (deviceType === 'mobile') {
+    return true;
+  }
+  return false;
 }
 
 
@@ -173,21 +215,25 @@ const app = express().get( '*', async (req: express.Request, res: express.Respon
   const isBot = detectBot(userAgent);
   const isValidRequest = validateServerRequest(req);
 
+  // If bot, render with puppeteer
   if (isBot && isValidRequest) {
     await preRenderWithPuppeteer(req, userAgent, res);
-  } else {
-    await renderOnClient(userAgent, res);
+    return;
   }
 
-  // const isHeadless = detectHeadlessChrome(userAgent);
+  // If not bot, perform tests to determine puppeteer vs client
+  const isHeadless = detectHeadlessChrome(userAgent);
+  const isMobileDevice = detectMobileDevice(userAgent);
+  const isValidPath = validateUrlPath(req);
 
-  // if (isHeadless) {
-  //   await renderOnClient(userAgent, res);
-  // } else {
-  //   await preRenderWithPuppeteer(req, userAgent, res);
-  // }
+  if (isHeadless || !isMobileDevice || !isValidPath || !isValidRequest) {
+    await renderOnClient(userAgent, res);
+    return;
+  } else {
+    await preRenderWithPuppeteer(req, userAgent, res);
+    return;
+  }
 
-  
 });
 
 const opts = {memory: '1GB', timeoutSeconds: 60};
