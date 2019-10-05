@@ -15,6 +15,10 @@
     ],
     "rewrites": [
       {
+        "source": "*.*",
+        "destination": "./"
+      },
+      {
         "source": "**",
         "function": "puppeteerServer"
       }

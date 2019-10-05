@@ -3,12 +3,23 @@ import { UiService } from './core/services/ui.service';
 import { MatSidenav } from '@angular/material';
 import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
-import { RootStoreState, UserStoreSelectors, AuthStoreSelectors, AuthStoreActions, UserStoreActions } from './root-store';
-import { withLatestFrom, map, takeWhile } from 'rxjs/operators';
+import {
+  RootStoreState,
+  UserStoreSelectors,
+  AuthStoreSelectors,
+  AuthStoreActions,
+  UserStoreActions,
+  UiStoreActions,
+  UiStoreSelectors
+} from './root-store';
+import { withLatestFrom, map, takeWhile, filter, tap } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductStrings } from 'shared-models/products/product-strings.model';
 import { Product } from 'shared-models/products/product.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { Meta } from '@angular/platform-browser';
+import { Router, NavigationStart } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +32,9 @@ export class AppComponent implements OnInit {
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
+  private routeNavCount = 0;
+  cachedHtmlActive$: Observable<boolean>;
+  private isBot: boolean;
 
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
@@ -28,15 +42,72 @@ export class AppComponent implements OnInit {
     private uiService: UiService,
     private authService: AuthService,
     private store$: Store<RootStoreState.State>,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private metaTagService: Meta,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    this.checkForBot();
+    this.checkIfCachedHtml();
+    this.monitorCachedHtmlStatus();
+    this.detectRouteChange();
     this.setUserSessionId();
     this.configureSideNav();
     this.configureAuthDetection();
     this.checkForOfflineProductData();
     this.initializePublicUser();
+  }
+
+  private checkForBot() {
+    const botMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.explearningPublic.metaTagIsBot}`);
+    if (botMetaTag) {
+      this.store$.dispatch(new UiStoreActions.BotDetected());
+      console.log('Bot detected', botMetaTag);
+    }
+    console.log('No bot detected');
+
+    // Keep this updated in the app component state;
+    this.store$.select(UiStoreSelectors.selectBotDetected)
+      .subscribe(isBot => {
+        if (isBot) {
+          this.isBot = true;
+        }
+      });
+  }
+
+  private checkIfCachedHtml() {
+    const cachedMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.explearningPublic.metaTagCachedHtml}`);
+    if (cachedMetaTag) {
+      this.store$.dispatch(new UiStoreActions.HTMLCacheActivated());
+      console.log('Cached content detected', cachedMetaTag);
+      return true;
+    }
+    console.log('No cached content detected');
+    return false;
+  }
+
+  // Used to turn off HTML Cache async logic
+  private detectRouteChange() {
+    this.router.events.pipe(
+      takeWhile(() => this.routeNavCount < 2),
+      filter(event =>
+        event instanceof NavigationStart
+      ),
+      tap(event => {
+        console.log('Router change detected');
+        this.routeNavCount++;
+        if (this.routeNavCount > 1) {
+          this.store$.dispatch(new UiStoreActions.HTMLCacheDeactivated());
+          console.log('Valid router nav detected');
+        }
+      })
+    ).subscribe();
+  }
+
+  private monitorCachedHtmlStatus() {
+    this.cachedHtmlActive$ = this.store$.select(UiStoreSelectors.selectHTMLCacheActive)
+      .pipe(map(htmlCacheActive => htmlCacheActive));
   }
 
   private setUserSessionId() {
@@ -45,6 +116,10 @@ export class AppComponent implements OnInit {
   }
 
   private initializePublicUser() {
+    if (this.isBot) {
+      console.log('Bot detected, not initializing user');
+      return;
+    }
     this.store$.select(UserStoreSelectors.selectUser)
       .pipe(
         takeWhile(() => !this.userLoaded),
@@ -82,6 +157,10 @@ export class AppComponent implements OnInit {
   }
 
   private configureAuthDetection() {
+    if (this.isBot) {
+      console.log('Bot detected, not initializing auth services');
+      return;
+    }
     this.authService.initAuthListener();
     this.authService.authStatus$
     .pipe(
@@ -108,6 +187,10 @@ export class AppComponent implements OnInit {
   }
 
   private checkForOfflineProductData() {
+    if (this.isBot) {
+      console.log('Bot detected, not checking for offline product data');
+      return;
+    }
     const offlineProductData = localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA);
     if (offlineProductData) {
       const productData: Product = JSON.parse(localStorage.getItem(ProductStrings.OFFLINE_PRODUCT_DATA));

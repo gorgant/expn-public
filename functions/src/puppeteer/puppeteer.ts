@@ -6,26 +6,52 @@ import { now } from 'moment';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { PuppeteerResponse } from '../../../shared-models/ssr/puppeteer-response';
 import { createOrReverseFirebaseSafeUrl } from '../global-helpers';
+import { metaTagDefaults } from '../../../shared-models/analytics/metatags.model';
 const db = publicFirestore;
 
 // Courtesy of: https://developers.google.com/web/tools/puppeteer/articles/ssr
 // With additional tips from: https://medium.com/@ebidel/puppeteering-in-firebase-google-cloud-functions-76145c7662bd
+
+
+const updateHtml = (html: string, docTarget: string, textToAdd: string): string => {
+  const startIndex = html.indexOf(docTarget) + docTarget.length;
+  const updatedHtml = html.slice(0, startIndex) + ` ${textToAdd}` + html.slice(startIndex);
+  return updatedHtml;
+}
+
+// Applied before storing in database
+const tagCacheInHtml = (html: string): string => {
+  const docTarget = '<head>';
+  const cacheTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagCachedHtml}" content="true">`;
+  const updatedHtml = updateHtml(html, docTarget, cacheTag);
+  console.log('Marking cache in HTML');
+  return updatedHtml;
+}
+
+// Applied after retrieving from database
+const tagBotInHtml = (html: string): string => {
+  const docTarget = '<head>';
+  const botTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagIsBot}" content="true">`;
+  const updatedHtml = updateHtml(html, docTarget, botTag);
+  console.log('Marking bot in HTML');
+  return updatedHtml;
+}
 
 // Store cache in Firebase for rapid access
 const cachePage = async (url: string, userAgent: string, html: string) => {
   
   const fbSafeUrl: string = createOrReverseFirebaseSafeUrl(url);
 
+  const updatedHtml = tagCacheInHtml(html); // Add a cache tag to the HTML doc in the head section
+
   const webpage: Webpage = {
     expires: now() + (1000 * 60 * 60 * 24 * 7), // Set expiry for seven days
     userAgent,
-    payload: html,
+    payload: updatedHtml,
     saved: now(),
     url: createOrReverseFirebaseSafeUrl(fbSafeUrl, true) // Revert to normal url
   }
   
-  
-
   const fbRes = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).set(webpage)
     .catch(error => {
       console.log('Error connecting to firebase', error);
@@ -35,7 +61,8 @@ const cachePage = async (url: string, userAgent: string, html: string) => {
     return fbRes;
 }
 
-const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => {
+// Retrieve cached page from Firebase
+const retrieveCachedPage = async (url: string, isBot: boolean): Promise<Webpage | undefined> => {
   const fbSafeUrl = createOrReverseFirebaseSafeUrl(url);
   console.log('Attempting to retrieve cached page with id: ', fbSafeUrl);
   const pageDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).get()
@@ -46,6 +73,11 @@ const retrieveCachedPage = async (url: string): Promise<Webpage | undefined> => 
   if (pageDoc.exists) {
     const webPageData = pageDoc.data() as Webpage;
     console.log('Cached page exists', webPageData);
+    
+    // If a bot is accessing page, indicate that in the html
+    if (isBot) {
+      webPageData.payload = tagBotInHtml(webPageData.payload);
+    }
     return webPageData;
   }
 
@@ -69,7 +101,7 @@ const interceptRequest = async (page: puppeteer.Page) => {
       return req.abort();
     }
 
-    // Don't load Google Analytics lib requests so pageviews aren't 2x.
+    // Block GA requests as well as other unecessary requests
     const blacklist = ['www.google-analytics.com', '/gtag/js', 'ga.js', 'analytics.js', 'gtm.js', 'stripe.com', 'youtube.com', 'doubleclick.net', 'stripe.network'];
     let blacklistItem;
     if (blacklist.find(regex => {
@@ -123,7 +155,7 @@ const interceptRequest = async (page: puppeteer.Page) => {
 //   }, stylesheetContents);
 // }
 
-const exitWithCacheResponse = (cachedPage: Webpage) => {
+const exitWithCacheResponse = (cachedPage: Webpage): PuppeteerResponse => {
   console.log('Returning cached page payload', cachedPage.payload);
     const cacheResponse: PuppeteerResponse = {
       html: cachedPage.payload,
@@ -144,13 +176,13 @@ const exitWithEmptyResponse = () => {
  * @param {WebpageRequestType} requestType Dictates how the request should be handled by puppeteer
  */
 
-export const puppeteerSsr = async (url: string, userAgent: string, requestType: WebpageRequestType): Promise<PuppeteerResponse> => {
+export const puppeteerSsr = async (url: string, userAgent: string, requestType: WebpageRequestType, isBot: boolean): Promise<PuppeteerResponse> => {
   
   let cachedPage;
 
   // Retrieve cached page if this isn't a cacheUpdate request
   if (requestType !== WebpageRequestType.AUTO_CACHE) {
-    cachedPage = await retrieveCachedPage(url);
+    cachedPage = await retrieveCachedPage(url, isBot);
   }
 
 
@@ -186,7 +218,7 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
     await interceptRequest(page);
 
     console.log('Attempting to go to page', url);
-    page.setDefaultNavigationTimeout(40000); // Increase timeout to 40 seconds
+    page.setDefaultNavigationTimeout(20000); // Set timeout to 20 seconds
     await page.goto(url, {waitUntil: 'load'});
     console.log('Found page, waiting for selector to appear');
 
@@ -197,7 +229,7 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
     throw new Error('page.goto/waitForSelector timed out.');
   }
 
-  const html = await page.content(); // serialized HTML of page DOM.
+  let html = await page.content(); // serialized HTML of page DOM.
   console.log('Selector found, fetched this html', html);
   
   await browser.close(); // Close out browser to preserve memory
@@ -205,11 +237,17 @@ export const puppeteerSsr = async (url: string, userAgent: string, requestType: 
   const ttRenderMs = Date.now() - start;
   console.info(`Headless rendered page in: ${ttRenderMs}ms`);
 
+  // Cache HTML in database for easy future retrieval
   await cachePage(url, userAgent, html)
     .catch(error => {
       console.log('Error caching page', error);
       return error;
     });
+  
+  // Indicate bot in HTML response if applicable
+  if (requestType === WebpageRequestType.AUTO_CACHE || isBot) {
+    html = tagBotInHtml(html);
+  }
 
   const response: PuppeteerResponse = {
     html,

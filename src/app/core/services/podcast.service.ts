@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, takeUntil, map } from 'rxjs/operators';
+import { catchError, takeUntil, map, take } from 'rxjs/operators';
 import { throwError, Observable } from 'rxjs';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
@@ -55,7 +55,7 @@ export class PodcastService {
     const episodeDoc = this.getEpisodeDoc(podcastId, episodeId);
     return episodeDoc.valueChanges()
       .pipe(
-        takeUntil(this.authService.unsubTrigger$),
+        take(1),
         map(episode => {
           console.log('Fetched this episode', episode);
           return episode;

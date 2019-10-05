@@ -8,6 +8,8 @@ const getError = (state: State): any => state.error;
 const getIsOnline = (state: State): boolean => state.isOnline;
 const getGeographicDataLoaded = (state: State): boolean => state.geographicDataLoaded;
 const getGeographicData = (state: State): GeographicData => state.geographicData;
+const getHTMLCacheActive = (state: State): boolean => state.htmlCacheActive;
+const getBotDetected = (state: State): boolean => state.botDetected;
 
 export const selectUiState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('ui');
@@ -45,5 +47,17 @@ export const selectUsStateByAbbr: (stateAbbr: string) => MemoizedSelector<object
 = (stateAbbr: string) => createSelector(
   selectGeographicData,
   geographicData => geographicData.usStateList.filter(state => state.abbr === stateAbbr)[0]
+);
+
+export const selectHTMLCacheActive: MemoizedSelector<object, boolean>
+= createSelector(
+  selectUiState,
+  getHTMLCacheActive
+);
+
+export const selectBotDetected: MemoizedSelector<object, boolean>
+= createSelector(
+  selectUiState,
+  getBotDetected
 );
 

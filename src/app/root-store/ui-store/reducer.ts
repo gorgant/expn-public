@@ -23,6 +23,24 @@ export function featureReducer(state = initialState, action: Actions): State {
         geographicData: action.payload.geographicData
       };
 
+    case ActionTypes.HTML_CACHE_ACTIVATED:
+      return {
+        ...state,
+        htmlCacheActive: true
+      };
+
+    case ActionTypes.HTML_CACHE_DEACTIVATED:
+      return {
+        ...state,
+        htmlCacheActive: false
+      };
+
+    case ActionTypes.BOT_DETECTED:
+      return {
+        ...state,
+        botDetected: true
+      };
+
     case ActionTypes.UI_DATA_LOAD_ERROR:
       return {
         ...state,

@@ -81,14 +81,8 @@ const detectGoogleBot = (userAgent: string): boolean => {
   return isGoogleBot;
 }
 
-const renderOnClient = async (userAgent: string, res: express.Response) => {
+const renderOnClient = async (res: express.Response) => {
   console.log('Rendering on client');
-
-  const isHeadless = detectHeadlessChrome(userAgent);
-
-  if (isHeadless) {
-    console.log('Headless request detected');
-  }
 
   // For some reason, only need the root directory here (rather than the sub directory of the queried url)
   const fullStandardUrl = `https://${appUrl}`;
@@ -109,11 +103,11 @@ const renderOnClient = async (userAgent: string, res: express.Response) => {
 
   // This is not an infinite loop because Firebase Hosting Priorities dictate index.html will be loaded first
   const processRes = (body: string) => {
-    res.send(body.toString());
+    res.status(200).send(body.toString());
   }
   
   processRes(resBody);
-  console.log('Client res sent');
+  console.log('Client res sent', resBody);
 }
 
 // Prevent arbitrary server requests from unknown domains
@@ -161,14 +155,14 @@ const validateUrlPath = (request: express.Request): boolean => {
 
 }
 
-const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, res: express.Response) => {
+const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, res: express.Response, isBot: boolean) => {
 
   const isGoogleBot = detectGoogleBot(userAgent);
   const requestType = isGoogleBot ? WebpageRequestType.GOOGLE_BOT : WebpageRequestType.OTHER_BOT;
   const targetUrl = generateUrl(req);
 
   console.log('Sending this url to puppeteer', targetUrl);
-  const puppeteerResponse: PuppeteerResponse = await puppeteerSsr(targetUrl, userAgent, requestType)
+  const puppeteerResponse: PuppeteerResponse = await puppeteerSsr(targetUrl, userAgent, requestType, isBot)
     .catch(err => {
       console.log('Error with puppeteerSsr', err);
       return err;
@@ -176,7 +170,7 @@ const preRenderWithPuppeteer = async (req: express.Request, userAgent: string, r
   
   // If response is empty, switch to rendering on client
   if (puppeteerResponse.emptyResponse) {
-    await renderOnClient(userAgent, res);
+    await renderOnClient(res);
     return;
   }
 
@@ -214,26 +208,36 @@ const app = express().get( '*', async (req: express.Request, res: express.Respon
   const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
   const isBot = detectBot(userAgent);
   const isValidRequest = validateServerRequest(req);
-
-  // If bot, render with puppeteer
-  if (isBot && isValidRequest) {
-    await preRenderWithPuppeteer(req, userAgent, res);
-    return;
-  }
-
-  // If not bot, perform tests to determine puppeteer vs client
   const isHeadless = detectHeadlessChrome(userAgent);
   const isMobileDevice = detectMobileDevice(userAgent);
   const isValidPath = validateUrlPath(req);
 
-  if (isHeadless || !isMobileDevice || !isValidPath || !isValidRequest) {
-    await renderOnClient(userAgent, res);
-    return;
-  } else {
-    await preRenderWithPuppeteer(req, userAgent, res);
+  // If bot with valid request, render with puppeteer
+  if (isBot && isValidRequest && isValidPath) {
+    await preRenderWithPuppeteer(req, userAgent, res, isBot);
     return;
   }
 
+  // Render headless and invalid requests on client
+  if (isHeadless || !isValidPath || !isValidRequest) {
+    await renderOnClient(res); 
+    return;
+  }
+
+  // Render human non-mobile devices on client
+  if (!isBot && !isMobileDevice) {
+    await renderOnClient(res); 
+    return;
+  }
+
+  // Render bots and human mobile with puppeteer
+  if (isBot || isMobileDevice) {
+    await preRenderWithPuppeteer(req, userAgent, res, isBot);
+    return;
+  }
+
+  // Render any other non-matches on client
+  await renderOnClient(res);
 });
 
 const opts = {memory: '1GB', timeoutSeconds: 60};

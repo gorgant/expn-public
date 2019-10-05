@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
 import { Store } from '@ngrx/store';
-import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
+import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Location, DOCUMENT } from '@angular/common';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
@@ -26,6 +26,8 @@ export class AnalyticsService {
 
   private canonicalLink: HTMLLinkElement;
 
+  private isBot: boolean;
+
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
     private titleService: Title,
@@ -35,7 +37,18 @@ export class AnalyticsService {
     private store$: Store<RootStoreState.State>,
     private location: Location,
     @Inject(DOCUMENT) private domDoc: Document
-  ) { }
+  ) {
+    this.checkForBot();
+  }
+
+  private checkForBot() {
+    this.store$.select(UiStoreSelectors.selectBotDetected)
+      .subscribe(isBot => {
+        if (isBot) {
+          this.isBot = true;
+        }
+      });
+  }
 
   /**
    * Push both page view and custom dimensions (if any) to data layer
@@ -43,7 +56,14 @@ export class AnalyticsService {
    * @customDimensions custom dimensions to push to data layer
    * @overridePath optional override the page view url sent to GTM
    */
-  logPageViewWithCustomDimensions(overridePath: string, customDimensions?: PartialCustomDimensionsSet) {
+  logPageViewWithCustomDimensions(overridePath: string, customDimensions?: PartialCustomDimensionsSet): void {
+
+    // Exit function if bot
+    if (this.isBot) {
+      console.log('Bot detected, not logging page view');
+      return;
+    }
+
     if (!customDimensions) {
       customDimensions = {};
     }
@@ -73,7 +93,14 @@ export class AnalyticsService {
     (window as any).dataLayer.push(pageViewObject); // Push page view to datalayer
   }
 
-  createNavStamp(path: string) {
+  createNavStamp(path: string): void {
+
+    // Exit function if bot
+    if (this.isBot) {
+      console.log('Bot detected, not logging page view');
+      return;
+    }
+
     this.navStampCreated = false;
     this.navStampId = this.afs.createId();
 
@@ -103,6 +130,13 @@ export class AnalyticsService {
   }
 
   closeNavStamp() {
+
+    // Exit function if bot
+    if (this.isBot) {
+      console.log('Bot detected, not logging page view');
+      return;
+    }
+
     if (this.tempNavStampData && this.tempNavStampData.pageOpenTime) {
       const user = this.tempUserData;
       const navStamp: NavigationStamp = {

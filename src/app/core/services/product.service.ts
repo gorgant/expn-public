@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { takeUntil, map, catchError } from 'rxjs/operators';
+import { takeUntil, map, catchError, take } from 'rxjs/operators';
 import { UiService } from './ui.service';
 import { Product } from 'shared-models/products/product.model';
 import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
@@ -39,7 +39,7 @@ export class ProductService {
     const productDoc = this.getProductDoc(productId);
     return productDoc.valueChanges()
       .pipe(
-        takeUntil(this.authService.unsubTrigger$),
+        take(1),
         map(product => {
           console.log('Fetched this product', product);
           return product;
