@@ -28,7 +28,7 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
-  appVersion = '1.8.3';
+  appVersion = '1.8.4';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
