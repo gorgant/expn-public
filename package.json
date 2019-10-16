@@ -7,7 +7,13 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:client-app:sandbox": "ng build -c=sandbox",
+    "build:client-app:prod": "ng build --prod",
+    "build:server-app:sandbox": "ng run explearning:server:sandbox",
+    "build:server-app:prod": "ng run explearning:server:production",
+    "prerender": "ts-node -P ./server.tsconfig.json ./prerender.ts",
+    "start:express-server": "ts-node -P ./server.tsconfig.json ./server.ts"
   },
   "private": true,
   "dependencies": {
@@ -23,6 +29,7 @@
     "@angular/material-moment-adapter": "^8.0.2",
     "@angular/platform-browser": "~8.1.1",
     "@angular/platform-browser-dynamic": "~8.1.1",
+    "@angular/platform-server": "~8.1.1",
     "@angular/router": "~8.1.1",
     "@ngrx/effects": "^8.1.0",
     "@ngrx/entity": "^8.1.0",
