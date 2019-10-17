@@ -25,7 +25,7 @@ export class PostService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(posts => {
-          console.log('Fetched all posts', posts);
+          console.log('Fetched all posts');
           return posts;
         }),
         catchError(error => {
@@ -41,7 +41,7 @@ export class PostService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(posts => {
-          console.log('Fetched featured posts', posts);
+          console.log('Fetched featured posts');
           return posts;
         }),
         catchError(error => {

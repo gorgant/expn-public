@@ -6,6 +6,7 @@ export interface State {
   geographicData: GeographicData;
   htmlCacheActive: boolean;
   botDetected: boolean;
+  angularUniversalDetected: boolean;
   error?: any;
 }
 
@@ -15,5 +16,6 @@ export const initialState: State = {
   geographicData: null,
   htmlCacheActive: false,
   botDetected: false,
+  angularUniversalDetected: false,
   error: null
 };

@@ -10,7 +10,7 @@
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
     </div>
 
-    <div class="buy-now-container">
+    <div *appShellNoRender class="buy-now-container">
       <app-buy-now-box [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
       <div class="testamonial-section">
         <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>

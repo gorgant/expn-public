@@ -24,7 +24,7 @@ export class PodcastService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(podcast => {
-          console.log('Fetched this podcast', podcast);
+          console.log('Fetched podcast container');
           return podcast;
         }),
         catchError(error => {
@@ -40,7 +40,7 @@ export class PodcastService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(episodes => {
-          console.log('Fetched all episodes', episodes);
+          console.log('Fetched all episodes');
           return episodes;
         }),
         catchError(error => {
@@ -57,7 +57,7 @@ export class PodcastService {
       .pipe(
         take(1),
         map(episode => {
-          console.log('Fetched this episode', episode);
+          console.log('Fetched single episode');
           return episode;
         }),
         catchError(error => {

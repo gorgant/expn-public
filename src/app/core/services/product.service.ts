@@ -24,7 +24,7 @@ export class ProductService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(products => {
-          console.log('Fetched all products', products);
+          console.log('Fetched all products');
           return products;
         }),
         catchError(error => {
@@ -41,7 +41,7 @@ export class ProductService {
       .pipe(
         take(1),
         map(product => {
-          console.log('Fetched this product', product);
+          console.log('Fetched single product');
           return product;
         }),
         catchError(error => {

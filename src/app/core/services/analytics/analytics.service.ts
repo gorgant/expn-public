@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, Injector } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -7,11 +7,13 @@ import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
-import { Location, DOCUMENT } from '@angular/common';
+import { Location, DOCUMENT, isPlatformServer, isPlatformBrowser } from '@angular/common';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+
+import { REQUEST } from '@nguniversal/express-engine/tokens';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({
@@ -27,6 +29,7 @@ export class AnalyticsService {
   private canonicalLink: HTMLLinkElement;
 
   private isBot: boolean;
+  private isAngularUniversal: boolean;
 
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
@@ -36,9 +39,11 @@ export class AnalyticsService {
     private afs: AngularFirestore, // Used exclusively to generate an id
     private store$: Store<RootStoreState.State>,
     private location: Location,
-    @Inject(DOCUMENT) private domDoc: Document
+    @Inject(DOCUMENT) private domDoc: Document,
+    private injector: Injector,
   ) {
     this.checkForBot();
+    this.checkForAngularUniversal();
   }
 
   private checkForBot() {
@@ -46,6 +51,15 @@ export class AnalyticsService {
       .subscribe(isBot => {
         if (isBot) {
           this.isBot = true;
+        }
+      });
+  }
+
+  private checkForAngularUniversal() {
+    this.store$.select(UiStoreSelectors.selectAngularUniversalDetected)
+      .subscribe(isAngularUniversal => {
+        if (isAngularUniversal) {
+          this.isAngularUniversal = true;
         }
       });
   }
@@ -61,6 +75,12 @@ export class AnalyticsService {
     // Exit function if bot
     if (this.isBot) {
       console.log('Bot detected, not logging page view');
+      return;
+    }
+
+    // Exit function if Angular Universal
+    if (this.isAngularUniversal) {
+      console.log('Angular Universal detected, not logging page view');
       return;
     }
 
@@ -101,6 +121,12 @@ export class AnalyticsService {
       return;
     }
 
+    // Exit function if Angular Universal
+    if (this.isAngularUniversal) {
+      console.log('Angular Universal detected, not logging page view');
+      return;
+    }
+
     this.navStampCreated = false;
     this.navStampId = this.afs.createId();
 
@@ -137,6 +163,12 @@ export class AnalyticsService {
       return;
     }
 
+    // Exit function if Angular Universal
+    if (this.isAngularUniversal) {
+      console.log('Angular Universal detected, not logging page view');
+      return;
+    }
+
     if (this.tempNavStampData && this.tempNavStampData.pageOpenTime) {
       const user = this.tempUserData;
       const navStamp: NavigationStamp = {
@@ -153,7 +185,16 @@ export class AnalyticsService {
   }
 
   private getFulllUrl(path: string) {
-    const origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    let origin = '';
+
+    // If rendered on Angular Universal, must use this injection token
+    if (this.isAngularUniversal) {
+        const request = this.injector.get(REQUEST);
+        origin = request.protocol + '://' + request.get('host');
+    } else {
+        origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    }
+
     let fullPath: string;
 
     // Handle possible preceding slash
@@ -169,7 +210,15 @@ export class AnalyticsService {
     if (path.includes('https://')) {
       return path;
     }
-    const origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    let origin = '';
+
+    // If rendered on Angular Universal, must use this injection token
+    if (this.isAngularUniversal) {
+        const request = this.injector.get(REQUEST);
+        origin = request.protocol + '://' + request.get('host');
+    } else {
+        origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    }
     const imagePath = `${origin}/${path}`;
     return imagePath;
   }

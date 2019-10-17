@@ -12,6 +12,8 @@ import { MatElevationDirective } from './directives/mat-elevation.directive';
 import { TestamonialComponent } from './components/testamonial/testamonial.component';
 import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-portrait.component';
 import { ScrollableDirective } from './directives/scrollable.directive';
+import { AppShellNoRenderDirective } from './directives/app-shell-no-render.directive';
+import { AppShellRenderDirective } from './directives/app-shell-render.directive';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { ScrollableDirective } from './directives/scrollable.directive';
     TestamonialComponent,
     AvatarPortraitComponent,
     ScrollableDirective,
+    AppShellNoRenderDirective,
+    AppShellRenderDirective
   ],
   imports: [
     CommonModule,
@@ -45,7 +49,9 @@ import { ScrollableDirective } from './directives/scrollable.directive';
     MatElevationDirective,
     TestamonialComponent,
     AvatarPortraitComponent,
-    ScrollableDirective
+    ScrollableDirective,
+    AppShellNoRenderDirective,
+    AppShellRenderDirective
   ]
 })
 export class SharedModule { }

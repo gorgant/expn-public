@@ -14,10 +14,12 @@
       <p>It began on a Fulbright fellowship to Turkey, filming in my humble “studio”: red couch, burgundy curtains, overlooking the Black Sea coast. Script on my lap, FlipCam rolling, I addressed my audience with a warm "Merhaba" (hello).</p>
       <p>My educational videos published on YouTube that year caught the attention of the local university TV station, and in short order, I was producing video content for their channel, promoting cultural awareness and messages of harmony.</p>
       <p>After relocating to Istanbul, I cultivated a series of relationships that got my foot in the door of one of the country's largest TV networks. From there, I gradually worked my way up to anchorwoman for their daily world news segment.</p>
-      <div *ngIf="videoHtml" class="video-container" fxLayout="column" fxLayoutAlign="center center">
-        <div class="video-body" [innerHTML]="videoHtml"></div>
-        <div class="video-caption">Like my Turkish stage name?</div> 
-      </div>
+      <ng-container *appShellNoRender>
+        <div *ngIf="videoHtml" class="video-container" fxLayout="column" fxLayoutAlign="center center">
+          <div class="video-body" [innerHTML]="videoHtml"></div>
+          <div class="video-caption">Like my Turkish stage name?</div> 
+        </div>
+      </ng-container>
       <p>I know this page is supposed to be about me. But I also want to talk about how you fit into this picture.</p>
       <p>What enabled my two-year climb from amateur videographer to mainstream anchorwoman? Without a doubt, it was my communication skills.</p>
       <p>Sure, there were plenty of other factors at play. But when I look back at my eclectic career that spanned the U.S., Europe, and Asia, it is clear that every opportunity I created for myself was rooted in my ability to communicate.</p>

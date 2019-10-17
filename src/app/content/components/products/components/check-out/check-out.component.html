@@ -1,14 +1,16 @@
-<div *ngIf="(product$ | async) as product" class="checkout-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center start" >
-  <div class="checkout-content">
-    <app-product-summary [product]="product"></app-product-summary>
-    <div class="purchase-data-form-container" fxLayout="column" fxLayoutAlign="center center">
-      <app-purchase-data-form [product]="product" [publicUser]="publicUser$ | async"></app-purchase-data-form>
-      <div class="checkout-disclaimer">I authorize Explearning, LLC to charge me for the order total. I further affirm that the name and personal information provided on this form are true and correct. I further declare that I have read, understand and accept Explearning's business terms as published on their website. By pressing the order button, I agree to pay Explearning.</div>
+<ng-container *appShellNoRender>
+  <div *ngIf="(product$ | async) as product" class="checkout-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayout.gt-sm="row" fxLayoutAlign.gt-sm="center start" >
+    <div class="checkout-content">
+      <app-product-summary [product]="product"></app-product-summary>
+      <div class="purchase-data-form-container" fxLayout="column" fxLayoutAlign="center center">
+        <app-purchase-data-form [product]="product" [publicUser]="publicUser$ | async"></app-purchase-data-form>
+        <div class="checkout-disclaimer">I authorize Explearning, LLC to charge me for the order total. I further affirm that the name and personal information provided on this form are true and correct. I further declare that I have read, understand and accept Explearning's business terms as published on their website. By pressing the order button, I agree to pay Explearning.</div>
+      </div>
+    </div>
+    <div class="md-avatar">
+      <img class="avatar-image" [src]="imagePaths.MD_CHECKOUT_AVATAR" alt="Mary Daphne Explearning Headshot">
+      <div class="md-blurb">{{ product.checkoutData.tagline }}</div>
+      <img class="signature-image" [src]="imagePaths.MD_CHECKOUT_SIGNATURE" alt="Mary Daphne Explearning Signature">
     </div>
   </div>
-  <div class="md-avatar">
-    <img class="avatar-image" [src]="imagePaths.MD_CHECKOUT_AVATAR" alt="Mary Daphne Explearning Headshot">
-    <div class="md-blurb">{{ product.checkoutData.tagline }}</div>
-    <img class="signature-image" [src]="imagePaths.MD_CHECKOUT_SIGNATURE" alt="Mary Daphne Explearning Signature">
-  </div>
-</div>
+</ng-container>

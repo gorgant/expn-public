@@ -10,6 +10,7 @@ export enum ActionTypes {
   HTML_CACHE_ACTIVATED = '[UI] HTML Cache Actived',
   HTML_CACHE_DEACTIVATED = '[UI] HTML Cache Deactived',
   BOT_DETECTED = '[UI] Bot Detected',
+  ANGULAR_UNIVERSAL_DETECTED = '[UI] Angular Universal Detected',
   UI_DATA_LOAD_ERROR = '[UI] Load Failure'
 }
 
@@ -43,6 +44,10 @@ export class BotDetected implements Action {
   readonly type = ActionTypes.BOT_DETECTED;
 }
 
+export class AngularUniversalDetected implements Action {
+  readonly type = ActionTypes.ANGULAR_UNIVERSAL_DETECTED;
+}
+
 export class LoadErrorDetected implements Action {
   readonly type = ActionTypes.UI_DATA_LOAD_ERROR;
   constructor(public payload: { error: string }) {}
@@ -56,5 +61,6 @@ export type Actions =
   HTMLCacheActivated |
   HTMLCacheDeactivated |
   BotDetected |
+  AngularUniversalDetected |
   LoadErrorDetected
   ;

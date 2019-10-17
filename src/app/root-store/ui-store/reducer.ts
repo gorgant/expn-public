@@ -41,6 +41,12 @@ export function featureReducer(state = initialState, action: Actions): State {
         botDetected: true
       };
 
+    case ActionTypes.ANGULAR_UNIVERSAL_DETECTED:
+      return {
+        ...state,
+        angularUniversalDetected: true
+      };
+
     case ActionTypes.UI_DATA_LOAD_ERROR:
       return {
         ...state,

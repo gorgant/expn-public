@@ -10,6 +10,7 @@ const getGeographicDataLoaded = (state: State): boolean => state.geographicDataL
 const getGeographicData = (state: State): GeographicData => state.geographicData;
 const getHTMLCacheActive = (state: State): boolean => state.htmlCacheActive;
 const getBotDetected = (state: State): boolean => state.botDetected;
+const getAngularUniversalDetected = (state: State): boolean => state.angularUniversalDetected;
 
 export const selectUiState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('ui');
@@ -59,5 +60,11 @@ export const selectBotDetected: MemoizedSelector<object, boolean>
 = createSelector(
   selectUiState,
   getBotDetected
+);
+
+export const selectAngularUniversalDetected: MemoizedSelector<object, boolean>
+= createSelector(
+  selectUiState,
+  getAngularUniversalDetected
 );
 
