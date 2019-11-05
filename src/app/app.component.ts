@@ -29,7 +29,7 @@ import { isPlatformServer } from '@angular/common';
 })
 export class AppComponent implements OnInit {
   title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
-  appVersion = '1.8.4';
+  appVersion = '1.8.5';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
