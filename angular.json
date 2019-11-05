@@ -140,7 +140,7 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "dist-server",
+            "outputPath": "functions/lib/app-bundle",
             "main": "src/main.server.ts",
             "tsConfig": "src/tsconfig.server.json"
           },

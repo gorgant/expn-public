@@ -28,7 +28,7 @@ export class PostComponent implements OnInit, OnDestroy {
   error$: Observable<string>;
   errorSubscription: Subscription;
   isLoading$: Observable<boolean>;
-  postLoaded: boolean;
+  loadPostTriggered: boolean;
   titleSet: boolean;
   postSubscription: Subscription;
 
@@ -98,11 +98,12 @@ export class PostComponent implements OnInit, OnDestroy {
       ),
       map(([post, postsLoaded]) => {
         // Check if items are loaded, if not fetch from server
-        if (!postsLoaded && !this.postLoaded) {
+        if (!postsLoaded && !this.loadPostTriggered) {
           console.log('No post in store, fetching from server', this.postId);
+          this.loadPostTriggered = true; // Prevents loading from firing more than needed
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
-        this.postLoaded = true; // Prevents loading from firing more than needed
+        this.loadPostTriggered = true; // Prevents loading from firing more than needed
         return post;
       })
     );

@@ -1,6 +1,6 @@
 <div class="item puppeteer-loaded" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
   <a class="thumbnail" [routerLink]="[appRoutes.BLOG, post.id, postUrlSlug]">
-    <img appMatElevation class="post-image" [src]="thumbnailSrc" [alt]="post.title">
+    <img appMatElevation class="post-image" [lazyLoad]="thumbnailSrc" [alt]="post.title">
   </a>
   <h2>
     <a class="caption" [routerLink]="[appRoutes.BLOG, post.id, postUrlSlug]" [matTooltip]="post.title" matTooltipPosition="above" matTooltipShowDelay="500">{{ post.title }}</a>

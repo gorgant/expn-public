@@ -28,7 +28,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   product$: Observable<Product>;
   error$: Observable<string>;
   errorSubscription: Subscription;
-  productLoaded: boolean;
+  loadProductTriggered: boolean;
   private titleSet: boolean;
   productSubscription: Subscription;
 
@@ -48,7 +48,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // this.setProductPathsBasedOnEnvironment();
     this.initializeProductData();
     this.handleProductError();
     this.initializePageComponents();
@@ -87,11 +86,12 @@ export class ProductPageComponent implements OnInit, OnDestroy {
         ),
         map(([product, productsLoaded]) => {
           // Check if items are loaded, if not fetch from server
-          if (!productsLoaded && !this.productLoaded) {
+          if (!productsLoaded && !this.loadProductTriggered) {
             console.log('No products in store, fetching from server', this.productId);
+            this.loadProductTriggered = true; // Prevents loading from firing more than needed
             this.store$.dispatch(new ProductStoreActions.SingleProductRequested({productId: this.productId}));
           }
-          this.productLoaded = true; // Prevents loading from firing more than needed
+          this.loadProductTriggered = true; // Prevents loading from firing more than needed
           return product;
         }),
       );

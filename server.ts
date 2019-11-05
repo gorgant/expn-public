@@ -9,6 +9,8 @@ import * as express from 'express';
 import { readFileSync } from 'fs';
 import { enableProdMode } from '@angular/core';
 
+import * as compression from 'compression';
+
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist-server/main');
 
 enableProdMode();
@@ -42,6 +44,8 @@ const app = express();
 // });
 
 const distFolder = __dirname + '/dist/explearning';
+
+app.use(compression());
 
 // Define a custom express engine using the Universal Adapter
 // This engine will be reading the index HTML from the file system directly, so no need to pass it in manually

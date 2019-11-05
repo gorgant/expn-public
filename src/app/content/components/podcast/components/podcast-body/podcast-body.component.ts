@@ -5,7 +5,7 @@ import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
 import { UiService } from 'src/app/core/services/ui.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
-import { withLatestFrom, map } from 'rxjs/operators';
+import { withLatestFrom, map, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-podcast-body',
@@ -15,6 +15,7 @@ import { withLatestFrom, map } from 'rxjs/operators';
 export class PodcastBodyComponent implements OnInit {
 
   podcastList$: Observable<PodcastEpisode[]>;
+  loadPodcastTriggered: boolean;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -33,13 +34,16 @@ export class PodcastBodyComponent implements OnInit {
       ),
       map(([episodes, episodesLoaded]) => {
         // Check if items are loaded, if not fetch from server
-        if (!episodesLoaded) {
+        if (!episodesLoaded && !this.loadPodcastTriggered) {
           console.log('No episodes loaded, loading those now');
           const podcastId: string = this.uiService.getPodcastId(PodcastPaths.EXPLEARNING_RSS_FEED);
+          this.loadPodcastTriggered = true; // Prevents loading from firing more than needed
           this.store$.dispatch(new PodcastStoreActions.AllEpisodesRequested({podcastId}));
         }
+        this.loadPodcastTriggered = true; // Prevents loading from firing more than needed
         return episodes;
-      })
+      }),
+      filter(episodes => episodes.length > 0) // Catches the first emission which is an empty array
     );
 
   }

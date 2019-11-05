@@ -14,7 +14,7 @@ const db = publicFirestore;
 const appUrl = publicAppUrl;
 const pubSub = new PubSub();
 
-const publishUrltoPuppeteerTopic = async (url: string) => {
+const publishUrltoSsrTopic = async (url: string) => {
 
   const urlObject: WebpageUrl = { url };
   console.log('Commencing url trasmission based on this data', urlObject);
@@ -40,7 +40,7 @@ const publishUrltoPuppeteerTopic = async (url: string) => {
 /////// DEPLOYABLE FUNCTIONS ///////
 
 // A cron job triggers this function, which sends an array of individual transmissions of urls to get updated asynchronously
-export const transmitWebpageUrlsToPuppeteer = functions.https.onRequest( async (req, res ) => {
+export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, res ) => {
   console.log('Update web cache request received with these headers', req.headers);
 
   if (req.headers['user-agent'] !== 'Google-Cloud-Scheduler') {
@@ -87,7 +87,7 @@ export const transmitWebpageUrlsToPuppeteer = functions.https.onRequest( async (
   // console.log('Compiled this test array', testUrlArray);
   
   const transmitCacheRequests = webpageUrlArray.map( async (url) => {
-    await publishUrltoPuppeteerTopic(url)
+    await publishUrltoSsrTopic(url)
       .catch(error => {
         console.log('Error transmitting subscriber', error);
         return error;

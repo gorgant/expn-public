@@ -5,7 +5,9 @@
       <app-sidenav></app-sidenav>
     </mat-sidenav>
     <mat-sidenav-content fxLayoutAlign="center center">
-      <router-outlet></router-outlet>
+      <ng-container>
+        <router-outlet></router-outlet>
+      </ng-container>
     </mat-sidenav-content>
   </mat-sidenav-container>
   <app-footer [appVersion]="appVersion"></app-footer>

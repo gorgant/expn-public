@@ -187,7 +187,6 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  // TODO: Consolidate into a single form (rather than a group)
   private initializeForm(): void {
     this.purchaseDataForm = this.fb.group({
       billingDetailsGroup: this.fb.group({

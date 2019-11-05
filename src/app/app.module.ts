@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -16,12 +16,18 @@ import { environment } from '../environments/environment';
 import { RootStoreModule } from './root-store';
 import { HttpClientModule } from '@angular/common/http';
 
+import { TransferHttpCacheModule } from '@nguniversal/common';
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserModule.withServerTransition({ appId: 'explearning' }),
+    TransferHttpCacheModule,
+    BrowserTransferStateModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
@@ -30,7 +36,7 @@ import { HttpClientModule } from '@angular/common/http';
     AngularFireStorageModule,
     AngularFireFunctionsModule,
     MaterialModule,
-    FlexLayoutModule,
+    FlexLayoutModule.withConfig({ssrObserveBreakpoints: ['gt-sm', 'gt-md', 'lt-md']}),
     RootStoreModule,
     NavigationModule,
     AppRoutingModule,

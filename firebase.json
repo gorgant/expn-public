@@ -20,7 +20,7 @@
       },
       {
         "source": "**",
-        "function": "puppeteerServer"
+        "function": "universalSsr"
       }
     ]
   },
