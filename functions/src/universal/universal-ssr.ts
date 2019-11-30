@@ -13,12 +13,20 @@ import * as compression from 'compression';
 import { detectUaBot } from '../web-cache/detect-ua-bot';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
+import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
 
 // Also consider Universal with Nest in Cloud Run https://fireship.io/courses/angular/ssr-nest/
 
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bundle/main');
 
-const renderAndCachePageWithUniversal = async (res: express.Response, req: express.Request, userAgent: string, requestType: WebpageRequestType) => {
+const charLimit = 700000; // Min length for blog page
+let reloadAttempts = 0; // Track reload attempts
+
+const renderAndCachePageWithUniversal = async (res: express.Response, req: express.Request, userAgent: string) => {
+
+  if (reloadAttempts > 0) {
+    console.log(`Blog reload attempt ${reloadAttempts} initiated`);
+  }
 
   // Encode reserved characters (ngExpressEngine cannot process these) and will produce a route error
   const ngExpressSafeUrl = req.path.replace(/[!'()*]/g, (c) => {
@@ -26,16 +34,31 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
   });
   console.log('ngExpressSafeUrl', ngExpressSafeUrl);
 
-  // Can find more render options here: https://github.com/angular/universal/tree/master/modules/express-engine
+  // See more render options here: https://github.com/angular/universal/tree/master/modules/express-engine
   res.render('index-server', { 
       req,
       url: ngExpressSafeUrl
     }, async (error, html) => {
-    console.log('Rendering with Universal ngExpressEngine')
-    if (error) {
-      console.log('error rendering html');
-      res.sendStatus(500);
-      return;
+
+      console.log('Rendering with Universal ngExpressEngine')
+      // Exit function if error
+      if (error) {
+        console.log('error rendering html');
+        res.sendStatus(500);
+        return;
+      }
+
+      // If blog, check if fully loaded      
+      if (req.path === PublicAppRoutes.BLOG) {
+        // Exit function with fresh load attempt if blog is not fully loaded
+        if (html.length < charLimit && reloadAttempts < 2) {
+          console.log('Blog load result incomplete, re-running')
+          reloadAttempts ++;
+          return renderAndCachePageWithUniversal(res, req, userAgent);
+        }
+
+        // Otherwise, continue with cache storage
+        console.log('Blog length passed charlimit check');
     }
 
     // Cache HTML in database for easy future retrieval
@@ -95,12 +118,15 @@ const customExpressApp = () => {
       const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
       const isBot = detectUaBot(userAgent);
       const isGoogleBot: boolean = userAgent.toLowerCase().includes('googlebot') ? true : false;
-      let requestType = isGoogleBot ? WebpageRequestType.GOOGLE_BOT : (isBot ? WebpageRequestType.OTHER_BOT : WebpageRequestType.NO_BOT);
+      const requestType = req.query[`${WebpageRequestType.AUTO_CACHE}`] ? WebpageRequestType.AUTO_CACHE : (
+          isGoogleBot ? WebpageRequestType.GOOGLE_BOT : (
+            isBot ? WebpageRequestType.OTHER_BOT : WebpageRequestType.NO_BOT
+          )
+        );
 
-      if (req.query[`${WebpageRequestType.AUTO_CACHE}`]) {
+      if (requestType === WebpageRequestType.AUTO_CACHE) {
         console.log('Auto cache detected');
-        requestType = WebpageRequestType.AUTO_CACHE;
-        await renderAndCachePageWithUniversal(res, req, userAgent, requestType);
+        await renderAndCachePageWithUniversal(res, req, userAgent);
         console.log('This fired after auto cache render as a test');
         return;
       }
@@ -114,7 +140,7 @@ const customExpressApp = () => {
         return;
       }
 
-      await renderAndCachePageWithUniversal(res, req, userAgent, requestType);
+      await renderAndCachePageWithUniversal(res, req, userAgent);
 
       return;
   });
