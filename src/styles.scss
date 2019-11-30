@@ -20,3 +20,10 @@ body {
   margin: 0; 
   font-family: 'Roboto', sans-serif, "Helvetica Neue", arial; 
 }
+
+// A wrapper class for the download promo box, set in the dialogConfig
+.download-promo-wrapper {
+  mat-dialog-container {
+    padding: 0;
+  }
+}

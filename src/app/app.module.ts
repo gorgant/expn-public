@@ -17,6 +17,7 @@ import { RootStoreModule } from './root-store';
 import { HttpClientModule } from '@angular/common/http';
 
 import { TransferHttpCacheModule } from '@nguniversal/common';
+import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
 
 
 
@@ -42,6 +43,9 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
     AppRoutingModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    DownloadPromoComponent
+  ]
 })
 export class AppModule { }

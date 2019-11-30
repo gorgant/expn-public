@@ -1,0 +1,97 @@
+@import "../../../../variables";
+
+.box-container {
+  padding: 32px;
+  background-color: $primary;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: $font-weight-medium;
+  color: white;
+  text-align: center;
+}
+
+.description {
+  font-size: 16px;
+  color: white;
+}
+
+.subscribe-form {
+  width: 100%;
+}
+
+.form-fields {
+  width: 100%;
+}
+
+mat-form-field {
+  width: $desktop-form-width;
+  
+}
+
+::ng-deep {
+  .mat-form-field-underline {
+    background-color: white !important;
+  }
+  .mat-form-field-ripple {
+    background-color: white !important;
+  }
+}
+
+.input-placeholder {
+  color: white;
+}
+
+.email-input, .first-name-input {
+  color: white;
+}
+
+.submit-button {
+  width: $desktop-button-width;
+  opacity: $inactive-item-opacity;
+}
+
+.submit-button:hover {
+  opacity: $active-item-opacity;
+}
+
+.exit-container {
+  // background-color: white;
+  @include background-opacity($primary, $opacity-faded);
+}
+
+.no-thanks {
+  // margin-top: 16px;
+  text-align: center;
+  font-weight: $font-weight-regular;
+}
+
+.post-submit-message {
+  color: white;
+  text-align: center;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+
+  .box-container {
+    padding: 16px;
+  }
+
+  .description {
+    text-align: center;
+  }
+
+  mat-form-field {
+    width: $mobile-form-width;
+  }
+
+  .submit-button {
+    width: $mobile-button-width;
+    opacity: $active-item-opacity;
+    width: 100%;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+}

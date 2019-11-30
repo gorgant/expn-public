@@ -1,0 +1,46 @@
+<div class="box-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start" fxLayoutGap="16px">
+  <div class="title">Afraid of Small Talk?</div>
+  <div class="description">Sign up to get our five foolproof strategies for mastering small talk.</div>
+  <form 
+      class="subscribe-form" 
+      [formGroup]="subscribeForm" 
+      (ngSubmit)="onSubmit()" 
+      fxLayout="column" 
+      fxLayoutAlign="center center"
+      fxLayout.gt-sm="row"
+      fxLayoutAlign.gt-sm="start center"
+      fxLayoutGap.gt-sm="16px"
+      >
+    <mat-form-field class="first-name-form-field">
+      <input class="first-name-input" matInput formControlName="firstName">
+      <mat-placeholder class="input-placeholder">First Name</mat-placeholder>
+      <mat-error *ngFor="let validation of formValidationMessages.firstName">
+        <mat-error *ngIf="firstName.hasError(validation.type) && firstName.invalid && (firstName.dirty || firstName.touched)">{{ validation.message }}</mat-error>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field color="accent">
+      <input class="email-input" matInput formControlName="email" type="email">
+      <mat-placeholder class="input-placeholder">Your Email</mat-placeholder>
+      <mat-error *ngFor="let validation of formValidationMessages.email">
+        <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
+      </mat-error>
+    </mat-form-field>
+    <button 
+      [disabled]="(email.invalid && (email.dirty || email.touched)) || (subscribeProcessing$ | async) || (subscribeSubmitted$ | async) "
+      class="submit-button" 
+      type="submit" 
+      mat-raised-button 
+      color="accent">
+        Submit
+    </button>
+  </form>
+
+  <div *ngIf="(subscribeSubmitted$ | async) && emailSubmitted" class="post-submit-message">
+    Please check your inbox for a confirmation email from {{ senderEmail }}. If it isn't there, be sure to check your spam folder and add that address to your trusted contacts.
+  </div>
+</div>
+<div class="exit-container" fxLayoutAlign="center center">
+  <button class="no-thanks" mat-button mat-dialog-close>
+    Nah, I'm already a small talk pro.
+  </button>
+</div>

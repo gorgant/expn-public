@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { UiService } from './core/services/ui.service';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav, MatDialogConfig, MatDialog } from '@angular/material';
 import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
 import {
@@ -12,7 +12,7 @@ import {
   UiStoreActions,
   UiStoreSelectors
 } from './root-store';
-import { withLatestFrom, map, takeWhile, filter, tap } from 'rxjs/operators';
+import { withLatestFrom, map, takeWhile, filter, tap, take } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductStrings } from 'shared-models/products/product-strings.model';
 import { Product } from 'shared-models/products/product.model';
@@ -21,6 +21,7 @@ import { Meta } from '@angular/platform-browser';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable } from 'rxjs';
 import { isPlatformServer } from '@angular/common';
+import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
 
 @Component({
   selector: 'app-root',
@@ -47,7 +48,8 @@ export class AppComponent implements OnInit {
     private afs: AngularFirestore,
     private metaTagService: Meta,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: {}
+    @Inject(PLATFORM_ID) private platformId: {},
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -60,6 +62,44 @@ export class AppComponent implements OnInit {
     this.configureAuthDetection();
     this.checkForOfflineProductData();
     this.initializePublicUser();
+    this.initializeDownloadPromo();
+  }
+
+  private initializeDownloadPromo() {
+
+    // Only run popup if human user
+    if (!this.isAngularUniversal && !this.isBot) {
+
+      const popupDelay = 10000;
+
+      // Wait 2 seconds before triggering popup
+      setTimeout(() => {
+
+        this.store$.select(UserStoreSelectors.selectUser)
+          .pipe(take(1))
+          .subscribe(user => {
+
+            // Check if user email already exists
+            if (user && user.billingDetails && user.billingDetails.email) {
+              console.log('Email already collected, no popup');
+              return;
+            }
+
+            console.log('Popup activated');
+            const dialogConfig = new MatDialogConfig();
+
+            dialogConfig.data = '';
+            dialogConfig.autoFocus = true;
+            dialogConfig.minWidth = 300;
+            dialogConfig.panelClass = 'download-promo-wrapper'; // CSS for this class set globally in styles.scss
+
+            const dialogRef = this.dialog.open(DownloadPromoComponent, dialogConfig);
+
+          });
+      }, popupDelay);
+
+    }
+
   }
 
   private checkForBot() {
@@ -183,13 +223,13 @@ export class AppComponent implements OnInit {
 
     // Don't detect auth if bot
     if (this.isBot) {
-      console.log('Bot detected, not initializing user');
+      console.log('Bot detected, not initializing auth detection');
       return;
     }
 
     // Don't detect auth if Angular Universal rendering
     if (this.isAngularUniversal) {
-      console.log('Angular Universal detected, not initializing user');
+      console.log('Angular Universal detected, not initializing auth detection');
       return;
     }
 
@@ -222,13 +262,13 @@ export class AppComponent implements OnInit {
   private checkForOfflineProductData() {
     // Don't check for offline product if bot
     if (this.isBot) {
-      console.log('Bot detected, not initializing user');
+      console.log('Bot detected, not initializing offline data');
       return;
     }
 
     // Don't check for offline product if Angular Universal rendering
     if (this.isAngularUniversal) {
-      console.log('Angular Universal detected, not initializing user');
+      console.log('Angular Universal detected, not initializing offline data');
       return;
     }
 
