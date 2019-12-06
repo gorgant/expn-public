@@ -30,7 +30,7 @@ import { DownloadPromoComponent } from './shared/components/email-collection/dow
 })
 export class AppComponent implements OnInit {
   title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
-  appVersion = '1.8.6';
+  appVersion = '1.8.7';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
