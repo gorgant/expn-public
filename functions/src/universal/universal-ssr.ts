@@ -61,6 +61,8 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         console.log('Blog length passed charlimit check');
     }
 
+    reloadAttempts = 0; // Reset reload attempts for future functions
+
     // Cache HTML in database for easy future retrieval
     await storeWebPageCache(req.path, userAgent, html)
       .catch(err => {

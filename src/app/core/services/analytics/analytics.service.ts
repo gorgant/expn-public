@@ -1,4 +1,4 @@
-import { Injectable, Inject, PLATFORM_ID, Injector } from '@angular/core';
+import { Injectable, Inject, Injector } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -7,13 +7,13 @@ import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
-import { Location, DOCUMENT, isPlatformServer, isPlatformBrowser } from '@angular/common';
+import { Location, DOCUMENT } from '@angular/common';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
-
-import { REQUEST } from '@nguniversal/express-engine/tokens';
+import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
+import { environment } from 'src/environments/environment';
 
 // Courtesy of: https://medium.com/quick-code/set-up-analytics-on-an-angular-app-via-google-tag-manager-5c5b31e6f41
 @Injectable({
@@ -30,6 +30,8 @@ export class AnalyticsService {
 
   private isBot: boolean;
   private isAngularUniversal: boolean;
+
+  private productionEnvironment: boolean = environment.production;
 
   constructor(
     private dataLayerCustomDimensions: DataLayerService,
@@ -187,12 +189,18 @@ export class AnalyticsService {
   private getFulllUrl(path: string) {
     let origin = '';
 
-    // If rendered on Angular Universal, must use this injection token
-    if (this.isAngularUniversal) {
-        const request = this.injector.get(REQUEST);
-        origin = request.protocol + '://' + request.get('host');
-    } else {
-        origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    switch (this.productionEnvironment) {
+      case true:
+        origin = `https://${PRODUCTION_APPS.explearningPublicApp.websiteDomain}`;
+        console.log('Prod mode detected, using prod origin', origin);
+        break;
+      case false:
+        origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
+        console.log('Sandbox detected, using sandbox origin', origin);
+        break;
+      default:
+        origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
+        break;
     }
 
     let fullPath: string;
@@ -207,18 +215,29 @@ export class AnalyticsService {
   }
 
   private getFullImagePath(path: string) {
+
+    // Dynamic images will include the full origin in URL (served from Firebase storage)
     if (path.includes('https://')) {
       return path;
     }
+
+    // Statically served assets (e.g. home page background) require origin to be added (served from origin file folder vs firebase storage)
     let origin = '';
 
-    // If rendered on Angular Universal, must use this injection token
-    if (this.isAngularUniversal) {
-        const request = this.injector.get(REQUEST);
-        origin = request.protocol + '://' + request.get('host');
-    } else {
-        origin = this.location[`_platformStrategy`]._platformLocation.location.origin;
+    switch (this.productionEnvironment) {
+      case true:
+        origin = `https://${PRODUCTION_APPS.explearningPublicApp.websiteDomain}`;
+        console.log('Prod mode detected, using prod origin', origin);
+        break;
+      case false:
+        origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
+        console.log('Sandbox detected, using sandbox origin', origin);
+        break;
+      default:
+        origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
+        break;
     }
+
     const imagePath = `${origin}/${path}`;
     return imagePath;
   }

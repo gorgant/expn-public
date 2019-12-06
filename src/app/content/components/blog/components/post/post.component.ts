@@ -15,6 +15,7 @@ import { DOCUMENT } from '@angular/common';
 import { UiService } from 'src/app/core/services/ui.service';
 import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-post',
@@ -40,8 +41,8 @@ export class PostComponent implements OnInit, OnDestroy {
   videoHtml: SafeHtml;
   podcastEpisodeHtml: SafeHtml;
 
-  productionEnvironment: boolean;
-  origin: string;
+  private productionEnvironment: boolean = environment.production;
+  private origin: string;
   sanitizedSubscribeButtonContent: SafeHtml;
 
 
@@ -140,13 +141,13 @@ export class PostComponent implements OnInit, OnDestroy {
   private setYouTubeIframeOriginBasedOnEnvironment(): string {
     switch (this.productionEnvironment) {
       case true:
-        this.origin = PRODUCTION_APPS.explearningPublicApp.websiteDomain;
+        this.origin = `https://${PRODUCTION_APPS.explearningPublicApp.websiteDomain}`;
         break;
       case false:
-        this.origin = SANDBOX_APPS.explearningPublicApp.websiteDomain;
+        this.origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
         break;
       default:
-        this.origin = SANDBOX_APPS.explearningPublicApp.websiteDomain;
+        this.origin = `https://${SANDBOX_APPS.explearningPublicApp.websiteDomain}`;
         break;
     }
     return this.origin;
