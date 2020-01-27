@@ -55,11 +55,11 @@ export class ContactBodyComponent implements OnInit {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
-              firstName: existingFirstName ? existingFirstName : this.firstName.value, // Prefer an existing value if user has order history
-              email: this.email.value
+              firstName: (existingFirstName ? existingFirstName : this.firstName.value as string).trim(), // Use exstng val if order history
+              email: (this.email.value as string).trim()
             } : {
-              firstName: this.firstName.value,
-              email: this.email.value
+              firstName: (this.firstName.value as string).trim(),
+              email: (this.email.value as string).trim()
             }
           };
 
@@ -79,8 +79,8 @@ export class ContactBodyComponent implements OnInit {
           const contactFormData: ContactForm = {
             id: this.afs.createId(),
             createdDate: now(),
-            firstName: this.firstName.value,
-            email: this.email.value,
+            firstName: (this.firstName.value as string).trim(),
+            email: (this.email.value as string).trim(),
             message: this.message.value,
             publicUser: user
           };

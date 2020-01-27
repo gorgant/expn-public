@@ -18,8 +18,8 @@ import { ProductStrings } from 'shared-models/products/product-strings.model';
 import { Product } from 'shared-models/products/product.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { Meta } from '@angular/platform-browser';
-import { Router, NavigationStart } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 import { isPlatformServer } from '@angular/common';
 import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
 
@@ -38,6 +38,8 @@ export class AppComponent implements OnInit {
   cachedHtmlActive$: Observable<boolean>;
   private isBot: boolean;
   private isAngularUniversal: boolean;
+  private promoFired: boolean;
+  private queryParamsSubscription: Subscription;
 
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
@@ -50,6 +52,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: {},
     private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -70,36 +73,59 @@ export class AppComponent implements OnInit {
     // Only run popup if human user
     if (!this.isAngularUniversal && !this.isBot) {
 
-      const popupDelay = 10000;
+      // Note the queryParams don't get set until after init, so this needs to be a dynamic subscription
+      this.queryParamsSubscription = this.route.queryParams.subscribe(params => {
 
-      // Wait 2 seconds before triggering popup
-      setTimeout(() => {
+        const popupDelay = 10000;
+        const instaPopTrigger = 'smallTalk';
+        const instaPop = params[instaPopTrigger];
 
-        this.store$.select(UserStoreSelectors.selectUser)
-          .pipe(take(1))
-          .subscribe(user => {
+         // If popup query param is present, no popup delay
+        if (instaPop && !this.promoFired) {
+          console.log('InstaPop detected', instaPop);
+          this.firePopup();
+        }
 
-            // Check if user email already exists
-            if (user && user.billingDetails && user.billingDetails.email) {
-              console.log('Email already collected, no popup');
-              return;
-            }
+        setTimeout(() => {
+          if (!this.promoFired) {
+            this.firePopup();
+          }
+        }, popupDelay);
 
-            console.log('Popup activated');
-            const dialogConfig = new MatDialogConfig();
-
-            dialogConfig.data = '';
-            dialogConfig.autoFocus = true;
-            dialogConfig.minWidth = 300;
-            dialogConfig.panelClass = 'download-promo-wrapper'; // CSS for this class set globally in styles.scss
-
-            const dialogRef = this.dialog.open(DownloadPromoComponent, dialogConfig);
-
-          });
-      }, popupDelay);
-
+      });
     }
+  }
 
+  // Trigger popup on a delay basis
+  private firePopup() {
+
+    this.store$.select(UserStoreSelectors.selectUser)
+      .pipe(take(1))
+      .subscribe(user => {
+
+        // Check if user email already exists
+        if (user && user.billingDetails && user.billingDetails.email) {
+          console.log('Email already collected, no popup');
+          return;
+        }
+
+        if (this.promoFired) {
+          console.log('Promo already fired, canceling duplicate');
+          return;
+        }
+
+        console.log('Popup activated');
+        const dialogConfig = new MatDialogConfig();
+
+        dialogConfig.data = '';
+        dialogConfig.autoFocus = true;
+        dialogConfig.minWidth = 300;
+        dialogConfig.panelClass = 'download-promo-wrapper'; // CSS for this class set globally in styles.scss
+
+        const dialogRef = this.dialog.open(DownloadPromoComponent, dialogConfig);
+        this.promoFired = true; // prevents duplicates from firing
+      });
+    this.queryParamsSubscription.unsubscribe(); // close out the queryParam subscription
   }
 
   private checkForBot() {

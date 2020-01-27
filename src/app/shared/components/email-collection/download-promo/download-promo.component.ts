@@ -60,11 +60,11 @@ export class DownloadPromoComponent implements OnInit {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
-              firstName: this.firstName.value,
-              email: this.email.value
+              firstName: (this.firstName.value as string).trim(),
+              email: (this.email.value as string).trim()
             } : {
-              firstName: this.firstName.value,
-              email: this.email.value
+              firstName: (this.firstName.value as string).trim(),
+              email: (this.email.value as string).trim()
             }
           };
 

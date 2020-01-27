@@ -270,7 +270,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     const serverBillingDetailsNoPostal = {...user.billingDetails};
     delete serverBillingDetailsNoPostal.postalCode; // Remove postal code from server version since it isn't collected in form
     const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(serverBillingDetailsNoPostal));
-    const formBillingDetails = JSON.stringify(this.sortObjectByKeyName(this.billingDetailsGroup.value));
+    const formBillingDetails = JSON.stringify(this.sortObjectByKeyName(this.trimmedBillingDetailsData));
 
     // console.log('Server Billing Details', serverBillingDetails);
     // console.log('Form Billing Details', formBillingDetails);
@@ -295,7 +295,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   private updateUserBillingDetails() {
     const updatedUser: PublicUser = {
       ...this.publicUser,
-      billingDetails: this.billingDetailsGroup.value,
+      billingDetails: this.trimmedBillingDetailsData,
     };
     this.store$.dispatch(new UserStoreActions.StoreUserDataRequested({userData: updatedUser}));
   }
@@ -311,7 +311,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   // These getters are used for easy access in the HTML template
   get billingDetailsGroup() { return this.purchaseDataForm.get('billingDetailsGroup'); }
-  get billingDetailsData(): BillingDetails { return this.purchaseDataForm.get('billingDetailsGroup').value; }
+  // get billingDetailsData(): BillingDetails { return this.trimmedBillingDetailsData; }
   get firstName() { return this.purchaseDataForm.get('billingDetailsGroup.firstName'); }
   get lastName() { return this.purchaseDataForm.get('billingDetailsGroup.lastName'); }
   get email() { return this.purchaseDataForm.get('billingDetailsGroup.email'); }
@@ -323,6 +323,25 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   get usStateCode() { return this.purchaseDataForm.get('billingDetailsGroup.usStateCode'); }
   get country() { return this.purchaseDataForm.get('billingDetailsGroup.country'); }
   get countryCode() { return this.purchaseDataForm.get('billingDetailsGroup.countryCode'); }
+  // Get trimmed version of billing details
+  get trimmedBillingDetailsData(): Partial<BillingDetails> {
+    // Partial because postal code isn't collected in this form
+    const trimmedData: Partial<BillingDetails> = {
+      firstName: (this.firstName.value as string).trim(),
+      lastName: (this.lastName.value as string).trim(),
+      email: (this.email.value as string).trim(),
+      phone: (this.phone.value as string).trim(),
+      billingOne: (this.billingOne.value as string).trim(),
+      billingTwo: (this.billingTwo.value as string).trim(),
+      city: (this.city.value as string).trim(),
+      state: (this.state.value as string).trim(),
+      usStateCode: (this.usStateCode.value as string).trim(),
+      // postalCode: null, // Not included because not collected on this form
+      country: (this.country.value as string).trim(),
+      countryCode: (this.countryCode.value as string).trim()
+    };
+    return trimmedData;
+  }
 
   ngOnDestroy() {
 

@@ -78,14 +78,14 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     const billingDetails: BillingDetails = this.billingDetailsForm.value;
     const owner: stripe.OwnerInfo = {
       name: `${billingDetails.firstName} ${billingDetails.lastName}`,
-      email: billingDetails.email,
-      phone: billingDetails.phone,
+      email: billingDetails.email.trim(),
+      phone: billingDetails.phone.trim(),
       address: {
-        line1: billingDetails.billingOne,
-        line2: billingDetails.billingTwo,
-        city: billingDetails.city,
-        state: billingDetails.countryCode === 'US' ? billingDetails.usStateCode : billingDetails.state,
-        country: billingDetails.countryCode
+        line1: billingDetails.billingOne.trim(),
+        line2: billingDetails.billingTwo.trim(),
+        city: billingDetails.city.trim(),
+        state: (billingDetails.countryCode === 'US' ? billingDetails.usStateCode : billingDetails.state as string).trim(),
+        country: billingDetails.countryCode.trim()
       }
     };
 
