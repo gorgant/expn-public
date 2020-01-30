@@ -14,21 +14,28 @@ import { detectUaBot } from '../web-cache/detect-ua-bot';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
+import { currentEnvironmentType } from '../environments/config';
+import { EnvironmentTypes } from '../../../shared-models/environments/env-vars.model';
 
 // Also consider Universal with Nest in Cloud Run https://fireship.io/courses/angular/ssr-nest/
 
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bundle/main');
 
-const charLimit = 700000; // Min length for blog page
+// These are a few globals to help with longpage loads
+let charLimit = 900000; // Min length for blog page (this may need to be increased)
+if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
+  charLimit = 100000; // reduce charlimit if sandbox
+}
 let reloadAttempts = 0; // Track reload attempts
 
 const renderAndCachePageWithUniversal = async (res: express.Response, req: express.Request, userAgent: string) => {
 
+  // Log in console page reload attempts if they exist
   if (reloadAttempts > 0) {
-    console.log(`Blog reload attempt ${reloadAttempts} initiated`);
+    console.log(`Longpage reload attempt ${reloadAttempts} initiated`);
   }
 
-  // Encode reserved characters (ngExpressEngine cannot process these) and will produce a route error
+  // Encode reserved characters found in URL (ngExpressEngine cannot process these and will produce a route error)
   const ngExpressSafeUrl = req.path.replace(/[!'()*]/g, (c) => {
     return '%' + c.charCodeAt(0).toString(16);
   });
@@ -48,17 +55,24 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         return;
       }
 
-      // If blog, check if fully loaded      
-      if (req.path === PublicAppRoutes.BLOG) {
-        // Exit function with fresh load attempt if blog is not fully loaded
+      // If blog or podcast, check if these longer pages fully loaded (sometimes fails)
+      if (req.path === PublicAppRoutes.BLOG || req.path === PublicAppRoutes.PODCAST) {
+        // If html fails char limit, exit function and re-attempt the render (up to the max attempts)
         if (html.length < charLimit && reloadAttempts < 2) {
-          console.log('Blog load result incomplete, re-running')
+          console.log('Longpage load failed charLimit check, re-running')
           reloadAttempts ++;
           return renderAndCachePageWithUniversal(res, req, userAgent);
         }
 
+        // If exceeds reloadAttempts, exit out of function with whatever it has (prevents overwriting cache with incomplete version)
+        if (html.length < charLimit && reloadAttempts >= 2) {
+          console.log(`Longpage load exceeded limit with ${reloadAttempts} attemps. Aborting with incomplete data as response.`);
+          res.status(200).send(html);
+          return;
+        }
+
         // Otherwise, continue with cache storage
-        console.log('Blog length passed charlimit check');
+        console.log('Longpage length passed charlimit check');
     }
 
     reloadAttempts = 0; // Reset reload attempts for future functions
@@ -125,7 +139,9 @@ const customExpressApp = () => {
             isBot ? WebpageRequestType.OTHER_BOT : WebpageRequestType.NO_BOT
           )
         );
+      console.log('Detected this request type', requestType);
 
+      // If auto-cache request, bypass cache check and perform render request
       if (requestType === WebpageRequestType.AUTO_CACHE) {
         console.log('Auto cache detected');
         await renderAndCachePageWithUniversal(res, req, userAgent);
@@ -133,6 +149,7 @@ const customExpressApp = () => {
         return;
       }
 
+      // Retrieve cached page if it exists
       const cachedPage = await retrieveWebPageCache(url, isBot);
 
       // If cached page exists, return that and end the function
@@ -142,6 +159,7 @@ const customExpressApp = () => {
         return;
       }
 
+      // If cached page doesn't exist, render with universal
       await renderAndCachePageWithUniversal(res, req, userAgent);
 
       return;
