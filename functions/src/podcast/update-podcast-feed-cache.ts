@@ -29,7 +29,7 @@ const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   return {postId, postHandle};
 }
 
-// Fetch aqi data for a specific city
+// Fetch podcast feed data from Soundcloud
 const fetchPodcastFeed = async () => {
 
   const requestUrl = PodcastPaths.EXPLEARNING_RSS_FEED;
