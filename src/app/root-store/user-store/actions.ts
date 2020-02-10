@@ -4,6 +4,7 @@ import { Product } from 'shared-models/products/product.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { ContactForm } from 'shared-models/user/contact-form.model';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
+import { SubOptInConfirmationData } from 'shared-models/subscribers/sub-opt-in-confirmation-data.model';
 
 
 export enum ActionTypes {
@@ -24,7 +25,10 @@ export enum ActionTypes {
   TRANSMIT_CONTACT_FORM_COMPLETE = '[User] Transmit Contact Form Complete',
   STORE_NAV_STAMP_REQUESTED = '[User] Store Nav Stamp Requested',
   STORE_NAV_STAMP_COMPLETE = '[User] Store Nav Stamp Complete',
-  SET_USER_SESSION_ID = '[User] Create User Session Id'
+  SET_USER_SESSION_ID = '[User] Create User Session Id',
+  CONFIRM_SUB_OPT_IN_REQUESTED = '[User] Confirm Sub Opt In Requested',
+  CONFIRM_SUB_OPT_IN_COMPLETE = '[User] Confirm Sub Opt In Complete',
+  CONFIRM_SUB_OPT_IN_ERROR_DETECTED = '[User] Confirm Sub Opt In Error Detected'
 }
 
 export class UserDataRequested implements Action {
@@ -95,6 +99,21 @@ export class SetUserSessionId implements Action {
   constructor(public payload: {userSessionId: string}) {}
 }
 
+export class ConfirmSubOptInRequested implements Action {
+  readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_REQUESTED;
+  constructor(public payload: {subConfData: SubOptInConfirmationData}) {}
+}
+
+export class ConfirmSubOptInComplete implements Action {
+  readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_COMPLETE;
+  constructor(public payload: {subConfirmed: boolean}) {}
+}
+
+export class ConfirmSubOptInErrorDetected implements Action {
+  readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_ERROR_DETECTED;
+  constructor(public payload: { error: any }) {}
+}
+
 export type Actions =
 UserDataRequested |
 UserDataLoaded |
@@ -109,5 +128,8 @@ TransmitContactFormRequested |
 TransmitContactFormComplete |
 StoreNavStampRequested |
 StoreNavStampComplete |
-SetUserSessionId
+SetUserSessionId |
+ConfirmSubOptInRequested |
+ConfirmSubOptInComplete |
+ConfirmSubOptInErrorDetected
 ;

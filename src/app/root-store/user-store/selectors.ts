@@ -13,6 +13,10 @@ const getSubscribeSubmitted = (state: State): boolean => state.subscribeSubmitte
 const getContactFormProcessing = (state: State): boolean => state.contactFormProcessing;
 const getContactFormSubmitted = (state: State): boolean => state.contactFormSubmitted;
 const getUserSessionId = (state: State): string => state.userSessionId;
+const getConfirmSubscriberProcessing = (state: State): boolean => state.confirmSubscriberProcessing;
+const getSubMarkedConfirmed = (state: State): boolean => state.subMarkedConfirmed;
+const getConfirmSubscriberError = (state: State): any => state.confirmSubscriberError;
+
 
 const selectUserState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('user');
@@ -50,3 +54,12 @@ export const selectContactFormSubmitted: MemoizedSelector<object, boolean>
 
 export const selectUserSessionid: MemoizedSelector<object, string>
 = createSelector(selectUserState, getUserSessionId);
+
+export const selectConfirmSubscriberProcessing: MemoizedSelector<object, boolean>
+= createSelector(selectUserState, getConfirmSubscriberProcessing);
+
+export const selectSubMarkedConfrimed: MemoizedSelector<object, boolean>
+= createSelector(selectUserState, getSubMarkedConfirmed);
+
+export const selectConfirmSubscriberError: MemoizedSelector<object, any>
+= createSelector(selectUserState, getConfirmSubscriberError);

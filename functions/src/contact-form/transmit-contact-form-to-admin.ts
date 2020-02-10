@@ -3,7 +3,7 @@ import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 import { ContactForm } from '../../../shared-models/user/contact-form.model'
 import { adminProjectId } from '../environments/config';
-import { AdminFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
+import { AdminTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 
 const pubSub = new PubSub();
 
@@ -16,7 +16,7 @@ const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
 
   // Target topic in the admin PubSub (must add this project's service account to target project)
   // Courtesy of https://stackoverflow.com/a/55003466/6572208
-  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminFunctionNames.SAVE_CONTACT_FORM_TOPIC}`);
+  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminTopicNames.SAVE_CONTACT_FORM_TOPIC}`);
 
   const topicPublishRes = await topic.publishJSON(contactForm)
     .catch(err => {

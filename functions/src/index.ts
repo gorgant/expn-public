@@ -37,3 +37,7 @@ export {
 export {
   universalSsr
 } from './universal/universal-ssr';
+
+export {
+  confirmSubOptInOnAdmin
+} from './subscribers/confirm-sub-opt-in-on-admin';

@@ -3,7 +3,7 @@ import { PubSub } from '@google-cloud/pubsub';
 import { publicFirestore } from '../db';
 import { SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { publicProjectId, publicAppUrl } from '../environments/config';
-import { PublicFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
+import { PublicTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import { Post } from '../../../shared-models/posts/post.model';
 import { Product } from '../../../shared-models/products/product.model';
@@ -23,7 +23,7 @@ const publishUrltoSsrTopic = async (url: string) => {
   console.log('Publishing to this project topic', publicProject);
 
   // Target topic in the PubSub (must add this project's service account to target project)
-  const topic = pubSub.topic(`projects/${publicProject}/topics/${PublicFunctionNames.UPDATE_WEBPAGE_CACHE}`);
+  const topic = pubSub.topic(`projects/${publicProject}/topics/${PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC}`);
 
   const topicPublishRes = await topic.publishJSON(urlObject)
     .catch(err => {

@@ -12,6 +12,9 @@ export interface State {
   contactFormProcessing: boolean;
   contactFormSubmitted: boolean;
   userSessionId: string;
+  confirmSubscriberProcessing: boolean;
+  subMarkedConfirmed: boolean;
+  confirmSubscriberError: any;
 }
 
 export const initialState: State = {
@@ -24,5 +27,8 @@ export const initialState: State = {
   subscribeSubmitted: false,
   contactFormProcessing: false,
   contactFormSubmitted: false,
-  userSessionId: null
+  userSessionId: null,
+  confirmSubscriberProcessing: false,
+  subMarkedConfirmed: null,
+  confirmSubscriberError: null,
 };

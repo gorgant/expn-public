@@ -13,6 +13,7 @@ import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-
 import { ContactForm } from 'shared-models/user/contact-form.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
+import { SubOptInConfirmationData } from 'shared-models/subscribers/sub-opt-in-confirmation-data.model';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,42 @@ export class UserService {
         }),
         catchError(error => {
           console.log('Error transmitting subscriber', error);
+          return throwError(error);
+        })
+      );
+
+    return res;
+  }
+
+  confirmSubOnAdmin(subConfData: SubOptInConfirmationData): Observable<boolean> {
+
+    // const fakeServerPromise = new Promise<boolean>((resolve, reject) => {
+    //   setTimeout(() => {
+    //     resolve(true);
+    //     // reject('Test rejection error');
+    //   }, 3000);
+
+    // });
+
+    // const res = from(fakeServerPromise)
+    //   .pipe(
+    //     catchError(error => {
+    //       console.log('Error transmitting subscriber', error);
+    //       return throwError(error);
+    //     })
+    //   );
+
+    const confirmSub: (data: SubOptInConfirmationData) => Observable<boolean> = this.fns.httpsCallable(
+      PublicFunctionNames.CONFIRM_SUB_OPT_IN_ON_ADMIN
+    );
+    const res = confirmSub(subConfData)
+      .pipe(
+        take(1),
+        tap(subConfirmed => {
+          console.log('Subscriber confirmation status', subConfirmed);
+        }),
+        catchError(error => {
+          console.log('Error confirming subscriber', error);
           return throwError(error);
         })
       );

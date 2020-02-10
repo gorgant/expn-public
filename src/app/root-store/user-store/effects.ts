@@ -150,4 +150,28 @@ export class UserStoreEffects {
         )
     )
   );
+
+  @Effect()
+  confirmSubscriberEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<userFeatureActions.ConfirmSubOptInRequested>(
+      userFeatureActions.ActionTypes.CONFIRM_SUB_OPT_IN_REQUESTED
+    ),
+    switchMap(action =>
+      this.userService.confirmSubOnAdmin(action.payload.subConfData)
+        .pipe(
+          map(response => {
+            if (!response) {
+              throw new Error('No response from admin while confirming subscriber');
+            }
+            return new userFeatureActions.ConfirmSubOptInComplete({subConfirmed: response});
+          }),
+          catchError(error => {
+            this.store$.dispatch(
+              new userFeatureActions.ConfirmSubOptInComplete({subConfirmed: false})
+            );
+            return of(new userFeatureActions.ConfirmSubOptInErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

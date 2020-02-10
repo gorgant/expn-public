@@ -24,7 +24,7 @@ export class DownloadPromoComponent implements OnInit {
   subscribeProcessing$: Observable<boolean>;
   subscribeSubmitted$: Observable<boolean>;
   emailSubmitted: boolean;
-  senderEmail: string = EmailSenderAddresses.EXPLEARNING_DEFAULT;
+  senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
 
   constructor(
     private dialogRef: MatDialogRef<DownloadPromoComponent>,

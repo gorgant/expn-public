@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { PublicFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
+import { PublicTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import * as https from 'https';
 import * as url from 'url';
@@ -10,7 +10,7 @@ import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-t
 const opts = {memory: '256MB', timeoutSeconds: 20};
 
 // Listen for pubsub message
-export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicFunctionNames.UPDATE_WEBPAGE_CACHE).onPublish( async (message, context) => {
+export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC).onPublish( async (message, context) => {
   console.log('Context from pubsub', context);
   const wepageUrl = (message.json as WebpageUrl).url;
   console.log('Message from pubsub', wepageUrl);

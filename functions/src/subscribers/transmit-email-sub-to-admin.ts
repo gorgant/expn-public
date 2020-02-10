@@ -3,7 +3,7 @@ import { PubSub } from '@google-cloud/pubsub';
 import { assert } from '../stripe/helpers';
 import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscriber.model';
 import { adminProjectId } from '../environments/config';
-import { AdminFunctionNames } from '../../../shared-models/routes-and-paths/fb-function-names';
+import { AdminTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 
 const pubSub = new PubSub();
 
@@ -16,7 +16,7 @@ const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>)
 
   // Target topic in the admin PubSub (must add this project's service account to target project)
   // Courtesy of https://stackoverflow.com/a/55003466/6572208
-  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminFunctionNames.SAVE_EMAIL_SUB_TOPIC}`);
+  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminTopicNames.SAVE_EMAIL_SUB_TOPIC}`);
 
   const topicPublishRes = await topic.publishJSON(subscriber)
     .catch(err => {

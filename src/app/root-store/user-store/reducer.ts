@@ -76,6 +76,23 @@ export function featureReducer(state = initialState, action: Actions): State {
         ...state,
         userSessionId: action.payload.userSessionId
       };
+    case ActionTypes.CONFIRM_SUB_OPT_IN_REQUESTED:
+      return {
+        ...state,
+        confirmSubscriberProcessing: true,
+        confirmSubscriberError: null,
+      };
+    case ActionTypes.CONFIRM_SUB_OPT_IN_COMPLETE:
+      return {
+        ...state,
+        confirmSubscriberProcessing: false,
+        subMarkedConfirmed: action.payload.subConfirmed,
+      };
+    case ActionTypes.CONFIRM_SUB_OPT_IN_ERROR_DETECTED:
+      return {
+        ...state,
+        confirmSubscriberError: action.payload.error,
+      };
 
     default: {
       return state;
