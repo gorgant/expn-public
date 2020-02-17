@@ -105,7 +105,7 @@ export class PostComponent implements OnInit, OnDestroy {
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
         this.loadPostTriggered = true; // Prevents loading from firing more than needed
-        return post;
+        return post as Post;
       })
     );
 

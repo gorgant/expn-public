@@ -4,12 +4,12 @@ import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/ro
 import { Observable } from 'rxjs';
 import { withLatestFrom, map, filter } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { Post } from 'shared-models/posts/post.model';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
 
 @Component({
   selector: 'app-blog',
@@ -18,7 +18,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 })
 export class BlogComponent implements OnInit, OnDestroy {
 
-  posts$: Observable<Post[]>;
+  posts$: Observable<BlogIndexPostRef[]>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
 
@@ -66,21 +66,21 @@ export class BlogComponent implements OnInit, OnDestroy {
   }
 
   private initializePosts() {
-    this.posts$ = this.store$.select(PostStoreSelectors.selectAllPosts)
+    this.posts$ = this.store$.select(PostStoreSelectors.selectblogIndex)
       .pipe(
-        withLatestFrom(
-          this.store$.select(PostStoreSelectors.selectPostsLoaded)
-        ),
-        map(([posts, postsLoaded]) => {
-          // Check if posts are loaded, if not fetch from server
-          if (!postsLoaded) {
-            console.log('No posts loaded, loading those now');
-            this.store$.dispatch(new PostStoreActions.AllPostsRequested());
-          }
-          return posts;
-        }),
-        filter(posts => posts.length > 0), // Catches the first emission which is an empty array
-      );
+          withLatestFrom(
+            this.store$.select(PostStoreSelectors.selectPostsLoaded),
+            this.store$.select(PostStoreSelectors.selectblogIndexLoaded)
+          ),
+          map(([posts, postsLoaded, blogIndexLoaded]) => {
+            if (!postsLoaded && !blogIndexLoaded) {
+              console.log('No post index loaded, loading that now');
+              this.store$.dispatch(new PostStoreActions.BlogIndexRequested());
+            }
+            return posts as BlogIndexPostRef[];
+          }),
+          filter(posts => posts.length > 0), // Catches the first emission which is an empty array
+        );
 
     this.error$ = this.store$.select(
       PostStoreSelectors.selectPostError

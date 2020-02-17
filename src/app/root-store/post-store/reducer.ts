@@ -13,7 +13,7 @@ export function featureReducer(state = initialState, action: Actions): State {
     }
 
     case ActionTypes.SINGLE_POST_LOADED: {
-      return featureAdapter.addOne(
+      return featureAdapter.upsertOne(
         action.payload.post, {
           ...state,
           isLoading: false,
@@ -56,6 +56,25 @@ export function featureReducer(state = initialState, action: Actions): State {
           isLoading: false,
           error: null,
           featuredPostsLoaded: true,
+        }
+      );
+    }
+
+    case ActionTypes.BLOG_INDEX_REQUESTED: {
+      return {
+        ...state,
+        isLoading: true,
+        error: null
+      };
+    }
+
+    case ActionTypes.BLOG_INDEX_LOADED: {
+      return featureAdapter.addMany(
+        action.payload.blogIndex, {
+          ...state,
+          isLoading: false,
+          error: null,
+          blogIndexLoaded: true
         }
       );
     }

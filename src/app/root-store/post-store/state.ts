@@ -1,13 +1,14 @@
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Post } from 'shared-models/posts/post.model';
+import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
 
-export const featureAdapter: EntityAdapter<Post>
-  = createEntityAdapter<Post>(
+export const featureAdapter: EntityAdapter<Post | BlogIndexPostRef>
+  = createEntityAdapter<Post | BlogIndexPostRef>(
     {
-      selectId: (post: Post) => post.id,
+      selectId: (post: Post | BlogIndexPostRef) => post.id,
 
       // Sort by reverse published date
-      sortComparer: (a: Post, b: Post): number => {
+      sortComparer: (a: Post | BlogIndexPostRef, b: Post | BlogIndexPostRef): number => {
         const publishedDateA = a.publishedDate;
         const publishedDateB = b.publishedDate;
         return publishedDateB.toString().localeCompare(publishedDateA.toString(), undefined, {numeric: true});
@@ -15,11 +16,12 @@ export const featureAdapter: EntityAdapter<Post>
     }
   );
 
-export interface State extends EntityState<Post> {
+export interface State extends EntityState<Post | BlogIndexPostRef> {
   isLoading?: boolean;
   error?: any;
   postsLoaded?: boolean;
   featuredPostsLoaded?: boolean;
+  blogIndexLoaded?: boolean;
 }
 
 export const initialState: State = featureAdapter.getInitialState(
@@ -28,5 +30,6 @@ export const initialState: State = featureAdapter.getInitialState(
     error: null,
     postsLoaded: false,
     featuredPostsLoaded: false,
+    blogIndexLoaded: false,
   }
 );

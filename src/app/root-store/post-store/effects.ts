@@ -75,4 +75,25 @@ export class PostStoreEffects {
         )
     )
   );
+
+  @Effect()
+  blogIndexRequestedEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<postFeatureActions.BlogIndexRequested>(
+      postFeatureActions.ActionTypes.BLOG_INDEX_REQUESTED
+    ),
+    switchMap(action =>
+      this.postService.fetchBlogIndex()
+        .pipe(
+          map(blogIndex => {
+            if (!blogIndex) {
+              throw new Error('Post index not found');
+            }
+            return new postFeatureActions.BlogIndexLoaded({ blogIndex });
+          }),
+          catchError(error => {
+            return of(new postFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+    )
+  );
 }

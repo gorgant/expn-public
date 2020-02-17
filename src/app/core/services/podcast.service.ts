@@ -8,6 +8,7 @@ import { UiService } from './ui.service';
 import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 import { makeStateKey, TransferState } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
+import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
 
 @Injectable({
   providedIn: 'root'
@@ -40,14 +41,14 @@ export class PodcastService {
 
   fetchAllPodcastEpisodes(podcastId: string): Observable<PodcastEpisode[]> {
 
-    const EPISODES_KEY = makeStateKey<PodcastEpisode[]>('fetchAllPodcastEpisodesKey'); // A key to identify data in USSR
+    const PODCAST_EPISODES_KEY = makeStateKey<PodcastEpisode[]>(TransferStateKeys.ALL_PODCAST_EPISODES_KEY);
 
     // If data exists in state transfer, use that
-    if (this.transferState.hasKey(EPISODES_KEY)) {
+    if (this.transferState.hasKey(PODCAST_EPISODES_KEY)) {
       console.log('Fetching episodes from transfer state');
-      const cacheData = this.transferState.get<PodcastEpisode[]>(EPISODES_KEY, {} as any);
+      const cacheData = this.transferState.get<PodcastEpisode[]>(PODCAST_EPISODES_KEY, {} as any);
       cacheData.sort((a, b) => (b.pubDate > a.pubDate) ? 1 : ((a.pubDate > b.pubDate) ? -1 : 0));
-      this.transferState.remove(EPISODES_KEY); // Clean up the cache
+      this.transferState.remove(PODCAST_EPISODES_KEY); // Clean up the cache
       return of(cacheData);
     }
 
@@ -62,7 +63,7 @@ export class PodcastService {
         }),
         tap(episodes => {
           if (isPlatformServer(this.platformId)) {
-            this.transferState.set(EPISODES_KEY, episodes); // Stash item in transfer state
+            this.transferState.set(PODCAST_EPISODES_KEY, episodes); // Stash item in transfer state
           }
         }),
         catchError(error => {
@@ -74,7 +75,7 @@ export class PodcastService {
 
   fetchSinglePodcastEpisode(podcastId: string, episodeId: string): Observable<PodcastEpisode> {
 
-    const SINGLE_EPISODE_KEY = makeStateKey<PodcastEpisode>(`${episodeId}-fetchSingleEpisodeKey`); // A key to identify data in USSR
+    const SINGLE_EPISODE_KEY = makeStateKey<PodcastEpisode>(`${episodeId}-${TransferStateKeys.SINGLE_PODCAST_EPISODE_KEY}`);
 
     // If data exists in state transfer, use that
     if (this.transferState.hasKey(SINGLE_EPISODE_KEY)) {

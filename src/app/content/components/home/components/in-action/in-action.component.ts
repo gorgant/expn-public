@@ -40,7 +40,7 @@ export class InActionComponent implements OnInit {
               console.log('No featured posts loaded, loading those now');
               this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
             }
-            return posts;
+            return posts as Post[];
           }),
           filter(posts => posts.length > 0), // Catches the first emission which is an empty array
         );

@@ -18,6 +18,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
+import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
 
 
 
@@ -26,7 +27,11 @@ import { DownloadPromoComponent } from './shared/components/email-collection/dow
     AppComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'explearning' }),
+    BrowserModule.withServerTransition(
+        {
+          appId: environment.production ? PRODUCTION_APPS.explearningPublicApp.projectId : SANDBOX_APPS.explearningPublicApp.projectId
+        }
+      ),
     TransferHttpCacheModule,
     BrowserTransferStateModule,
     BrowserAnimationsModule,

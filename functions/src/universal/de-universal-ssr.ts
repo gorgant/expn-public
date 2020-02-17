@@ -115,7 +115,7 @@ const customExpressApp = (config: FirebaseConfiguration) => {
   });
 
   
-  // // TODO: switch to using ngExpressEngine per the server.ts in the root folder
+  // // Don't forget to switch to using ngExpressEngine per the server.ts in the root folder
   // app.get('/*', angularUniversal(config));
   return app;
 }

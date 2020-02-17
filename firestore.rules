@@ -1,6 +1,11 @@
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    match /blogIndex/{postRef} {
+      // Anyone can read posts
+      allow read;
+    }
+
     match /posts/{post} {
     	// Anyone can read posts
       allow read;

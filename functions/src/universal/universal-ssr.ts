@@ -15,28 +15,54 @@ import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-t
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
 import { currentEnvironmentType } from '../environments/config';
-import { EnvironmentTypes } from '../../../shared-models/environments/env-vars.model';
+import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
+import { parseTransferState } from './parse-transfer-state';
+import { BlogIndexPostRef } from '../../../shared-models/posts/blog-index-post-ref.model';
+import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
+import { WebpageLoadFailureData } from '../../../shared-models/ssr/webpage-load-failure-data.model';
+import { transmitWebpageLoadFailureDataToAdmin } from '../web-cache/transmit-webpage-load-failure-data-to-admin';
 
 // Also consider Universal with Nest in Cloud Run https://fireship.io/courses/angular/ssr-nest/
 
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bundle/main');
 
 // These are a few globals to help with longpage loads
-let charLimit = 900000; // Min length for blog page (this may need to be increased)
+let minBlogPostCount = 100;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  charLimit = 100000; // reduce charlimit if sandbox
+  minBlogPostCount = 5; // reduce charlimit if sandbox
+}
+let minPodcastEpisodeCount = 50;
+if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
+  minPodcastEpisodeCount = 3; // reduce charlimit if sandbox
 }
 let reloadAttempts = 0; // Track reload attempts
+const reloadLimit = 2; // Set a max number of reload attempts
+
+const blogFullyLoaded = (blogIndex: BlogIndexPostRef[]): boolean => {
+  const blogIndexLength = blogIndex.length;
+  console.log(`Found ${blogIndexLength} posts in blog index`);
+  if (blogIndexLength > minBlogPostCount) return true;
+  return false;
+}
+
+const podcastFullyLoaded = (podcastIndex: PodcastEpisode[]): boolean => {
+  const podcastIndexLength = podcastIndex.length;
+  console.log(`Found ${podcastIndexLength} episodes in podcast index`);
+  if (podcastIndexLength > minPodcastEpisodeCount) return true;
+  return false;
+}
 
 const renderAndCachePageWithUniversal = async (res: express.Response, req: express.Request, userAgent: string) => {
 
+  const requestPath = req.path;
+  
   // Log in console page reload attempts if they exist
   if (reloadAttempts > 0) {
     console.log(`Longpage reload attempt ${reloadAttempts} initiated`);
   }
 
   // Encode reserved characters found in URL (ngExpressEngine cannot process these and will produce a route error)
-  const ngExpressSafeUrl = req.path.replace(/[!'()*]/g, (c) => {
+  const ngExpressSafeUrl = requestPath.replace(/[!'()*]/g, (c) => {
     return '%' + c.charCodeAt(0).toString(16);
   });
   console.log('ngExpressSafeUrl', ngExpressSafeUrl);
@@ -55,30 +81,51 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         return;
       }
 
-      // If blog or podcast, check if these longer pages fully loaded (sometimes fails)
-      if (req.path === PublicAppRoutes.BLOG || req.path === PublicAppRoutes.PODCAST) {
-        // If html fails char limit, exit function and re-attempt the render (up to the max attempts)
-        if (html.length < charLimit && reloadAttempts < 2) {
-          console.log('Longpage load failed charLimit check, re-running')
-          reloadAttempts ++;
-          return renderAndCachePageWithUniversal(res, req, userAgent);
-        }
+      // If blog or podcast, check if these longer pages fully loaded (sometimes fails), if fails reattempt up to the limit
+      if ((requestPath === PublicAppRoutes.BLOG || requestPath === PublicAppRoutes.PODCAST) && reloadAttempts < reloadLimit) {
+        
+        const transferStateData = parseTransferState(html, requestPath);
 
-        // If exceeds reloadAttempts, exit out of function with whatever it has (prevents overwriting cache with incomplete version)
-        if (html.length < charLimit && reloadAttempts >= 2) {
-          console.log(`Longpage load exceeded limit with ${reloadAttempts} attemps. Aborting with incomplete data as response.`);
-          res.status(200).send(html);
-          return;
+        // Check if data fully loaded, if not, make another attempt
+        switch (requestPath) {
+          case PublicAppRoutes.BLOG:
+            const blogIndex: BlogIndexPostRef[] = transferStateData as BlogIndexPostRef[];
+            if (!blogFullyLoaded(blogIndex)) {
+              reloadAttempts ++;
+              console.log(`Blog failed to load fully on attempt number ${reloadAttempts}, trying again`)
+              return renderAndCachePageWithUniversal(res, req, userAgent);
+            }
+            console.log('Blog passed item length check');
+            break;
+          case PublicAppRoutes.PODCAST:
+            const podcastIndex: PodcastEpisode[] = transferStateData as PodcastEpisode[];
+            if (!podcastFullyLoaded(podcastIndex)) {
+              reloadAttempts ++;
+              console.log(`Podcast failed to load fully on attempt number ${reloadAttempts}, trying again`)
+              return renderAndCachePageWithUniversal(res, req, userAgent);
+            }
+            console.log('Podcast passed item length check');
+            break;
+          default:
+            break;
         }
-
-        // Otherwise, continue with cache storage
-        console.log('Longpage length passed charlimit check');
+      }
+    
+    if (reloadAttempts >= reloadLimit) {
+      console.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
+      const webpageLoadFailureData: WebpageLoadFailureData = {
+        domain: currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.explearningPublicApp.websiteDomain : PRODUCTION_APPS.explearningPublicApp.websiteDomain,
+        urlPath: requestPath,
+        errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
+      }
+      await transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData)
+        .catch((err: any) => console.log('Error transmiting webpage load failture data to admin:', err));
     }
 
     reloadAttempts = 0; // Reset reload attempts for future functions
 
     // Cache HTML in database for easy future retrieval
-    await storeWebPageCache(req.path, userAgent, html)
+    await storeWebPageCache(requestPath, userAgent, html)
       .catch(err => {
         console.log('Error caching page', err);
         return err;
