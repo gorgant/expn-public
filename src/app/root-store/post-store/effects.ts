@@ -34,26 +34,26 @@ export class PostStoreEffects {
     )
   );
 
-  @Effect()
-  allPostsRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<postFeatureActions.AllPostsRequested>(
-      postFeatureActions.ActionTypes.ALL_POSTS_REQUESTED
-    ),
-    switchMap(action =>
-      this.postService.fetchAllPosts()
-        .pipe(
-          map(posts => {
-            if (!posts) {
-              throw new Error('Posts not found');
-            }
-            return new postFeatureActions.AllPostsLoaded({ posts });
-          }),
-          catchError(error => {
-            return of(new postFeatureActions.LoadErrorDetected({ error }));
-          })
-        )
-    )
-  );
+  // @Effect()
+  // allPostsRequestedEffect$: Observable<Action> = this.actions$.pipe(
+  //   ofType<postFeatureActions.AllPostsRequested>(
+  //     postFeatureActions.ActionTypes.ALL_POSTS_REQUESTED
+  //   ),
+  //   switchMap(action =>
+  //     this.postService.fetchAllPosts()
+  //       .pipe(
+  //         map(posts => {
+  //           if (!posts) {
+  //             throw new Error('Posts not found');
+  //           }
+  //           return new postFeatureActions.AllPostsLoaded({ posts });
+  //         }),
+  //         catchError(error => {
+  //           return of(new postFeatureActions.LoadErrorDetected({ error }));
+  //         })
+  //       )
+  //   )
+  // );
 
   @Effect()
   featuredPostsRequestedEffect$: Observable<Action> = this.actions$.pipe(

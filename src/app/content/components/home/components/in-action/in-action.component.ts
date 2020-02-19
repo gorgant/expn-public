@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { withLatestFrom, map, filter } from 'rxjs/operators';
-import { Post } from 'shared-models/posts/post.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
 
 @Component({
   selector: 'app-in-action',
@@ -13,7 +13,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 })
 export class InActionComponent implements OnInit {
 
-  posts$: Observable<Post[]>;
+  posts$: Observable<BlogIndexPostRef[]>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
   postLoadTriggered: boolean;
@@ -25,10 +25,10 @@ export class InActionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.initializePosts();
+    this.initializeFeaturedPosts();
   }
 
-  private initializePosts() {
+  private initializeFeaturedPosts() {
     this.posts$ = this.store$.select(PostStoreSelectors.selectFeaturedPosts)
       .pipe(
           withLatestFrom(
@@ -40,7 +40,7 @@ export class InActionComponent implements OnInit {
               console.log('No featured posts loaded, loading those now');
               this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
             }
-            return posts as Post[];
+            return posts as BlogIndexPostRef[];
           }),
           filter(posts => posts.length > 0), // Catches the first emission which is an empty array
         );

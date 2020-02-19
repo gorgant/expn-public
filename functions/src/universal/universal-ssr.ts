@@ -29,11 +29,11 @@ const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bund
 // These are a few globals to help with longpage loads
 let minBlogPostCount = 100;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minBlogPostCount = 5; // reduce charlimit if sandbox
+  minBlogPostCount = 1;
 }
 let minPodcastEpisodeCount = 50;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minPodcastEpisodeCount = 3; // reduce charlimit if sandbox
+  minPodcastEpisodeCount = 1;
 }
 let reloadAttempts = 0; // Track reload attempts
 const reloadLimit = 2; // Set a max number of reload attempts

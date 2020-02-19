@@ -20,13 +20,13 @@ export const selectAllPosts: (state: object) => Post[] | BlogIndexPostRef[] = cr
 
 export const selectFeaturedPosts = createSelector(
   selectAllPosts,
-  posts => posts.filter(post => (post as Post).featured)
+  posts => posts.filter(post => post.featured)
 );
 
 // A cosmetic filter, will return all posts in entity adapter (which on first load will be only the index)
 export const selectblogIndex = createSelector(
   selectAllPosts,
-  posts => posts.filter(post => post.published)
+  posts => posts.filter(post  => post.published)
 );
 
 export const selectPostById: (postId: string) => MemoizedSelector<object, Post | BlogIndexPostRef>

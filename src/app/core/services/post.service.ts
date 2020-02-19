@@ -25,39 +25,39 @@ export class PostService {
   ) { }
 
 
-  fetchAllPosts(): Observable<Post[]> {
+  // fetchAllPosts(): Observable<Post[]> {
 
-    const ALL_POSTS_KEY = makeStateKey<Post[]>(TransferStateKeys.ALL_POSTS_KEY); // A key to identify data in USSR
-    // If data exists in state transfer, use that
-    if (this.transferState.hasKey(ALL_POSTS_KEY)) {
-      console.log('Fetching posts from transfer state');
-      const cacheData = this.transferState.get<Post[]>(ALL_POSTS_KEY, {} as any);
-      // Sort by publish date because must be same order as in Root Store in order to sync properly
-      cacheData.sort((a, b) => (b.publishedDate > a.publishedDate) ? 1 : ((a.publishedDate > b.publishedDate) ? -1 : 0));
-      this.transferState.remove(ALL_POSTS_KEY); // Clean up the cache
-      return of(cacheData);
-    }
+  //   const ALL_POSTS_KEY = makeStateKey<Post[]>(TransferStateKeys.ALL_POSTS_KEY); // A key to identify data in USSR
+  //   // If data exists in state transfer, use that
+  //   if (this.transferState.hasKey(ALL_POSTS_KEY)) {
+  //     console.log('Fetching posts from transfer state');
+  //     const cacheData = this.transferState.get<Post[]>(ALL_POSTS_KEY, {} as any);
+  //     // Sort by publish date because must be same order as in Root Store in order to sync properly
+  //     cacheData.sort((a, b) => (b.publishedDate > a.publishedDate) ? 1 : ((a.publishedDate > b.publishedDate) ? -1 : 0));
+  //     this.transferState.remove(ALL_POSTS_KEY); // Clean up the cache
+  //     return of(cacheData);
+  //   }
 
-    // Otherwise, fetch from database
-    const postCollection = this.getPostsCollection();
-    return postCollection.valueChanges()
-      .pipe(
-        takeUntil(this.authService.unsubTrigger$),
-        map(posts => {
-          console.log('Fetched all posts');
-          return posts;
-        }),
-        tap(posts => {
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(ALL_POSTS_KEY, posts); // Stash item in transfer state
-          }
-        }),
-        catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
-          return throwError(error);
-        })
-      );
-  }
+  //   // Otherwise, fetch from database
+  //   const postCollection = this.getPostsCollection();
+  //   return postCollection.valueChanges()
+  //     .pipe(
+  //       takeUntil(this.authService.unsubTrigger$),
+  //       map(posts => {
+  //         console.log('Fetched all posts');
+  //         return posts;
+  //       }),
+  //       tap(posts => {
+  //         if (isPlatformServer(this.platformId)) {
+  //           this.transferState.set(ALL_POSTS_KEY, posts); // Stash item in transfer state
+  //         }
+  //       }),
+  //       catchError(error => {
+  //         this.uiService.showSnackBar(error, null, 5000);
+  //         return throwError(error);
+  //       })
+  //     );
+  // }
 
   // Load a partial version of the post collection that omits the post content
   fetchBlogIndex(): Observable<BlogIndexPostRef[]> {
@@ -95,14 +95,14 @@ export class PostService {
 
   }
 
-  fetchFeaturedPosts(): Observable<Post[]> {
+  fetchFeaturedPosts(): Observable<BlogIndexPostRef[]> {
 
-    const FEATURED_POSTS_KEY = makeStateKey<Post[]>(TransferStateKeys.FEATURED_POSTS_KEY); // A key to identify data in USSR
+    const FEATURED_POSTS_KEY = makeStateKey<BlogIndexPostRef[]>(TransferStateKeys.FEATURED_POSTS_KEY); // A key to identify data in USSR
 
     // If data exists in state transfer, use that
     if (this.transferState.hasKey(FEATURED_POSTS_KEY)) {
       console.log('Fetching featured posts from transfer state');
-      const cacheData = this.transferState.get<Post[]>(FEATURED_POSTS_KEY, {} as any);
+      const cacheData = this.transferState.get<BlogIndexPostRef[]>(FEATURED_POSTS_KEY, {} as any);
       cacheData.sort((a, b) => (b.publishedDate > a.publishedDate) ? 1 : ((a.publishedDate > b.publishedDate) ? -1 : 0));
       this.transferState.remove(FEATURED_POSTS_KEY); // Clean up the cache
       return of(cacheData);
@@ -167,8 +167,8 @@ export class PostService {
     return this.afs.collection<Post>(SharedCollectionPaths.POSTS);
   }
 
-  private getFeaturedPostsCollection(): AngularFirestoreCollection<Post> {
-    return this.afs.collection<Post>(SharedCollectionPaths.POSTS, ref => ref.where('featured', '==', true));
+  private getFeaturedPostsCollection(): AngularFirestoreCollection<BlogIndexPostRef> {
+    return this.afs.collection<BlogIndexPostRef>(PublicCollectionPaths.BLOG_INDEX, ref => ref.where('featured', '==', true));
   }
 
   private getBlogIndexCollection(): AngularFirestoreCollection<BlogIndexPostRef> {

@@ -39,7 +39,7 @@ export class FeaturedPostsRequested implements Action {
 
 export class FeaturedPostsLoaded implements Action {
   readonly type = ActionTypes.FEATURED_POSTS_LOADED;
-  constructor(public payload: { posts: Post[] }) {}
+  constructor(public payload: { posts: BlogIndexPostRef[] }) {}
 }
 
 export class BlogIndexRequested implements Action {

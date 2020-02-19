@@ -23,7 +23,7 @@ const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   }
 
   const matchingPost = matchingPostQuerySnapshot.docs[0].data() as Post; // Should only be one matching item
-  const postId = matchingPost.id as string;
+  const postId = matchingPost.id;
   const postHandle = convertToFriendlyUrlFormat(matchingPost.title);
 
   return {postId, postHandle};
