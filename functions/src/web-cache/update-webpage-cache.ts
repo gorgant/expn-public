@@ -4,17 +4,10 @@ import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import * as https from 'https';
 import * as url from 'url';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
+import { catchErrors } from '../config/global-helpers';
 
-/////// DEPLOYABLE FUNCTIONS ///////
-
-const opts = {memory: '256MB', timeoutSeconds: 20};
-
-// Listen for pubsub message
-export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC).onPublish( async (message, context) => {
-  console.log('Context from pubsub', context);
-  const wepageUrl = (message.json as WebpageUrl).url;
-  console.log('Message from pubsub', wepageUrl);
-  
+// Create an http request for the provided url
+const sendHttpRequest = async (wepageUrl: string) => {
   const urlObject = new url.URL(wepageUrl);
   urlObject.searchParams.set(`${WebpageRequestType.AUTO_CACHE}`, 'true');
   const reqOptions: https.RequestOptions = {
@@ -26,7 +19,7 @@ export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOp
   console.log('Sending cache update request to universal with these options', reqOptions);
 
 
-  const requestPromise = new Promise<string>(async (resolve, reject) => {
+  const requestResponse = new Promise<string>(async (resolve, reject) => {
 
     const req = https.request(reqOptions, (res) => {
     
@@ -40,7 +33,6 @@ export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOp
       });
 
       res.on('end', () => {
-        console.log('Response end reached in request promise')
         resolve(fullData);
       })
     });
@@ -52,12 +44,24 @@ export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOp
     req.end();
   });
 
-  const response = await requestPromise;
+  await requestResponse;
+}
 
-  if (response) {
-    return `Update succeeded with this response ${response}`;
-  }
+/////// DEPLOYABLE FUNCTIONS ///////
 
-  return `Update executed with no response`;
+const opts = {memory: '256MB', timeoutSeconds: 20};
+
+// Listen for pubsub message
+export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC).onPublish( async (message, context) => {
+  
+  const wepageUrl = (message.json as WebpageUrl).url;
+  console.log('Update Webpage Cache request received with this data', wepageUrl)
+  console.log('Context from pubsub', context);
+
+  const requestResponse = await catchErrors(sendHttpRequest(wepageUrl)) as Promise<String>;
+
+  console.log(`Http request for ${wepageUrl} complete`, requestResponse);
+
+  return requestResponse;
 
 });

@@ -2,23 +2,20 @@ import * as functions from 'firebase-functions';
 import { getOrCreateCustomer } from "./customers";
 import { stripe } from './config';
 import { attachSource } from './sources';
-import { assertUID, assert } from './helpers';
+import { catchErrors, assertUID, assert } from '../config/global-helpers';
 import { StripeChargeData } from '../../../shared-models/billing/stripe-charge-data.model';
 import { StripeError } from '../../../shared-models/billing/stripe-error.model';
 import { Product } from '../../../shared-models/products/product.model';
-import * as Stripe from 'stripe';
+import { Stripe as StripeDefs} from 'stripe';
 import { StripeChargeMetadata, StripeCustomerMetadata } from '../../../shared-models/billing/stripe-object-metadata.model';
 
 /**
  * Get a specific charge
  */
-export const getSingleCharge = (chargeId:string) => {
+export const getSingleCharge = (chargeId: string) => {
   return stripe.charges.retrieve(chargeId, {
     expand: ['customer']
-  }).catch(error => {
-    console.log('Error with stripe getting charge', error);
-    return error;
-  })
+  }).catch(err => {console.log(`Error fetching stripe charge:`, err); return err;});
 }
 
 /**
@@ -27,13 +24,13 @@ export const getSingleCharge = (chargeId:string) => {
  * @amount in pennies (e.g. $20 === 2000)
  * @idempotency_key ensures charge will only be executed once
  */
-export const createCharge = async(uid: string, source: stripe.Source, amount: number, product: Product): Promise<Stripe.charges.ICharge> => {
+export const createCharge = async(uid: string, source: stripe.Source, amount: number, product: Product): Promise<StripeDefs.Charge> => {
   
   const customer = await getOrCreateCustomer(uid);
 
   await attachSource(uid, source);
 
-  const chargeData: Stripe.charges.IChargeCreationOptions = {
+  const chargeData: StripeDefs.ChargeCreateParams = {
     amount,
     customer: customer.id,
     source: source.id,
@@ -95,10 +92,12 @@ export const stripeProcessCharge = functions.https.onCall( async (data: StripeCh
   const amount: number = assert(data, 'amountPaid');
   const product: Product = assert(data, 'product');
 
-  const chargeResponse: Stripe.charges.ICharge = await createCharge(uid, source, amount, product)
+  // TODO: Confirm charge amount matches price of product in admin database (before discounts are applied)
+
+  const chargeResponse: StripeDefs.Charge = await catchErrors(createCharge(uid, source, amount, product)
     .catch(err => {
       return handleStripeChargeResponse(err);
-    });
+    }));
 
   return chargeResponse;
 });

@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
-import { publicFirestore } from '../db';
+import { publicFirestore } from '../config/db-config';
 import { SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
-import { publicProjectId, publicAppUrl } from '../environments/config';
+import { publicProjectId, publicAppUrl } from '../config/environments-config';
 import { PublicTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import { Post } from '../../../shared-models/posts/post.model';
 import { Product } from '../../../shared-models/products/product.model';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
-import { convertToFriendlyUrlFormat } from '../global-helpers';
+import { convertToFriendlyUrlFormat } from '../config/global-helpers';
 
 const db = publicFirestore;
 const appUrl = publicAppUrl;
@@ -16,21 +16,13 @@ const pubSub = new PubSub();
 
 const publishUrltoSsrTopic = async (url: string) => {
 
-  const urlObject: WebpageUrl = { url };
-  console.log('Commencing url trasmission based on this data', urlObject);
-
-  const publicProject = publicProjectId;
-  console.log('Publishing to this project topic', publicProject);
-
-  // Target topic in the PubSub (must add this project's service account to target project)
-  const topic = pubSub.topic(`projects/${publicProject}/topics/${PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC}`);
-
-  const topicPublishRes = await topic.publishJSON(urlObject)
-    .catch(err => {
-      console.log('Publish to topic failed', err);
-      return err;
-    });
-  console.log('Res from topic publish', topicPublishRes);
+  const projectId = publicProjectId;
+  const topicName = PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC;
+  const topic = pubSub.topic(`projects/${projectId}/topics/${topicName}`);
+  const pubsubMsg: WebpageUrl = { url };
+  const topicPublishRes = await topic.publishJSON(pubsubMsg)
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -43,16 +35,14 @@ const publishUrltoSsrTopic = async (url: string) => {
 export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, res ) => {
   console.log('Update web cache request received with these headers', req.headers);
 
+  // Abort if request came from invalid source
   if (req.headers['user-agent'] !== 'Google-Cloud-Scheduler') {
     console.log('Invalid request, ending operation');
     return;
   }
 
   const postCollectionSnapshot: FirebaseFirestore.QuerySnapshot = await db.collection(SharedCollectionPaths.POSTS).get()
-  .catch(error => {
-    console.log('Error fetching post collection', error)
-    return error;
-  });
+    .catch(err => {console.log(`Failed to fetch post collection from public database:`, err); return err;});
   const blogSlugWithSlashPrefix = PublicAppRoutes.BLOG;
   const postUrlArray: string[] = postCollectionSnapshot.docs.map(doc => {
     const post: Post = doc.data() as Post;
@@ -62,10 +52,7 @@ export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, r
   });
 
   const productCollectionSnapshot: FirebaseFirestore.QuerySnapshot = await db.collection(SharedCollectionPaths.PRODUCTS).get()
-  .catch(error => {
-    console.log('Error fetching product collection', error)
-    return error;
-  });
+    .catch(err => {console.log(`Failed to fetch product collection from public database:`, err); return err;});
   const productListSlugWithSlashPrefix = PublicAppRoutes.PRODUCTS;
   const productUrlArray: string[] = productCollectionSnapshot.docs.map(doc => {
     const product: Product = doc.data() as Product;
@@ -87,15 +74,13 @@ export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, r
   // console.log('Compiled this test array', testUrlArray);
   
   const transmitCacheRequests = webpageUrlArray.map( async (url) => {
+    console.log('Transmit url to ssr received with this data', url);
     await publishUrltoSsrTopic(url)
-      .catch(error => {
-        console.log('Error transmitting subscriber', error);
-        return error;
-      });
+      .catch(err => {console.log(`Error transmitting url to ssr:`, err); return err;});
   })
 
   const transmissionResponse = await Promise.all(transmitCacheRequests)
-    .catch(error => console.log('Error in email record group promise', error));
+    .catch(err => {console.log(`Error in group promise to transmit url to ssr:`, err); return err;});
   
   console.log('All cache update requests sent', res);
   return res.status(200).send(transmissionResponse);

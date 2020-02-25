@@ -1,18 +1,16 @@
 import * as functions from 'firebase-functions';
 import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscriber.model';
 import { SubOptInConfirmationData } from '../../../shared-models/subscribers/sub-opt-in-confirmation-data.model';
-import { adminFirestore } from '../db';
+import { adminFirestore } from '../config/db-config';
 import { AdminCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
+import { assertUID, catchErrors } from '../config/global-helpers';
 
 const markSubscriberConfirmed = async (subConfData: SubOptInConfirmationData): Promise<boolean> => {
 
   const db: FirebaseFirestore.Firestore = adminFirestore;
 
   const subDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(AdminCollectionPaths.SUBSCRIBERS).doc(subConfData.subId).get()
-    .catch(error => {
-      console.log('Error fetching subscriber doc', error)
-      return error;
-    });
+    .catch(err => {console.log(`Error fetching podcast feed:`, err); return err;});
   
   if (!subDoc.exists) {
     console.log('Subscriber does not exist');
@@ -50,16 +48,9 @@ const markSubscriberConfirmed = async (subConfData: SubOptInConfirmationData): P
 
 
 export const confirmSubOptInOnAdmin = functions.https.onCall( async (subData: SubOptInConfirmationData, context ) => {
+
+  console.log('Confirm sub opt in on admin request received with this data', subData);
+  assertUID(context);
   
-  // If no sub id, exit function
-  if (!subData.subId) {
-    return;
-  }
-
-  const subscriberConfirmed = await markSubscriberConfirmed(subData);
-  
-
-  console.log('Transmit this sub ID to admin for confirmation', subData);
-
-  return subscriberConfirmed;
+  return catchErrors(markSubscriberConfirmed(subData));
 });

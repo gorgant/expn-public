@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import * as Stripe from 'stripe';
+import { Stripe as StripeDefs } from 'stripe';
 import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 
@@ -22,13 +22,13 @@ export class ProcessPaymentRequested implements Action {
 export class ProcessPaymentComplete implements Action {
   readonly type = ActionTypes.PROCESS_PAYMENT_COMPLETE;
 
-  constructor(public payload: { paymentResponse: Stripe.charges.ICharge }) {}
+  constructor(public payload: { paymentResponse: StripeDefs.Charge }) {}
 }
 
 export class TransmitOrderToAdminRequested implements Action {
   readonly type = ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED;
 
-  constructor(public payload: { stripeCharge: Stripe.charges.ICharge, user: PublicUser}) {}
+  constructor(public payload: { stripeCharge: StripeDefs.Charge, user: PublicUser}) {}
 }
 
 export class TransmitOrderToAdminComplete implements Action {

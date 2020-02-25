@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import * as Stripe from 'stripe';
-import { publicFirestore } from '../db';
+import { Stripe } from 'stripe';
+import { publicFirestore } from '../config/db-config';
 
 // Iniitialize Cloud Firestore Database
 export const db = publicFirestore;
@@ -11,5 +11,7 @@ db.settings(settings);
 const stripeSecret: string = functions.config().stripe.secret;
 
 //Export Stripe
-export const stripe = new Stripe(stripeSecret);
-
+const stripeConfig: Stripe.StripeConfig = {
+  apiVersion: '2019-12-03'
+}
+export const stripe = new Stripe.Stripe(stripeSecret, stripeConfig);

@@ -1,9 +1,11 @@
 import * as functions from 'firebase-functions';
-import { publicApp } from '../apps';
 import * as admin from 'firebase-admin'; // Imported for type definition only
 import { now } from 'moment';
+import { explearningPublicApp } from '../config/app-config';
 
-const isExpiredUser = async (user: admin.auth.UserRecord): Promise<boolean> => {
+const publicApp = explearningPublicApp;
+
+const isExpiredUser = (user: admin.auth.UserRecord): boolean => {
   // Optionally, you could go into user's Firestore profile for a more nuanced expiration asssesment
 
   // const publicUserDocSnapshot: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_USERS).doc(user.uid).get();
@@ -26,34 +28,29 @@ const isExpiredUser = async (user: admin.auth.UserRecord): Promise<boolean> => {
 }
 
 // Scan users and delete expired ones
-const scanUsers = async (nextPageToken?: string) => {
+const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
 
   console.log('Scanning users with this token', nextPageToken);
 
-  const publicUserList = await publicApp.auth().listUsers(50, nextPageToken);
+  const publicUserList: admin.auth.ListUsersResult = await publicApp.auth().listUsers(50, nextPageToken)
+    .catch(err => {console.log(`Failed to fetch users from public database:`, err); return err;});
+  
+  let expiredUserCount = 0;
 
   const deleteQualifiedUsersRequests = publicUserList.users.map( async(user) => {
-    const userExpired: boolean = await isExpiredUser(user)
-      .catch(error => {
-        console.log('Error checking for expired user')
-        return error;
-      });
+    const userExpired: boolean = isExpiredUser(user);
       
     if (userExpired) {
-      console.log('Deleting user', user);
       await publicApp.auth().deleteUser(user.uid)
-        .catch(error => {
-          console.log('Error deleting user', error);
-          return error;
-        });
+        .catch(err => {console.log(`Error deleting user from public database:`, err); return err;});
+      expiredUserCount ++;
     }
   });
 
   await Promise.all(deleteQualifiedUsersRequests)
-    .catch(error => {
-      console.log('Error in delete users group promise', error)
-      return error;
-    });
+    .catch(err => {console.log(`Error in group promise deleting users:`, err); return err;});
+  
+  console.log(`This batch of ${expiredUserCount} expired users deleted`);
 
   return publicUserList;
 }
@@ -70,20 +67,18 @@ export const purgeInactiveUsers = functions.https.onRequest( async (req, res ) =
     return;
   }
 
-  let userScanResults = await scanUsers();
+  let userScanResults = await identifyAndDeleteExpiredUsers()
+    .catch(err => {console.log(`Error scanning users:`, err); return err;});
 
   // If more than 1000 users, run scan again
   while (userScanResults.pageToken) {
     console.log('Running next batch of users');
     // List next batch of users.
-    userScanResults = await scanUsers(userScanResults.pageToken)
-      .catch(error => {
-        console.log('Error scanning next batch of users', userScanResults.pageToken);
-        return error;
-      });
+    userScanResults = await identifyAndDeleteExpiredUsers(userScanResults.pageToken)
+      .catch(err => {console.log(`Error scanning next batch of users:`, err); return err;});
   }
 
   
-  console.log('All users scanned', res);
+  
   return res.status(200).send('Scan completed');
 })

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import * as StripeDefs from 'stripe';
+import { Stripe as StripeDefs } from 'stripe';
 import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
@@ -15,7 +15,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 })
 export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
 
-  purchaseData$: Observable<StripeDefs.charges.ICharge>;
+  purchaseData$: Observable<StripeDefs.Charge>;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -33,7 +33,7 @@ export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
 
     const canonicalUrlPath = PublicAppRoutes.PURCHASE_CONFIRMATION;
 
-    this.titleService.setTitle(`Purchase Confirmation - ${metaTagDefaults.explearningPublic.metaTagSiteName}`);
+    this.titleService.setTitle(`Purchase Confirmation - ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}`);
     this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
     this.analyticsService.createNavStamp(canonicalUrlPath);
   }
@@ -42,7 +42,7 @@ export class PurchaseConfirmationComponent implements OnInit, OnDestroy {
     // Load purchase data from store
     this.purchaseData$ = this.store$.select(
       BillingStoreSelectors.selectStripeCharge
-    ) as Observable<StripeDefs.charges.ICharge>;
+    ) as Observable<StripeDefs.Charge>;
   }
 
   ngOnDestroy() {

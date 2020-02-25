@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable, throwError, BehaviorSubject } from 'rxjs';
-import { MatSnackBarConfig, MatSnackBar } from '@angular/material';
+import { MatSnackBarConfig, MatSnackBar } from '@angular/material/snack-bar';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { take, map, catchError } from 'rxjs/operators';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
@@ -37,7 +37,8 @@ export class UiService {
   }
 
   fetchGeographicData(): Observable<GeographicData> {
-    const geographicDataDoc = this.afs.collection(SharedCollectionPaths.PUBLIC_RESOURCES).doc<GeographicData>('geographicData');
+    const geographicDataDoc = this.afs.collection(SharedCollectionPaths.PUBLIC_RESOURCES)
+      .doc<GeographicData>(SharedCollectionPaths.GEOGRAPHIC_DATA);
 
     return geographicDataDoc.valueChanges()
       .pipe(

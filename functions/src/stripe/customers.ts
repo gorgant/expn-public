@@ -1,8 +1,9 @@
-import { assert } from './helpers';
+import { assert } from '../config/global-helpers';
 import { db, stripe } from './config'; 
 import { PublicUser } from '../../../shared-models/user/public-user.model';
 import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { StripeCustomerMetadata } from '../../../shared-models/billing/stripe-object-metadata.model';
+import { Stripe as StripeDefs} from 'stripe';
 
 /**
 Read the user document from Firestore
@@ -50,7 +51,7 @@ export const createCustomer = async(uid: any) => {
 /**
 Read the stripe customer ID from firestore, or create a new one if missing
 */
-export const getOrCreateCustomer = async(uid: string) => {
+export const getOrCreateCustomer = async(uid: string): Promise<StripeDefs.Customer> => {
     
     const user = await getUser(uid);
     const customerId = user && user.stripeCustomerId;
@@ -59,7 +60,7 @@ export const getOrCreateCustomer = async(uid: string) => {
     if (!customerId) {
         return createCustomer(uid);
     } else {
-        return stripe.customers.retrieve(customerId);
+        return stripe.customers.retrieve(customerId) as Promise<StripeDefs.Customer>;
     }
 
 }

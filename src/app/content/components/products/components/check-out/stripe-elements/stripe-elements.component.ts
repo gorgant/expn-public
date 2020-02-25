@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors, BillingStoreActions, UserStoreActions } from 'src/app/root-store';
-import * as StripeDefs from 'stripe';
+import { Stripe as StripeDefs } from 'stripe';
 import { AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -29,7 +29,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   @Input() product: Product;
 
   paymentProcessing$: Observable<boolean>;
-  paymentResponse$: Observable<StripeDefs.charges.ICharge | StripeError>;
+  paymentResponse$: Observable<any>;
   paymentSubmitted: boolean;
   paymentSucceeded: boolean;
 
@@ -117,7 +117,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           console.log('Observable fired', processing, response);
 
           // Listen for success
-          const charge = response as StripeDefs.charges.ICharge;
+          const charge = response as StripeDefs.Charge;
           if (charge && charge.status === 'succeeded') {
             this.postChargeSuccessActions(charge);
           }
@@ -134,7 +134,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   }
 
   // Various actions to be performed if charge is successful
-  private postChargeSuccessActions(stripeCharge: StripeDefs.charges.ICharge) {
+  private postChargeSuccessActions(stripeCharge: StripeDefs.Charge) {
     this.paymentSucceeded = true;
     this.paymentSubmitted = false; // Closes out the payment processing subscription
 

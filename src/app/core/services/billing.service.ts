@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, take, tap } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
-import * as Stripe from 'stripe';
+import { Stripe as StripeDefs } from 'stripe';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { now } from 'moment';
 import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
@@ -21,9 +21,9 @@ export class BillingService {
     private fns: AngularFireFunctions,
   ) { }
 
-  processPayment(billingData: StripeChargeData): Observable<Stripe.charges.ICharge> {
+  processPayment(billingData: StripeChargeData): Observable<StripeDefs.Charge> {
 
-    const chargeFunction: (data: StripeChargeData) => Observable<Stripe.charges.ICharge> = this.fns.httpsCallable(
+    const chargeFunction: (data: StripeChargeData) => Observable<StripeDefs.Charge> = this.fns.httpsCallable(
       PublicFunctionNames.STRIPE_PROCESS_CHARGE
     );
     const res = chargeFunction(billingData)
@@ -42,7 +42,7 @@ export class BillingService {
   }
 
   // This is fired if a charge is processed successfully
-  transmitOrderToAdmin(stripeCharge: Stripe.charges.ICharge, user: PublicUser): Observable<any> {
+  transmitOrderToAdmin(stripeCharge: StripeDefs.Charge, user: PublicUser): Observable<any> {
     console.log('Transmitting order to admin');
 
     const order = this.convertStripeChargeToOrder(stripeCharge, user);
@@ -65,7 +65,7 @@ export class BillingService {
     return res;
   }
 
-  convertStripeChargeToOrder(stripeCharge: Stripe.charges.ICharge, user: PublicUser): Order {
+  convertStripeChargeToOrder(stripeCharge: StripeDefs.Charge, user: PublicUser): Order {
     // Ensure all key data is present
     const stripeChargeId: string = stripeCharge.id;
     const stripeCustomerId: string = stripeCharge.customer as string;

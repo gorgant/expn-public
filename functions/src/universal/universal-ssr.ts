@@ -14,7 +14,7 @@ import { detectUaBot } from '../web-cache/detect-ua-bot';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
-import { currentEnvironmentType } from '../environments/config';
+import { currentEnvironmentType } from '../config/environments-config';
 import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
 import { parseTransferState } from './parse-transfer-state';
 import { BlogIndexPostRef } from '../../../shared-models/posts/blog-index-post-ref.model';
@@ -76,7 +76,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       console.log('Rendering with Universal ngExpressEngine')
       // Exit function if error
       if (error) {
-        console.log('error rendering html');
+        console.log('error rendering html', error);
         res.sendStatus(500);
         return;
       }
@@ -119,17 +119,14 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
       }
       await transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData)
-        .catch((err: any) => console.log('Error transmiting webpage load failture data to admin:', err));
+        .catch(err => {console.log('Error transmiting webpage load failture data to admin:', err); return err});
     }
 
     reloadAttempts = 0; // Reset reload attempts for future functions
 
     // Cache HTML in database for easy future retrieval
     await storeWebPageCache(requestPath, userAgent, html)
-      .catch(err => {
-        console.log('Error caching page', err);
-        return err;
-      });
+      .catch(err => {console.log(`Error storing webpagecache:`, err); return err;});
 
     console.log('Html rendered, first 100 chars are', html.substr(0, 100));
     res.status(200).send(html);
@@ -191,8 +188,8 @@ const customExpressApp = () => {
       // If auto-cache request, bypass cache check and perform render request
       if (requestType === WebpageRequestType.AUTO_CACHE) {
         console.log('Auto cache detected');
-        await renderAndCachePageWithUniversal(res, req, userAgent);
-        console.log('This fired after auto cache render as a test');
+        await renderAndCachePageWithUniversal(res, req, userAgent)
+          .catch(err => {console.log(`Error rendering and caching page with universal:`, err); return err;});;
         return;
       }
 

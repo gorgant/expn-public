@@ -1,29 +1,21 @@
 import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
-import { assert } from '../stripe/helpers';
+import { catchErrors, assert, assertUID } from '../config/global-helpers';
 import { ContactForm } from '../../../shared-models/user/contact-form.model'
-import { adminProjectId } from '../environments/config';
+import { adminProjectId } from '../config/environments-config';
 import { AdminTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
 
 const pubSub = new PubSub();
 
 const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
+  const projectId = adminProjectId;
+  const topicName = AdminTopicNames.SAVE_CONTACT_FORM_TOPIC;
+  const topic = pubSub.topic(`projects/${projectId}/topics/${topicName}`);
+  const pubsubMsg = contactForm;
 
-  console.log('Commencing contact form trasmission based on this data', contactForm);
-
-  const adminProject = adminProjectId;
-  console.log('Publishing to this project topic', adminProject);
-
-  // Target topic in the admin PubSub (must add this project's service account to target project)
-  // Courtesy of https://stackoverflow.com/a/55003466/6572208
-  const topic = pubSub.topic(`projects/${adminProject}/topics/${AdminTopicNames.SAVE_CONTACT_FORM_TOPIC}`);
-
-  const topicPublishRes = await topic.publishJSON(contactForm)
-    .catch(err => {
-      console.log('Publish to topic failed', err);
-      return err;
-    });
-  console.log('Res from topic publish', topicPublishRes);
+  const topicPublishRes = await topic.publishJSON(pubsubMsg)
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -33,16 +25,11 @@ const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
 
 export const transmitContactFormToAdmin = functions.https.onCall( async (data: ContactForm, context ) => {
   console.log('Transmit contact form request received with this data', data);
+  assertUID(context);
   
   assert(data, 'message'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid
 
   const contactForm: ContactForm = data;
 
-  const transmitContactFormResponse = await publishContactFormToAdminTopic(contactForm)
-    .catch(error => {
-      console.log('Error transmitting contact form', error);
-      return error;
-    })
-  
-  return transmitContactFormResponse;
+  return catchErrors(publishContactFormToAdminTopic(contactForm));
 });

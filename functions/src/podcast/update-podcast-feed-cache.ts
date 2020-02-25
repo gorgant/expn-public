@@ -2,11 +2,11 @@ import * as https from 'https';
 import { PodcastPaths } from '../../../shared-models/podcast/podcast-paths.model';
 import * as xml2js from 'xml2js'; // Also requires stream and timers packages
 import * as functions from 'firebase-functions';
-import { publicFirestore } from '../db';
+import { publicFirestore } from '../config/db-config';
 import { PublicCollectionPaths, SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../global-helpers';
+import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl, catchErrors } from '../config/global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
 
@@ -14,7 +14,8 @@ const db = publicFirestore;
 
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   const postsCollectionRef = db.collection(SharedCollectionPaths.POSTS);
-  const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get();
+  const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get()
+    .catch(err => {console.log(`Failed to fetch podcast episode from public database:`, err); return err;});
   
   // Handle situation where no matching post is found
   if (matchingPostQuerySnapshot.empty) {
@@ -94,7 +95,9 @@ const fetchPodcastFeed = async () => {
           let episodeBlogPostId = '';
           let episodeBlogPostUrlHandle = '';
           
-          const blogPostData = await fetchBlogPostIdAndHandle(episodeUrl);
+          const blogPostData = await fetchBlogPostIdAndHandle(episodeUrl)
+            .catch(err => {console.log(`Failed to fetch blog post id and handle:`, err); return err;});
+          
           if (blogPostData) {
             episodeBlogPostId = blogPostData.postId;
             episodeBlogPostUrlHandle = blogPostData.postHandle;
@@ -118,7 +121,8 @@ const fetchPodcastFeed = async () => {
           return podcastEpisode;
         })
 
-        const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise);
+        const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise)
+          .catch(err => {console.log(`Error in group promise forming podcast episode array:`, err); return err;});
         
 
         resolve({podcast, episodes: podcastEpisodeArray});
@@ -127,6 +131,7 @@ const fetchPodcastFeed = async () => {
     
   
     req.on('error', (e) => {
+      console.log('Error with request', e);
       reject(e);
     });
     req.end();
@@ -143,29 +148,35 @@ const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpis
 
   // Cache the podcast
   const cachPodcastRes = await podcastDocRef.set(podcast)
-    .catch(error => {
-      console.log('Error connecting to firebase', error);
-      return error;
-    });
-    console.log('Podcast cached');
+    .catch(err => {console.log(`Error setting podcast in public database:`, err); return err;});
+  console.log('Podcast updated');
 
   // Collect the array of episode cache requests
   const cachEpisodesRequests = episodes.map( async (episode) => {
     const episodeFbRes = await episodeCollectionRef.doc(episode.id).set(episode)
-      .catch(error => {
-        console.log('Error connecting to firebase', error);
-        return error;
-      });
-    console.log('Podcast cached');
+      .catch(err => {console.log(`Error setting podcast episode in public database:`, err); return err;});
+    console.log('Episode cached');
     return episodeFbRes;
   })
 
   // Cache the episodes
   const cacheEpisodesResponse = await Promise.all(cachEpisodesRequests)
-    .catch(error => console.log('Error in episodes group promise', error));
+    .catch(err => {console.log(`Error in group promise setting episodes:`, err); return err;});
   
   return cachPodcastRes && cacheEpisodesResponse;
   
+}
+
+const executeActions = async (): Promise<PodcastContainer> => {
+  const {podcast, episodes}: {podcast: PodcastContainer, episodes: PodcastEpisode[]} = await fetchPodcastFeed()
+  .catch(err => {console.log(`Error fetching podcast feed:`, err); return err;});
+  console.log(`Fetched podcast feed with ${episodes.length} episodes`);
+
+  const fbCacheUpdate = await cachePodcastFeed(podcast, episodes)
+    .catch(err => {console.log(`Error caching podcast feed:`, err); return err;});
+  console.log('Podcast caching complete', fbCacheUpdate);
+  
+  return podcast;
 }
 
 /////// DEPLOYABLE FUNCTIONS ///////
@@ -180,18 +191,8 @@ export const updatePodcastFeedCache = functions.https.onRequest( async (req, res
     return;
   }
 
-  const {podcast, episodes} = await fetchPodcastFeed()
-    .catch(err => {
-      console.log('Error fetching feed', err);
-      return err;
-    });
-  
-  const fbCacheUpdate = await cachePodcastFeed(podcast, episodes)
-    .catch(err => {
-      console.log('Error caching feed', err);
-      return err;
-    });
+  const podcast: PodcastContainer = await catchErrors(executeActions());
 
-  console.log('Podcast caching complete', fbCacheUpdate);
+  
   return resp.status(200).send(podcast);
 });

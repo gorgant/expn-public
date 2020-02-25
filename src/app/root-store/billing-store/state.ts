@@ -1,9 +1,9 @@
-import * as Stripe from 'stripe';
+import { Stripe as StripeDefs } from 'stripe';
 import { StripeError } from 'shared-models/billing/stripe-error.model';
 
 export interface State {
   paymentProcessing: boolean;
-  stripeCharge: Stripe.charges.ICharge | StripeError;
+  stripeCharge: StripeDefs.Charge | StripeError;
   error?: any;
 }
 
