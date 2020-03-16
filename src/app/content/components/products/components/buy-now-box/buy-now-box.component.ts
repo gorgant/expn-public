@@ -6,6 +6,7 @@ import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
 import { Product } from 'shared-models/products/product.model';
 import { PublicIconPaths } from 'shared-models/routes-and-paths/icon-paths.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 
 @Component({
   selector: 'app-buy-now-box',
@@ -22,6 +23,8 @@ export class BuyNowBoxComponent implements OnInit {
   title: string;
   subtitle: string;
   buttonText: string;
+
+  ordersEmail = EmailSenderAddresses.EXPLEARNING_ORDERS;
 
   constructor(
     private store$: Store<RootStoreState.State>,
