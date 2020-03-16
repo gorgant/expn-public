@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, from } from 'rxjs';
 import { catchError, take, tap } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { Stripe as StripeDefs } from 'stripe';
@@ -10,6 +10,7 @@ import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { Order } from 'shared-models/orders/order.model';
 import { StripeChargeMetadata } from 'shared-models/billing/stripe-object-metadata.model';
+import { DiscountCouponChild, DiscountCouponValidationData } from 'shared-models/billing/discount-coupon.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,54 @@ export class BillingService {
     private afs: AngularFirestore,
     private fns: AngularFireFunctions,
   ) { }
+
+  validateCoupon(validationData: DiscountCouponValidationData): Observable<DiscountCouponChild> {
+    // const fakeServerPromise = new Promise<DiscountCouponChild>((resolve, reject) => {
+    //   setTimeout(() => {
+    //     const fakeCoupon: DiscountCouponChild = {
+    //       couponCode: 'fakeCoupon',
+    //       discountPercentage: 0.5,
+    //       valid: false,
+    //     };
+    //     if (couponCode === fakeCoupon.couponCode) {
+    //       fakeCoupon.valid = true;
+    //       resolve(fakeCoupon);
+    //     } else {
+    //       resolve(fakeCoupon);
+    //     }
+
+    //     // reject('Test rejection error');
+    //   }, 3000);
+
+    // });
+
+    // const res = from(fakeServerPromise)
+    //   .pipe(
+    //     catchError(error => {
+    //       console.log('Error validating coupon', error);
+    //       return throwError(error);
+    //     })
+    //   );
+
+    // return res;
+    const validateCouponFunction: (validationData: DiscountCouponValidationData) => Observable<DiscountCouponChild> =
+      this.fns.httpsCallable(
+        PublicFunctionNames.VALIDATE_DISCOUNT_COUPON
+      );
+    const res = validateCouponFunction(validationData)
+      .pipe(
+        take(1),
+        tap(validateCouponRes => {
+          console.log('Coupon validation complete', validateCouponRes);
+        }),
+        catchError(error => {
+          console.log('Error validating coupon', error);
+          return throwError(error);
+        })
+      );
+
+    return res;
+  }
 
   processPayment(billingData: StripeChargeData): Observable<StripeDefs.Charge> {
 
@@ -71,10 +120,13 @@ export class BillingService {
     const stripeCustomerId: string = stripeCharge.customer as string;
     const firstName: string = user.billingDetails.firstName;
     const lastName: string = user.billingDetails.lastName;
-    const email: string = (stripeCharge as any).billing_details.email; // Isn't in the type definitions but exists on the object
+    const email: string = stripeCharge.billing_details.email; // Isn't in the type definitions but exists on the object
     const publicUser: PublicUser = user;
     const productId: string = stripeCharge.metadata[StripeChargeMetadata.PRODUCT_ID];
-    const amountPaid: number = stripeCharge.amount;
+    const listPrice: number = parseFloat(stripeCharge.metadata[StripeChargeMetadata.LIST_PRICE]);
+    const discountCouponCode: string = stripeCharge.metadata[StripeChargeMetadata.DISCOUNT_COUPON_CODE] ?
+      stripeCharge.metadata[StripeChargeMetadata.DISCOUNT_COUPON_CODE] : null;
+    const amountPaid: number = stripeCharge.amount / 100;
 
     const orderId = this.afs.createId();
     const orderNumber = orderId.substring(orderId.length - 8, orderId.length); // Create a user friendly 8 digit order ID
@@ -90,6 +142,8 @@ export class BillingService {
       email,
       publicUser,
       productId,
+      listPrice,
+      discountCouponCode,
       amountPaid,
       status: 'inactive',
     };

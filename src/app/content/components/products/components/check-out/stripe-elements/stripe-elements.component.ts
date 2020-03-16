@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { RootStoreState, BillingStoreSelectors, BillingStoreActions, UserStoreActions } from 'src/app/root-store';
 import { Stripe as StripeDefs } from 'stripe';
-import { AbstractControl } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { PublicUser } from 'shared-models/user/public-user.model';
@@ -16,6 +16,8 @@ import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { StripePublishableKeys } from 'shared-models/environments/env-vars.model';
+import { DiscountCouponChild } from 'shared-models/billing/discount-coupon.model';
+import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 
 @Component({
   selector: 'app-stripe-elements',
@@ -24,14 +26,18 @@ import { StripePublishableKeys } from 'shared-models/environments/env-vars.model
 })
 export class StripeElementsComponent implements OnInit, OnDestroy {
 
-  @Input() billingDetailsForm: AbstractControl;
+  @Input() billingDetailsForm: FormGroup;
   @Input() publicUser: PublicUser;
   @Input() product: Product;
+  discountCoupon: DiscountCouponChild;
+  discountCouponSubscription: Subscription;
 
   paymentProcessing$: Observable<boolean>;
   paymentResponse$: Observable<any>;
   paymentSubmitted: boolean;
   paymentSucceeded: boolean;
+
+  billingError$: Observable<any>;
 
 
 
@@ -55,6 +61,25 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     this.setStripeKeyBasedOnEnvironment();
     this.initializeStripeElement();
     this.initializePaymentStatus();
+    this.checkCouponStatus();
+    this.monitorBillingErrorStatus();
+  }
+
+  private monitorBillingErrorStatus() {
+    this.billingError$ = this.store$.select(BillingStoreSelectors.selectBillingError);
+
+    this.billingError$.subscribe(error => {
+      console.log('Billing error detected', error);
+    });
+  }
+
+  private checkCouponStatus() {
+    this.discountCouponSubscription = this.store$.select(BillingStoreSelectors.selectDiscountCoupon)
+      .subscribe(coupon => {
+        if (coupon && coupon.valid) {
+          this.discountCoupon = coupon;
+        }
+      });
   }
 
   private setStripeKeyBasedOnEnvironment() {
@@ -91,30 +116,45 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
 
     const { source, error } = await this.stripe.createSource(this.card, {owner});
 
+    const typeSafeSource = source as unknown;
+
     if (error) {
       // Inform the customer that there was an error.
       this.cardErrors = error.message;
     } else {
       // Send the token to your server.
       const billingData: StripeChargeData = {
-        source,
+        source: typeSafeSource as StripeDefs.Source,
         publicUserId: this.publicUser.id,
-        amountPaid: this.product.price * 100, // Stripe prices in cents,
-        product: this.product
+        product: this.product,
+        quantity: 1, // Currently hardcoded
+        discountCoupon: this.discountCoupon ? this.discountCoupon : null
       };
 
       this.paymentSubmitted = true;
 
+      // Dispatch payment request to server
       this.store$.dispatch(new BillingStoreActions.ProcessPaymentRequested({billingData}));
 
       // Update UI based on response from Stripe
       this.paymentProcessing$
         .pipe(
-          withLatestFrom(this.paymentResponse$),
+          withLatestFrom(
+            this.paymentResponse$,
+            this.billingError$
+            ),
           takeWhile(() => this.paymentSubmitted) // Prevents memory leak between attempts
         )
-        .subscribe(([processing, response]) => {
+        .subscribe(([processing, response, billingError]) => {
           console.log('Observable fired', processing, response);
+
+          // Listen for error
+          if (billingError) {
+            this.paymentSucceeded = false;
+            this.paymentSubmitted = false;
+            this.cardErrors = `Fatal billing error. Please contact ${EmailSenderAddresses.EXPLEARNING_SUPPORT}`;
+            console.log('Billing function error, resetting payment loop');
+          }
 
           // Listen for success
           const charge = response as StripeDefs.Charge;
@@ -122,12 +162,12 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
             this.postChargeSuccessActions(charge);
           }
 
-          // Listen for failure
-          const err = response as StripeError;
-          if (err && err.stripeErrorType) {
+          // Listen for Stripe error
+          const stripeError = response as StripeError;
+          if (stripeError && stripeError.stripeErrorType) {
             this.paymentSucceeded = false;
             this.paymentSubmitted = false;
-            console.log('Charge failed, resetting payment loop');
+            console.log('Stripe error detected, resetting payment loop');
           }
         });
     }
@@ -206,6 +246,10 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
     if (this.card) {
       console.log('Card destroyed');
       this.card.destroy();
+    }
+
+    if (this.discountCouponSubscription) {
+      this.discountCouponSubscription.unsubscribe();
     }
   }
 

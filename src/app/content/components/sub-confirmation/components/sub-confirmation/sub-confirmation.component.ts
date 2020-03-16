@@ -9,16 +9,16 @@ import { isPlatformServer } from '@angular/common';
 
 @Component({
   selector: 'app-confirmation',
-  templateUrl: './confirmation.component.html',
-  styleUrls: ['./confirmation.component.scss']
+  templateUrl: './sub-confirmation.component.html',
+  styleUrls: ['./sub-confirmation.component.scss']
 })
-export class ConfirmationComponent implements OnInit {
+export class SubConfirmationComponent implements OnInit {
 
   confirmSubscriberProcessing$: Observable<boolean>;
   subMarkedConfirmed$: Observable<boolean>;
   confirmSubcriberError$: Observable<any>;
 
-  supportEmail = EmailSenderAddresses.EXPLEARNING_DEFAULT;
+  supportEmail = EmailSenderAddresses.EXPLEARNING_SUPPORT;
   // subConfCheckStarted: boolean;
   // subConfCheckFailed: boolean;
 
@@ -52,33 +52,12 @@ export class ConfirmationComponent implements OnInit {
     if (subscriberId && pubIdParamName) {
 
       const subConfData: SubOptInConfirmationData = {
-        subId: subscriberId,
-        pubId: publicId
+        subscriberId,
+        publicId
       };
 
       this.store$.dispatch(new UserStoreActions.ConfirmSubOptInRequested({subConfData}));
       console.log('marking subscriber confirmed with this id data', subConfData);
-
-      // this.confirmSubscriberProcessing$
-      //   .pipe(
-      //     withLatestFrom(this.subMarkedConfirmed$),
-      //     // takeWhile(() => this.subConfCheckStarted)
-      //   )
-      //   .subscribe(([processing, response]) => {
-      //     console.log('Observable fired', processing, response);
-
-      //     // Listen for success
-      //     const subConfirmed = response;
-      //     if (subConfirmed) {
-
-      //     }
-
-      //     if (!subConfirmed) {
-      //       // this.subConfCheckFailed = false;
-      //       console.log('Failed to mark sub confirmed');
-      //     }
-
-      //   });
     }
   }
 

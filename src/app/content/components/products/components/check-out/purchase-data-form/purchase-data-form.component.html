@@ -6,6 +6,12 @@
     fxLayoutAlign="center center"
     fxLayoutGap="16px">
   <div class="billing-details-group" formGroupName="billingDetailsGroup" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayoutAlign.gt-sm="center start">
+    <mat-form-field class="email">
+      <input matInput formControlName="email" type="email" placeholder="Email">
+      <mat-error *ngFor="let validation of billingValidationMessages.email">
+        <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
+      </mat-error>
+    </mat-form-field>
     <mat-form-field class="country">
       <mat-label>Select Country</mat-label>
       <mat-select formControlName="countryCode" (selectionChange)="getCountry($event.value)">
@@ -25,12 +31,6 @@
       <input matInput formControlName="lastName" type="text" placeholder="Last Name">
       <mat-error *ngFor="let validation of billingValidationMessages.lastName">
         <mat-error *ngIf="lastName.hasError(validation.type) && lastName.invalid && (lastName.dirty || lastName.touched)">{{ validation.message }}</mat-error>
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field class="email">
-      <input matInput formControlName="email" type="email" placeholder="Email">
-      <mat-error *ngFor="let validation of billingValidationMessages.email">
-        <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
       </mat-error>
     </mat-form-field>
     <mat-form-field class="phone">
@@ -74,6 +74,12 @@
     </mat-form-field>
   </div>
 </form>
+
+<app-coupon-form
+  [billingDetailsForm]="billingDetailsGroup"
+  [publicUser]="publicUser"
+  [product]="product"
+></app-coupon-form>
 
 <app-stripe-elements 
   [billingDetailsForm]="billingDetailsGroup"

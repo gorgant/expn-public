@@ -14,6 +14,28 @@ export class BillingStoreEffects {
   ) { }
 
   @Effect()
+  processCouponValidationEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<billingFeatureActions.ValidateCouponRequested>(
+      billingFeatureActions.ActionTypes.VALIDATE_COUPON_REQUESTED
+    ),
+    switchMap(action =>
+      this.billingService.validateCoupon(action.payload.validationData)
+        .pipe(
+          map(discountCoupon => {
+            if (!discountCoupon) {
+              throw new Error('Error processing discount coupon');
+            }
+            return new billingFeatureActions.ValidateCouponComplete({discountCoupon});
+          }),
+          catchError(error => {
+            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+          })
+        )
+
+    )
+  );
+
+  @Effect()
   processPaymentRequestedEffect$: Observable<Action> = this.actions$.pipe(
     ofType<billingFeatureActions.ProcessPaymentRequested>(
       billingFeatureActions.ActionTypes.PROCESS_PAYMENT_REQUESTED

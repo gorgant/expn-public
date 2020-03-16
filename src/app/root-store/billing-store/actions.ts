@@ -2,8 +2,11 @@ import { Action } from '@ngrx/store';
 import { Stripe as StripeDefs } from 'stripe';
 import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
+import { DiscountCouponChild, DiscountCouponValidationData } from 'shared-models/billing/discount-coupon.model';
 
 export enum ActionTypes {
+  VALIDATE_COUPON_REQUESTED = '[Billing] Validate Coupon Requested',
+  VALIDATE_COUPON_COMPLETE = '[Billing] Validate Coupon Complete',
   PROCESS_PAYMENT_REQUESTED = '[Billing] Process Payment Requested',
   PROCESS_PAYMENT_COMPLETE = '[Billing] Process Payment Complete',
   TRANSMIT_ORDER_TO_ADMIN_REQUESTED = '[Billing] Transmit Order to Admin Requested',
@@ -11,6 +14,18 @@ export enum ActionTypes {
   PURGE_STRIPE_CHARGE = '[Billing] Stripe Charge Purged',
   PURGE_BILLING_STATE = '[Billing] Invoice State Purged',
   LOAD_ERROR_DETECTED = '[Billing] Billing Load Error',
+}
+
+export class ValidateCouponRequested implements Action {
+  readonly type = ActionTypes.VALIDATE_COUPON_REQUESTED;
+
+  constructor(public payload: { validationData: DiscountCouponValidationData }) {}
+}
+
+export class ValidateCouponComplete implements Action {
+  readonly type = ActionTypes.VALIDATE_COUPON_COMPLETE;
+
+  constructor(public payload: { discountCoupon: DiscountCouponChild }) {}
 }
 
 export class ProcessPaymentRequested implements Action {
@@ -49,6 +64,8 @@ export class LoadErrorDetected implements Action {
 }
 
 export type Actions =
+ValidateCouponRequested |
+ValidateCouponComplete |
 ProcessPaymentRequested |
 ProcessPaymentComplete |
 TransmitOrderToAdminRequested |

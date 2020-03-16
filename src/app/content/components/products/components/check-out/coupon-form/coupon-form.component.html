@@ -1,0 +1,30 @@
+<div class="coupon-form-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
+  <div *ngIf="!couponCodeFieldActive" class="apply-coupon-code-text" (click)="onToggleCouponCodeField()">Apply Coupon Code</div>
+  <form
+    class="coupon-form"
+    [formGroup]="couponForm"
+    (ngSubmit)="onValidateCoupon($event)"
+    fxLayout="column"
+    fxLayoutAlign="center center">
+    <div [fxHide]="!couponCodeFieldActive" class="coupon-code-container" fxLayout="column" fxLayoutGap="16px">
+      <div class="input-and-button-container" fxLayout="row" fxLayoutGap="16px">
+        <mat-form-field class="coupon-code-input" fxFlex.gt-sm="40">
+          <input matInput formControlName="couponCode" type="text" placeholder="Coupon Code">
+          <mat-error *ngIf="(validateCouponResponse$ | async) && !(validateCouponProcessing$ | async) && !billingFormInvalid">
+            <mat-error *ngIf="!(validateCouponResponse$ | async).valid" class="coupon-invalid-text">{{ invalidReason }} No discount applied.</mat-error>
+          </mat-error>
+          <mat-error *ngIf="billingFormInvalid" class="coupon-invalid-text">{{ invalidReason }} No discount applied.</mat-error>
+          <mat-hint *ngIf="(validateCouponResponse$ | async) && !(validateCouponProcessing$ | async)">
+            <mat-hint *ngIf="(validateCouponResponse$ | async).valid" class="coupon-valid-text">Success! Discount has been applied.</mat-hint>
+          </mat-hint>
+        </mat-form-field>
+        <div class="coupon-button-container" fxLayout="row" fxLayoutAlign="start center" fxFlex.gt-sm="60">
+          <button *ngIf="!(validateCouponProcessing$ | async)" [disabled]="couponCode.disabled || billingFormInvalid" mat-raised-button color="primary" type="submit">Apply Coupon</button>
+          <div *ngIf="(validateCouponProcessing$ | async)" class="validate-coupon-processing-container" fxLayout="column" fxLayoutAlign="center center">
+            <mat-progress-spinner diameter=40 color="accent" mode="indeterminate"></mat-progress-spinner>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

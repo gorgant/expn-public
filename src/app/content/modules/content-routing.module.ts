@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 const routes: Routes = [
   {
@@ -31,8 +32,8 @@ const routes: Routes = [
     loadChildren: () => import('../components/legal/modules/legal.module').then(m => m.LegalModule)
   },
   {
-    path: 'confirmation',
-    loadChildren: () => import('../components/confirmation/modules/confirmation.module').then(m => m.ConfirmationModule)
+    path: 'sub-confirmation',
+    loadChildren: () => import('../components/sub-confirmation/modules/sub-confirmation.module').then(m => m.SubConfirmationModule)
   },
   {
     path: 'home',

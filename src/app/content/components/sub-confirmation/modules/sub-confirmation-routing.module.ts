@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ConfirmationComponent } from '../components/confirmation/confirmation.component';
+import { SubConfirmationComponent } from '../components/sub-confirmation/sub-confirmation.component';
 
 
 const routes: Routes = [
   {
     path: ':pubId/:subId',
-    component: ConfirmationComponent
+    component: SubConfirmationComponent
   },
   {
     path: '', // If no ID, redirect to home page
@@ -19,4 +19,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ConfirmationRoutingModule { }
+export class SubConfirmationRoutingModule { }

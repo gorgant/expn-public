@@ -118,7 +118,7 @@ export class UserService {
     //   );
 
     const confirmSub: (data: SubOptInConfirmationData) => Observable<boolean> = this.fns.httpsCallable(
-      PublicFunctionNames.CONFIRM_SUB_OPT_IN_ON_ADMIN
+      PublicFunctionNames.MARK_SUB_OPTED_IN
     );
     const res = confirmSub(subConfData)
       .pipe(

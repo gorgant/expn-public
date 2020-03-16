@@ -15,7 +15,7 @@ import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-t
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
 import { currentEnvironmentType } from '../config/environments-config';
-import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
+import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS, ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from '../../../shared-models/environments/env-vars.model';
 import { parseTransferState } from './parse-transfer-state';
 import { BlogIndexPostRef } from '../../../shared-models/posts/blog-index-post-ref.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
@@ -26,14 +26,16 @@ import { transmitWebpageLoadFailureDataToAdmin } from '../web-cache/transmit-web
 
 const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bundle/main');
 
+
+
 // These are a few globals to help with longpage loads
-let minBlogPostCount = 100;
+let minBlogPostCount: number = ProductionSsrDataLoadChecks.EXPLEARNING_BLOG_MIN;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minBlogPostCount = 1;
+  minBlogPostCount = SandboxSsrDataLoadChecks.EXPLEARNING_BLOG_MIN;
 }
-let minPodcastEpisodeCount = 50;
+let minPodcastEpisodeCount: number = ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minPodcastEpisodeCount = 1;
+  minPodcastEpisodeCount = SandboxSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN;
 }
 let reloadAttempts = 0; // Track reload attempts
 const reloadLimit = 2; // Set a max number of reload attempts
@@ -124,9 +126,34 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
 
     reloadAttempts = 0; // Reset reload attempts for future functions
 
-    // Cache HTML in database for easy future retrieval
-    await storeWebPageCache(requestPath, userAgent, html)
-      .catch(err => {console.log(`Error storing webpagecache:`, err); return err;});
+    // Designate routes that shouldn't be cached
+    const nonCachableAppRoutes: PublicAppRoutes[] = [
+      PublicAppRoutes.CHECKOUT,
+      PublicAppRoutes.SUB_CONFIRMATION,
+      PublicAppRoutes.HOME, // We will put home in manually since it is too broad
+      PublicAppRoutes.PURCHASE_CONFIRMATION,
+      PublicAppRoutes.PRIVACY_POLICY,
+      PublicAppRoutes.TERMS_AND_CONDITIONS
+    ];
+
+    // Create an array of cachable app routes
+    const cachableAppRoutes = Object.values(PublicAppRoutes).reduce((result, appRoute) => {
+      // Only push results that aren't included in the nonCachable array
+      if (!nonCachableAppRoutes.includes(appRoute)) {
+        result.push(appRoute);
+      }
+      return result;
+    }, [] as PublicAppRoutes[]);
+
+    // Only cache request path if it matches a cachable route as defined above or matches the home route
+    for (const validRoute of cachableAppRoutes) {
+      if (requestPath.includes(validRoute) || requestPath === '/') {
+        console.log(`Cachable route detected, submitted for caching`);
+        // Cache HTML in database for easy future retrieval
+        await storeWebPageCache(requestPath, userAgent, html)
+          .catch(err => {console.log(`Error storing webpagecache:`, err); return err;});
+      }
+    }
 
     console.log('Html rendered, first 100 chars are', html.substr(0, 100));
     res.status(200).send(html);

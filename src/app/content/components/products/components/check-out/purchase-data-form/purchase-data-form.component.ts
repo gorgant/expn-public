@@ -74,7 +74,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.initializeForm();
+    this.initializeBillingDetailsForm();
 
     this.initializeGeographicData();
 
@@ -187,7 +187,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     );
   }
 
-  private initializeForm(): void {
+  private initializeBillingDetailsForm(): void {
     this.purchaseDataForm = this.fb.group({
       billingDetailsGroup: this.fb.group({
         firstName: ['', [Validators.required]],

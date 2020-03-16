@@ -10,8 +10,9 @@ import { PublicUser } from '../../../shared-models/user/public-user.model';
  * Attaches a payment source to a stripe customer account.
  */
 
-export const attachSource = async(uid: string, source: stripe.Source) => {
+export const attachSource = async(uid: string, source: StripeDefs.Source) => {
   const customer = await getOrCreateCustomer(uid);
+  const sourceOwner = source.owner as StripeDefs.Source.Owner;
 
   // Check if source already exists on customer
   const existingSource = customer.sources.data.filter(s => s.id === source.id).pop();
@@ -24,7 +25,7 @@ export const attachSource = async(uid: string, source: stripe.Source) => {
     await stripe.customers.createSource(customer.id, { source: source.id });
     
     // Use source zip to update FB user (which isn't collected on the FB form)
-    const updatedZip: Partial<BillingDetails> = { postalCode: source.owner.address!.postal_code };
+    const updatedZip: Partial<BillingDetails> = { postalCode: (sourceOwner.address as StripeDefs.Address).postal_code as string};
     const publicUser: Partial<PublicUser> = { billingDetails: updatedZip };
     await updateUser(uid, publicUser);
 
@@ -32,10 +33,10 @@ export const attachSource = async(uid: string, source: stripe.Source) => {
     // Create a custom customer update that extends the standard one to include some other properties
     const completeData: StripeDefs.CustomerUpdateParams = {
       default_source: source.id,
-      name: source.owner.name as string,
-      email: source.owner.email as string,
-      phone: source.owner.phone as string,
-      address: source.owner.address as StripeDefs.AddressParam,
+      name: sourceOwner.name as string,
+      email: sourceOwner.email as string,
+      phone: sourceOwner.phone as string,
+      address: sourceOwner.address as StripeDefs.AddressParam,
     }
     return await stripe.customers.update(customer.id, completeData);
   }

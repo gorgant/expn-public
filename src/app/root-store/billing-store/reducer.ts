@@ -3,10 +3,23 @@ import { Actions, ActionTypes } from './actions';
 
 export function featureReducer(state = initialState, action: Actions): State {
   switch (action.type) {
+    case ActionTypes.VALIDATE_COUPON_REQUESTED:
+      return {
+        ...state,
+        couponValidationProcessing: true,
+        error: null
+      };
+    case ActionTypes.VALIDATE_COUPON_COMPLETE:
+      return {
+        ...state,
+        couponValidationProcessing: false,
+        discountCoupon: action.payload.discountCoupon
+      };
     case ActionTypes.PROCESS_PAYMENT_REQUESTED:
       return {
         ...state,
         paymentProcessing: true,
+        error: null
       };
     case ActionTypes.PROCESS_PAYMENT_COMPLETE:
       return {
@@ -25,6 +38,8 @@ export function featureReducer(state = initialState, action: Actions): State {
       };
     case ActionTypes.PURGE_BILLING_STATE:
       return {
+        couponValidationProcessing: null,
+        discountCoupon: null,
         paymentProcessing: null,
         stripeCharge: null,
         error: null,
@@ -32,7 +47,8 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.LOAD_ERROR_DETECTED:
       return {
         ...state,
-        error: action.payload.error
+        error: action.payload.error,
+        paymentProcessing: false
       };
 
     default: {

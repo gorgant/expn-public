@@ -22,6 +22,7 @@ import { Router, NavigationStart, ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { isPlatformServer } from '@angular/common';
 import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
+import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
   selector: 'app-root',
@@ -104,13 +105,33 @@ export class AppComponent implements OnInit {
       .subscribe(user => {
 
         // Check if user email already exists
-        if (user && user.billingDetails && user.billingDetails.email) {
-          console.log('Email already collected, no popup');
+        if (user.optInConfirmed) {
+          console.log('User has already opted in, no popup');
           return;
         }
 
+        // Check if promo already fired
         if (this.promoFired) {
           console.log('Promo already fired, canceling duplicate');
+          return;
+        }
+
+        const invalidRoutes: PublicAppRoutes[] = [
+          PublicAppRoutes.CHECKOUT,
+          PublicAppRoutes.SUB_CONFIRMATION,
+          PublicAppRoutes.PURCHASE_CONFIRMATION
+        ];
+
+        let invalidRouteDetected = false;
+        for (const route of invalidRoutes) {
+          if (this.router.url.includes(route)) {
+            invalidRouteDetected = true;
+          }
+        }
+
+        // Check if user is at checkout
+        if (invalidRouteDetected) {
+          console.log('No popup because invalid route detected');
           return;
         }
 

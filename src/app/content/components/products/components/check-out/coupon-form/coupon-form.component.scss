@@ -1,0 +1,44 @@
+@import '../../../../../../variables';
+
+.coupon-form-container {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.apply-coupon-code-text {
+  cursor: pointer;
+  color: $primary;
+  font-size: 0.8em;
+}
+
+.coupon-form {
+  width: 100%;
+}
+
+.coupon-code-container {
+  width: 100%;
+}
+
+.input-and-button-container {
+  width: 100;
+}
+
+.coupon-code-input {
+  width: 100%;
+}
+
+.validate-coupon-processing-container {
+  min-width: 120px;
+}
+
+.validate-coupon-processing-text {
+  font-size: 0.8em;
+}
+
+.coupon-valid-text {
+  color: $primary;
+}
+
+.coupon-invalid-text {
+  color: $warn;
+}

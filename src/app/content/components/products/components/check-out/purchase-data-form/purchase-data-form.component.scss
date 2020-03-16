@@ -16,6 +16,10 @@ mat-form-field {
   width: $desktop-form-width;
 }
 
+app-coupon-form {
+  width: 100%;
+}
+
 .processing-hint {
   font-size: 0.75em;
   opacity: $opacity-medium;

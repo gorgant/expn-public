@@ -31,11 +31,14 @@ mat-form-field {
 }
 
 ::ng-deep {
-  .mat-form-field-underline {
-    background-color: white !important;
-  }
-  .mat-form-field-ripple {
-    background-color: white !important;
+  // Make sure to nest this under a custom class, otherwise this style gets applied globally to all forms
+  .subscribe-form{
+    .mat-form-field-underline {
+      background-color: white !important;
+    }
+    .mat-form-field-ripple {
+      background-color: white !important;
+    }
   }
 }
 

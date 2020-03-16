@@ -4,7 +4,7 @@ export {
 
 export { 
   stripeProcessCharge,
-} from './stripe/charges';
+} from './stripe/stripe-process-charge';
 
 export {
   transmitOrderToAdmin
@@ -39,5 +39,13 @@ export {
 } from './universal/universal-ssr';
 
 export {
-  confirmSubOptInOnAdmin
-} from './subscribers/confirm-sub-opt-in-on-admin';
+  markSubOptedIn
+} from './subscribers/mark-sub-opted-in';
+
+export {
+  validateDiscountCoupon
+} from './stripe/validate-discount-coupon';
+
+export {
+  updateDiscountCoupon
+} from './stripe/update-discount-coupon';

@@ -27,6 +27,17 @@
   font-size: 1em;
 }
 
+.original-product-price {
+  color: grey;
+  text-decoration: line-through;
+  text-decoration-color: $warn;
+}
+
+.discounted-price {
+  color: $primary;
+  font-weight: $font-weight-medium;
+}
+
 mat-divider {
   color: $form-border-color;
   width: 100%;

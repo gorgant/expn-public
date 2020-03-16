@@ -89,7 +89,7 @@ export class SubscribeComponent implements OnInit {
   }
 
   // These getters are used for easy access in the HTML template
-  get email() { return this.subscribeForm.get('email'); }
   get firstName() { return this.subscribeForm.get('firstName'); }
+  get email() { return this.subscribeForm.get('email'); }
 
 }

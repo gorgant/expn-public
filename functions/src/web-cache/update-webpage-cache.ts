@@ -58,10 +58,5 @@ export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOp
   console.log('Update Webpage Cache request received with this data', wepageUrl)
   console.log('Context from pubsub', context);
 
-  const requestResponse = await catchErrors(sendHttpRequest(wepageUrl)) as Promise<String>;
-
-  console.log(`Http request for ${wepageUrl} complete`, requestResponse);
-
-  return requestResponse;
-
+  return catchErrors(sendHttpRequest(wepageUrl));
 });

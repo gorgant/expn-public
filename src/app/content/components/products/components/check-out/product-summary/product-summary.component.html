@@ -2,7 +2,11 @@
   <div class="summary-header">{{ product.checkoutData.header }}</div>
   <div class="summary-details" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="16px" fxLayoutAlign.gt-sm="center start">
     <div class="product-name">{{ product.name }}</div>
-    <div class="product-price">${{ product.price | number: '1.2' }}</div>
+    <div *ngIf="!discountedPrice" class="product-price">${{ product.price | number: '1.2' }}</div>
+    <div *ngIf="discountedPrice" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px" fxLayoutAlign.gt-sm="center start">
+      <div class="original-product-price">${{ product.price | number: '1.2' }}</div>
+      <div class="discounted-price">${{ discountedPrice | number: '1.2' }} (Discount Applied!)</div>
+    </div>
     <div class="product-description">{{ product.checkoutData.description }}</div>
     <mat-divider ></mat-divider>
   </div>
