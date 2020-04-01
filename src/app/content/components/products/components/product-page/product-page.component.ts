@@ -9,7 +9,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { Product } from 'shared-models/products/product.model';
 import { ProductIdList } from 'shared-models/products/product-id-list.model';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
-import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
+import { BuyNowBoxData, BuyNowBoxKeys } from 'shared-models/products/buy-now-box-data.model';
 import { TestamonialData } from 'shared-models/forms-and-components/testamonial-data.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { testamonialsList } from 'shared-models/forms-and-components/testamonials.model';
@@ -56,7 +56,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   private configSeoAndAnalytics(product: Product) {
 
     const title = `${product.name} - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
-    const description = `${product.productCardData.tagline} ${product.productCardData.highlights.join('. ')}.`;
+    const description = `${product.tagline} ${product.productCardData.highlights.join('. ')}.`;
     const localImagePath = this.heroData.imageProps.src;
     const productSlug = this.uiService.convertToFriendlyUrlFormat(product.name);
     const canonicalUrlPath = `${PublicAppRoutes.PRODUCTS}/${product.id}/${productSlug}`;
@@ -132,7 +132,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     console.log('Initializing buy now data with this product', product);
     this.buyNowData = {
       title: product.buyNowData.title,
-      subtitle: product.buyNowData.subtitle,
+      [BuyNowBoxKeys.BUY_NOW_BOX_SUBTITLE]: product.buyNowData[BuyNowBoxKeys.BUY_NOW_BOX_SUBTITLE],
       buttonText: `Get Started - $${product.price}`
     };
   }

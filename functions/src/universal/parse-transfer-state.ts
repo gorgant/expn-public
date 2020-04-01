@@ -2,8 +2,8 @@ import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from "../../../shared
 import { currentEnvironmentType } from "../config/environments-config";
 import { PublicAppRoutes } from "../../../shared-models/routes-and-paths/app-routes.model";
 import { TransferStateKeys } from '../../../shared-models/ssr/ssr-vars';
-import { BlogIndexPostRef } from "../../../shared-models/posts/blog-index-post-ref.model";
 import { PodcastEpisode } from "../../../shared-models/podcast/podcast-episode.model";
+import { BlogIndexPostRef } from "../../../shared-models/posts/post.model";
 
 // import { JSDOM } from 'jsdom';
 // import jsdom = require('jsdom');

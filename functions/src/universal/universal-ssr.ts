@@ -17,10 +17,10 @@ import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-rou
 import { currentEnvironmentType } from '../config/environments-config';
 import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS, ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from '../../../shared-models/environments/env-vars.model';
 import { parseTransferState } from './parse-transfer-state';
-import { BlogIndexPostRef } from '../../../shared-models/posts/blog-index-post-ref.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
 import { WebpageLoadFailureData } from '../../../shared-models/ssr/webpage-load-failure-data.model';
 import { transmitWebpageLoadFailureDataToAdmin } from '../web-cache/transmit-webpage-load-failure-data-to-admin';
+import { BlogIndexPostRef } from '../../../shared-models/posts/post.model';
 
 // Also consider Universal with Nest in Cloud Run https://fireship.io/courses/angular/ssr-nest/
 
@@ -121,7 +121,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
       }
       await transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData)
-        .catch(err => {console.log('Error transmiting webpage load failture data to admin:', err); return err});
+        .catch(err => {console.error('Error transmiting webpage load failture data to admin:', err);}); // Don't throw error, just log it to console
     }
 
     reloadAttempts = 0; // Reset reload attempts for future functions
@@ -151,7 +151,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         console.log(`Cachable route detected, submitted for caching`);
         // Cache HTML in database for easy future retrieval
         await storeWebPageCache(requestPath, userAgent, html)
-          .catch(err => {console.log(`Error storing webpagecache:`, err); return err;});
+          .catch(err => {console.error(`Error storing webpagecache:`, err);}); // Don't throw error, just log it to console
       }
     }
 
@@ -215,8 +215,7 @@ const customExpressApp = () => {
       // If auto-cache request, bypass cache check and perform render request
       if (requestType === WebpageRequestType.AUTO_CACHE) {
         console.log('Auto cache detected');
-        await renderAndCachePageWithUniversal(res, req, userAgent)
-          .catch(err => {console.log(`Error rendering and caching page with universal:`, err); return err;});;
+        await renderAndCachePageWithUniversal(res, req, userAgent);
         return;
       }
 

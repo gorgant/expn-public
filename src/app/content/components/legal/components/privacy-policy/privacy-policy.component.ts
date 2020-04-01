@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { LegalBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -10,6 +11,9 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
   styleUrls: ['./privacy-policy.component.scss']
 })
 export class PrivacyPolicyComponent implements OnInit, OnDestroy {
+
+  legalBusinessName = LegalBusinessNames.EXPLEARNING;
+  shorthandBusinessName = LegalBusinessNames.EXPLEARNING;
 
   constructor(
     private titleService: Title,

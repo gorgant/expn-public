@@ -11,6 +11,7 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { LegalBusinessNames, ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
 
 @Component({
   selector: 'app-check-out',
@@ -24,6 +25,8 @@ export class CheckOutComponent implements OnInit, OnDestroy {
   userAuthenticationRequested: boolean;
 
   imagePaths = PublicImagePaths;
+  legalBusinessName = LegalBusinessNames.EXPLEARNING;
+  shorthandBusinessName = ShorthandBusinessNames.EXPLEARNING;
 
   constructor(
     private store$: Store<RootStoreState.State>,

@@ -6,7 +6,7 @@ import { publicFirestore } from '../config/db-config';
 import { PublicCollectionPaths, SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl, catchErrors } from '../config/global-helpers';
+import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
 
@@ -15,7 +15,7 @@ const db = publicFirestore;
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   const postsCollectionRef = db.collection(SharedCollectionPaths.POSTS);
   const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get()
-    .catch(err => {console.log(`Failed to fetch podcast episode from public database:`, err); return err;});
+    .catch(err => {console.log(`Failed to fetch podcast episode from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   
   // Handle situation where no matching post is found
   if (matchingPostQuerySnapshot.empty) {
@@ -96,7 +96,7 @@ const fetchPodcastFeed = async () => {
           let episodeBlogPostUrlHandle = '';
           
           const blogPostData = await fetchBlogPostIdAndHandle(episodeUrl)
-            .catch(err => {console.log(`Failed to fetch blog post id and handle:`, err); return err;});
+            .catch(err => {console.log(`Failed to fetch blog post id and handle:`, err); throw new functions.https.HttpsError('internal', err);});
           
           if (blogPostData) {
             episodeBlogPostId = blogPostData.postId;
@@ -121,8 +121,7 @@ const fetchPodcastFeed = async () => {
           return podcastEpisode;
         })
 
-        const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise)
-          .catch(err => {console.log(`Error in group promise forming podcast episode array:`, err); return err;});
+        const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise);
         
 
         resolve({podcast, episodes: podcastEpisodeArray});
@@ -140,41 +139,67 @@ const fetchPodcastFeed = async () => {
   return requestPromise;
 }
 
+let itemsProcessedCount = 0; // Keeps track of episodes cached between loops
+let loopCount = 0; // Prevents infinite looping in case of error
+const batchCacheEpisodes = async (episodes: PodcastEpisode[], podcastDocRef: FirebaseFirestore.DocumentReference) => {
+  const episodeCollectionRef = podcastDocRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
+  const remainingEpisodesToCache = episodes.slice(itemsProcessedCount);
+  
+  const batch = db.batch();
+  const maxBatchSize = 450; // Firebase limit is 500
+  let batchSize = 0;
+  // Loop through array until the max batch size is reached
+  for (let i = 0; i < maxBatchSize; i++) {
+    // Get the data to upload
+    const episode = remainingEpisodesToCache[i];
+    if (!episode) {
+      break; // Abort loop if end of array reached before batch limit is hit
+    }
+    // Create a reference to the new doc using the episode id
+    const docRef = episodeCollectionRef.doc(episode.id);
+    batch.set(docRef, episode);
+    batchSize = i+1;
+  }
+
+  const batchCreate = await batch.commit()
+    .catch(err => {console.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
+
+  console.log(`Batch created ${batchCreate.length} items`);
+  itemsProcessedCount += batchSize; // Update global variable to keep track of remaining episodes to cache
+  loopCount++;
+}
+
 // Cache the podcast along with the episodes as a subcollection of the podcast
 const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpisode[]) => {
 
+  itemsProcessedCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
+  loopCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
+
   const podcastDocRef = db.collection(PublicCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
-  const episodeCollectionRef = podcastDocRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
 
   // Cache the podcast
-  const cachPodcastRes = await podcastDocRef.set(podcast)
-    .catch(err => {console.log(`Error setting podcast in public database:`, err); return err;});
+  await podcastDocRef.set(podcast)
+    .catch(err => {console.log(`Error setting podcast in public database:`, err); throw new functions.https.HttpsError('internal', err);});
   console.log('Podcast updated');
 
-  // Collect the array of episode cache requests
-  const cachEpisodesRequests = episodes.map( async (episode) => {
-    const episodeFbRes = await episodeCollectionRef.doc(episode.id).set(episode)
-      .catch(err => {console.log(`Error setting podcast episode in public database:`, err); return err;});
-    console.log('Episode cached');
-    return episodeFbRes;
-  })
-
-  // Cache the episodes
-  const cacheEpisodesResponse = await Promise.all(cachEpisodesRequests)
-    .catch(err => {console.log(`Error in group promise setting episodes:`, err); return err;});
-  
-  return cachPodcastRes && cacheEpisodesResponse;
-  
+  // Cache each episode inside the podcast container
+  const totalItemCount = episodes.length;
+  while (itemsProcessedCount < totalItemCount && loopCount < 10) {
+    await batchCacheEpisodes(episodes, podcastDocRef);
+    if (itemsProcessedCount < totalItemCount) {
+      console.log(`Repeating batch process: ${itemsProcessedCount} out of ${totalItemCount} items cached`);
+    }
+  }
 }
 
+
+
 const executeActions = async (): Promise<PodcastContainer> => {
-  const {podcast, episodes}: {podcast: PodcastContainer, episodes: PodcastEpisode[]} = await fetchPodcastFeed()
-  .catch(err => {console.log(`Error fetching podcast feed:`, err); return err;});
+  const {podcast, episodes}: {podcast: PodcastContainer, episodes: PodcastEpisode[]} = await fetchPodcastFeed();
   console.log(`Fetched podcast feed with ${episodes.length} episodes`);
 
-  const fbCacheUpdate = await cachePodcastFeed(podcast, episodes)
-    .catch(err => {console.log(`Error caching podcast feed:`, err); return err;});
-  console.log('Podcast caching complete', fbCacheUpdate);
+  await cachePodcastFeed(podcast, episodes);
+  console.log('Podcast caching complete');
   
   return podcast;
 }
@@ -191,7 +216,7 @@ export const updatePodcastFeedCache = functions.https.onRequest( async (req, res
     return;
   }
 
-  const podcast: PodcastContainer = await catchErrors(executeActions());
+  const podcast: PodcastContainer = await executeActions();
 
   
   return resp.status(200).send(podcast);

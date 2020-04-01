@@ -28,7 +28,7 @@ export class BillingStoreEffects {
             return new billingFeatureActions.ValidateCouponComplete({discountCoupon});
           }),
           catchError(error => {
-            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+            return of(new billingFeatureActions.ValidateCouponError({ error }));
           })
         )
 
@@ -50,7 +50,7 @@ export class BillingStoreEffects {
             return new billingFeatureActions.ProcessPaymentComplete({paymentResponse});
           }),
           catchError(error => {
-            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+            return of(new billingFeatureActions.ProcessPaymentError({ error }));
           })
         )
 
@@ -72,7 +72,7 @@ export class BillingStoreEffects {
             return new billingFeatureActions.TransmitOrderToAdminComplete();
           }),
           catchError(error => {
-            return of(new billingFeatureActions.LoadErrorDetected({ error }));
+            return of(new billingFeatureActions.TransmitOrderError({ error }));
           })
         )
     )

@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { PubSub } from '@google-cloud/pubsub';
-import { catchErrors, assert, assertUID } from '../config/global-helpers';
+import { assert, assertUID } from '../config/global-helpers';
 import { ContactForm } from '../../../shared-models/user/contact-form.model'
 import { adminProjectId } from '../config/environments-config';
 import { AdminTopicNames } from '../../../shared-models/routes-and-paths/fb-function-names';
@@ -14,7 +14,7 @@ const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
   const pubsubMsg = contactForm;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
   console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
@@ -31,5 +31,5 @@ export const transmitContactFormToAdmin = functions.https.onCall( async (data: C
 
   const contactForm: ContactForm = data;
 
-  return catchErrors(publishContactFormToAdminTopic(contactForm));
+  return publishContactFormToAdminTopic(contactForm);
 });

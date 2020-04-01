@@ -278,7 +278,7 @@ export class PostComponent implements OnInit, OnDestroy {
     console.log('Initializing hero data with this post', post);
     this.heroData = {
       pageTitle: post.title,
-      pageSubtitle: null,
+      pageHeroSubtitle: null,
       imageProps: post.imageProps,
       actionMessage: 'Read More',
       isPost: true

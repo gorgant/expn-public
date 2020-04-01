@@ -3,7 +3,7 @@
     <div class="product-icon-container" fxLayoutAlign="center center">
       <img class="product-icon" [src]="product.cardImageProps.src" [alt]="product.name">
     </div>
-    <div class="subtitle">{{ buyNowData.subtitle }}</div>
+    <div class="subtitle">{{ buyNowData.buyNowBoxSubtitle }}</div>
     <button class="buy-now-button" mat-raised-button (click)="onBuyNow()">{{ buyNowData.buttonText }}</button>
     <div class="cards-icon-container" fxLayoutAlign="center center">
       <img [src]="iconPaths.CREDIT_CARDS" alt="accepted credit cards">

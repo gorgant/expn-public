@@ -4,6 +4,7 @@ import { AdminTopicNames } from '../../../shared-models/routes-and-paths/fb-func
 import { EmailPubMessage } from '../../../shared-models/email/email-pub-message.model';
 import { EmailCategories } from '../../../shared-models/email/email-vars.model';
 import { WebpageLoadFailureData } from '../../../shared-models/ssr/webpage-load-failure-data.model';
+import * as functions from 'firebase-functions';
 const pubSub = new PubSub();
 
 export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureData: WebpageLoadFailureData ) => {
@@ -19,7 +20,7 @@ export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureDa
     webpageLoadFailureData
   }
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
   console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
   
   return topicPublishRes;

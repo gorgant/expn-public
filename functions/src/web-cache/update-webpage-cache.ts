@@ -4,7 +4,6 @@ import { WebpageUrl } from '../../../shared-models/ssr/webpage-url.model';
 import * as https from 'https';
 import * as url from 'url';
 import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-type.model';
-import { catchErrors } from '../config/global-helpers';
 
 // Create an http request for the provided url
 const sendHttpRequest = async (wepageUrl: string) => {
@@ -44,7 +43,8 @@ const sendHttpRequest = async (wepageUrl: string) => {
     req.end();
   });
 
-  await requestResponse;
+  await requestResponse
+    .catch(err => {console.log(`Http request failed:`, err); throw new functions.https.HttpsError('internal', err);});
 }
 
 /////// DEPLOYABLE FUNCTIONS ///////
@@ -58,5 +58,5 @@ export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOp
   console.log('Update Webpage Cache request received with this data', wepageUrl)
   console.log('Context from pubsub', context);
 
-  return catchErrors(sendHttpRequest(wepageUrl));
+  return sendHttpRequest(wepageUrl);
 });

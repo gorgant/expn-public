@@ -1,8 +1,7 @@
 import { State } from './state';
 import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromPosts from './reducer';
-import { Post } from 'shared-models/posts/post.model';
-import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
+import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
 
 const getError = (state: State): any => state.error;
 const getIsLoading = (state: State): boolean => state.isLoading;

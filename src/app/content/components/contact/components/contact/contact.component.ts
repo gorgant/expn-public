@@ -48,7 +48,7 @@ export class ContactComponent implements OnInit, OnDestroy {
 
     this.heroData = {
       pageTitle: 'Contact Me',
-      pageSubtitle: 'Questions, suggestions, and thoughtful input are welcome',
+      pageHeroSubtitle: 'Questions, suggestions, and thoughtful input are welcome',
       imageProps: aboutImageProps,
       actionMessage: 'Get in Touch'
     };

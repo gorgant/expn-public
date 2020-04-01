@@ -48,7 +48,7 @@ export class AboutComponent implements OnInit, OnDestroy {
     // Text is added in-line because layout is specific to About Me page
     this.heroData = {
       pageTitle: null,
-      pageSubtitle: null,
+      pageHeroSubtitle: null,
       imageProps: aboutImageProps,
       actionMessage: 'Read More'
     };

@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.heroData = {
       pageTitle: 'A Richer Life Begins with Better Communication',
-      pageSubtitle: null,
+      pageHeroSubtitle: null,
       imageProps,
       actionMessage: 'Learn More'
     };

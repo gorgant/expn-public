@@ -9,7 +9,8 @@ import { CONTACT_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
-import { ContactForm } from 'shared-models/user/contact-form.model';
+import { ContactForm, ContactFormKeys } from 'shared-models/user/contact-form.model';
+import { BillingKeys } from 'shared-models/billing/billing-details.model';
 
 @Component({
   selector: 'app-contact-body',
@@ -32,9 +33,9 @@ export class ContactBodyComponent implements OnInit {
 
   ngOnInit() {
     this.contactForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      message: ['', [Validators.required]]
+      [BillingKeys.FIRST_NAME]: ['', [Validators.required]],
+      [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email]],
+      [ContactFormKeys.MESSAGE]: ['', [Validators.required]]
     });
   }
 
@@ -49,17 +50,18 @@ export class ContactBodyComponent implements OnInit {
       .subscribe(user => {
         console.log('Checking for user to subscribe', user);
         if (user) {
-          const existingFirstName = user.stripeCustomerId && user.billingDetails.firstName;
+          const existingFirstName = user.stripeCustomerId && user.billingDetails[BillingKeys.FIRST_NAME];
           // Update the user's name and email address (or add to a new billing details object)
           const updatedUser: PublicUser = {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
-              firstName: (existingFirstName ? existingFirstName : this.firstName.value as string).trim(), // Use exstng val if order history
-              email: (this.email.value as string).trim()
+              // tslint:disable-next-line:max-line-length
+              [BillingKeys.FIRST_NAME]: (existingFirstName ? existingFirstName : this[BillingKeys.FIRST_NAME].value as string).trim(), // Use exstng val if order history
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             } : {
-              firstName: (this.firstName.value as string).trim(),
-              email: (this.email.value as string).trim()
+              [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             }
           };
 
@@ -79,9 +81,9 @@ export class ContactBodyComponent implements OnInit {
           const contactFormData: ContactForm = {
             id: this.afs.createId(),
             createdDate: now(),
-            firstName: (this.firstName.value as string).trim(),
-            email: (this.email.value as string).trim(),
-            message: this.message.value,
+            [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+            [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim(),
+            [ContactFormKeys.MESSAGE]: this[ContactFormKeys.MESSAGE].value,
             publicUser: user
           };
           this.store$.dispatch(new UserStoreActions.TransmitContactFormRequested({contactForm: contactFormData}));
@@ -117,8 +119,8 @@ export class ContactBodyComponent implements OnInit {
   }
 
   // These getters are used for easy access in the HTML template
-  get firstName() { return this.contactForm.get('firstName'); }
-  get email() { return this.contactForm.get('email'); }
-  get message() { return this.contactForm.get('message'); }
+  get [BillingKeys.FIRST_NAME]() { return this.contactForm.get(BillingKeys.FIRST_NAME); }
+  get [BillingKeys.EMAIL]() { return this.contactForm.get(BillingKeys.EMAIL); }
+  get [ContactFormKeys.MESSAGE]() { return this.contactForm.get(ContactFormKeys.MESSAGE); }
 
 }

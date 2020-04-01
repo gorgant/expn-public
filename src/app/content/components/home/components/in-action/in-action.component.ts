@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { withLatestFrom, map, filter } from 'rxjs/operators';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
-import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
+import { BlogIndexPostRef } from 'shared-models/posts/post.model';
 
 @Component({
   selector: 'app-in-action',

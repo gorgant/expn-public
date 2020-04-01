@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SUBSCRIBE_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
 import { Observable } from 'rxjs';
@@ -10,6 +10,7 @@ import { takeWhile } from 'rxjs/operators';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
+import { BillingKeys } from 'shared-models/billing/billing-details.model';
 
 @Component({
   selector: 'app-download-promo',
@@ -27,7 +28,6 @@ export class DownloadPromoComponent implements OnInit {
   senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
 
   constructor(
-    private dialogRef: MatDialogRef<DownloadPromoComponent>,
     @Inject(MAT_DIALOG_DATA) public promoData: any,
     private fb: FormBuilder,
     private store$: Store<RootStoreState.State>
@@ -35,8 +35,8 @@ export class DownloadPromoComponent implements OnInit {
 
   ngOnInit() {
     this.subscribeForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]]
+      [BillingKeys.FIRST_NAME]: ['', [Validators.required]],
+      [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email]]
     });
 
     this.initializeSubscribeObservers(); // Used to disable subscribe buttons
@@ -44,7 +44,7 @@ export class DownloadPromoComponent implements OnInit {
 
   onSubmit() {
     // Prevent submission if either field is blank (allows submit button to stay illuminated even when blank)
-    if (this.email.value === '' || this.firstName.value === '') {
+    if (this[BillingKeys.EMAIL].value === '' || this[BillingKeys.FIRST_NAME].value === '') {
       return;
     }
 
@@ -60,11 +60,11 @@ export class DownloadPromoComponent implements OnInit {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
-              firstName: (this.firstName.value as string).trim(),
-              email: (this.email.value as string).trim()
+              [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             } : {
-              firstName: (this.firstName.value as string).trim(),
-              email: (this.email.value as string).trim()
+              [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             }
           };
 
@@ -92,7 +92,7 @@ export class DownloadPromoComponent implements OnInit {
   }
 
   // These getters are used for easy access in the HTML template
-  get email() { return this.subscribeForm.get('email'); }
-  get firstName() { return this.subscribeForm.get('firstName'); }
+  get [BillingKeys.FIRST_NAME]() { return this.subscribeForm.get(BillingKeys.FIRST_NAME); }
+  get [BillingKeys.EMAIL]() { return this.subscribeForm.get(BillingKeys.EMAIL); }
 
 }

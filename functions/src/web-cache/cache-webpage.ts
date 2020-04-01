@@ -1,9 +1,10 @@
-import { createOrReverseFirebaseSafeUrl, catchErrors } from "../config/global-helpers";
+import { createOrReverseFirebaseSafeUrl } from "../config/global-helpers";
 import { metaTagDefaults } from "../../../shared-models/analytics/metatags.model";
 import { Webpage } from "../../../shared-models/ssr/webpage.model";
 import { now } from "moment";
 import { publicFirestore } from "../config/db-config";
 import { PublicCollectionPaths } from "../../../shared-models/routes-and-paths/fb-collection-paths";
+import * as functions from 'firebase-functions';
 
 const db = publicFirestore;
 const charLimit = 700000; // Sets the character limit for a segment (FB max is 1M bytes, which is typically ~1.2x chars)
@@ -86,11 +87,10 @@ const storePageHtmlSegments = async (url: string, userAgent: string, html: strin
   // Upload segments to database
   const uploadWebpageSegments = webpageArray.map( async (webpage, index) => {
     await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(webpage.segmentId as string).set(webpage)
-      .catch(err => {console.log(`Failed to update webpage on public database:`, err); return err;});
+      .catch(err => {console.log(`Failed to update webpage on public database:`, err); throw new functions.https.HttpsError('internal', err);});
   })
 
-  const uploadResponse = await Promise.all(uploadWebpageSegments)
-    .catch(err => {console.log(`Error in group promise uploading webpage segments:`, err); return err;});
+  const uploadResponse = await Promise.all(uploadWebpageSegments);
 
   console.log('All blog html segments uploaded');
   return uploadResponse;
@@ -106,15 +106,14 @@ const retrieveSegmentedWebPageCache = async (segmentRefData: Webpage, isBot: boo
   // Unpack the html segments using the array of ids
   const segementPromiseArray = htmlSegementIdArray.map( async (segementId) => {
     const blogSegmentDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(segementId).get()
-      .catch(err => {console.log(`Error fetching blog segment:`, err); return err;});
+      .catch(err => {console.log(`Error fetching blog segment:`, err); throw new functions.https.HttpsError('internal', err);});
     const segmentData = blogSegmentDoc.data() as Webpage;
     return segmentData.payload;
   });
 
-  const htmlSegementArray = await Promise.all(segementPromiseArray)
-    .catch(err => {console.log(`Error in group promise fetching blog segments:`, err); return err;});
+  const htmlSegementArray = await Promise.all(segementPromiseArray);
 
-  const completeHtml = (htmlSegementArray as string []).join(''); // Combine the segments into a single html string
+  const completeHtml = (htmlSegementArray).join(''); // Combine the segments into a single html string
 
   const completeWebpage: Webpage = {
     ...segmentRefData,
@@ -157,8 +156,7 @@ export const storeWebPageCache = async (url: string, userAgent: string, html: st
   const htmlCharLength = updatedHtml.length;
   if (htmlCharLength > charLimit) {
     console.log('Char length exceeded, attempting to store page html segements')
-    const segmentedWebpageFbRes = await storePageHtmlSegments(url, userAgent, html, htmlCharLength)
-      .catch(err => {console.log(`Error storing html segments:`, err); return err;});
+    const segmentedWebpageFbRes = await storePageHtmlSegments(url, userAgent, html, htmlCharLength);
     return segmentedWebpageFbRes;
   }
 
@@ -173,9 +171,9 @@ export const storeWebPageCache = async (url: string, userAgent: string, html: st
   }
   
   const fbRes = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).set(webpage)
-    .catch(err => {console.log(`Error updating webpage cache on public database:`, err); return err;});
+    .catch(err => {console.log(`Error updating webpage cache on public database:`, err); throw new functions.https.HttpsError('internal', err);});
   console.log('Web page cached with this id', webpage.url);
-    return fbRes;
+  return fbRes;
 }
 
 const executeActions = async (webPageData: Webpage, isBot: boolean): Promise<Webpage> => {
@@ -184,8 +182,7 @@ const executeActions = async (webPageData: Webpage, isBot: boolean): Promise<Web
 
   // If htmlSegmentIdArray has an item, it is a ref doc with segmented data, so fetch appropriately
   if (webPageData.htmlSegmentIdArray && webPageData.htmlSegmentIdArray.length > 0) {
-    updatedWebpageData = await retrieveSegmentedWebPageCache(webPageData, isBot)
-      .catch(err => {console.log(`Error retrieving segmented webpage cache:`, err); return err;});
+    updatedWebpageData = await retrieveSegmentedWebPageCache(webPageData, isBot);
   }
   
   // If a bot is accessing page, indicate that in the html
@@ -202,7 +199,7 @@ export const retrieveWebPageCache = async (url: string, isBot: boolean): Promise
   
   console.log('Attempting to retrieve cached page with id: ', fbSafeUrl);
   const pageDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).get()
-    .catch(err => {console.log(`Error fetching webpage doc from public database:`, err); return err;});
+    .catch(err => {console.log(`Error fetching webpage doc from public database:`, err); throw new functions.https.HttpsError('internal', err);});
 
   if (!pageDoc.exists) {
     console.log('No cached page found');
@@ -211,6 +208,6 @@ export const retrieveWebPageCache = async (url: string, isBot: boolean): Promise
   console.log('Cached page exists');
   const webPageData = pageDoc.data() as Webpage;
 
-  return await catchErrors(executeActions(webPageData, isBot)) as Webpage;
+  return await executeActions(webPageData, isBot);
   
 }

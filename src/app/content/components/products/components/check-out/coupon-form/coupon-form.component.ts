@@ -134,7 +134,7 @@ export class CouponFormComponent implements OnInit, OnDestroy {
   }
 
   private initializeCouponValidationStatus() {
-    this.validateCouponProcessing$ = this.store$.select(BillingStoreSelectors.selectCouponValidationProcessing);
+    this.validateCouponProcessing$ = this.store$.select(BillingStoreSelectors.selectIsValidatingCoupon);
     this.validateCouponResponse$ = this.store$.select(BillingStoreSelectors.selectDiscountCoupon);
   }
 

@@ -1,6 +1,5 @@
 import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Post } from 'shared-models/posts/post.model';
-import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
+import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
 
 export const featureAdapter: EntityAdapter<Post | BlogIndexPostRef>
   = createEntityAdapter<Post | BlogIndexPostRef>(

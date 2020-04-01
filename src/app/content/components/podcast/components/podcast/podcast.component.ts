@@ -48,7 +48,7 @@ export class PodcastComponent implements OnInit, OnDestroy {
 
     this.heroData = {
       pageTitle: 'Podcast',
-      pageSubtitle: 'Get our lastest communications strategies in audio form',
+      pageHeroSubtitle: 'Get our lastest communications strategies in audio form',
       imageProps: imgProps,
       actionMessage: 'View Episodes'
     };

@@ -9,7 +9,7 @@ import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
-import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
+import { BlogIndexPostRef } from 'shared-models/posts/post.model';
 
 @Component({
   selector: 'app-blog',
@@ -59,7 +59,7 @@ export class BlogComponent implements OnInit, OnDestroy {
 
     this.heroData = {
       pageTitle: 'Explearning Blog',
-      pageSubtitle: `Access our complete library of free lessons on speaking skills and effective communication`,
+      pageHeroSubtitle: `Access our complete library of free lessons on speaking skills and effective communication`,
       imageProps: blogImageProps,
       actionMessage: 'View Collection'
     };

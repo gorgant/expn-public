@@ -9,6 +9,7 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
+import { BillingKeys } from 'shared-models/billing/billing-details.model';
 
 @Component({
   selector: 'app-subscribe',
@@ -32,8 +33,8 @@ export class SubscribeComponent implements OnInit {
 
   ngOnInit() {
     this.subscribeForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]]
+      [BillingKeys.FIRST_NAME]: ['', [Validators.required]],
+      [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email]]
     });
 
     this.initializeSubscribeObservers(); // Used to disable subscribe buttons
@@ -41,7 +42,7 @@ export class SubscribeComponent implements OnInit {
 
   onSubmit() {
     // Prevent submission if either field is blank (allows submit button to stay illuminated even when blank)
-    if (this.email.value === '' || this.firstName.value === '') {
+    if (this[BillingKeys.EMAIL].value === '' || this[BillingKeys.FIRST_NAME].value === '') {
       return;
     }
 
@@ -57,11 +58,11 @@ export class SubscribeComponent implements OnInit {
             ...user,
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
-              firstName: (this.firstName.value as string).trim(),
-              email: (this.email.value as string).trim()
+              [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             } : {
-              firstName: (this.firstName.value as string).trim(),
-              email: (this.email.value as string).trim()
+              [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
             }
           };
 
@@ -89,7 +90,7 @@ export class SubscribeComponent implements OnInit {
   }
 
   // These getters are used for easy access in the HTML template
-  get firstName() { return this.subscribeForm.get('firstName'); }
-  get email() { return this.subscribeForm.get('email'); }
+  get [BillingKeys.FIRST_NAME]() { return this.subscribeForm.get(BillingKeys.FIRST_NAME); }
+  get [BillingKeys.EMAIL]() { return this.subscribeForm.get(BillingKeys.EMAIL); }
 
 }

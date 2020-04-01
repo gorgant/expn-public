@@ -6,49 +6,69 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.VALIDATE_COUPON_REQUESTED:
       return {
         ...state,
-        couponValidationProcessing: true,
-        error: null
+        isValidatingCoupon: true,
+        validateCouponError: null
       };
     case ActionTypes.VALIDATE_COUPON_COMPLETE:
       return {
         ...state,
-        couponValidationProcessing: false,
-        discountCoupon: action.payload.discountCoupon
+        isValidatingCoupon: false,
+        discountCoupon: action.payload.discountCoupon,
+        validateCouponError: null
       };
     case ActionTypes.PROCESS_PAYMENT_REQUESTED:
       return {
         ...state,
-        paymentProcessing: true,
-        error: null
+        isProcessingPayment: true,
+        processPaymentError: null
       };
     case ActionTypes.PROCESS_PAYMENT_COMPLETE:
       return {
         ...state,
-        paymentProcessing: false,
+        isProcessingPayment: false,
         stripeCharge: action.payload.paymentResponse,
+        processPaymentError: null
+      };
+    case ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED:
+      return {
+        ...state,
+        isTransmittingOrder: true,
+        transmitOrderError: null
       };
     case ActionTypes.TRANSMIT_ORDER_TO_ADMIN_COMPLETE:
       return {
-        ...state
+        ...state,
+        isTransmittingOrder: false,
+        transmitOrderError: null
       };
     case ActionTypes.PURGE_STRIPE_CHARGE:
       return {
         ...state,
         stripeCharge: null,
+        processPaymentError: null,
       };
     case ActionTypes.PURGE_BILLING_STATE:
       return {
-        couponValidationProcessing: null,
+        isValidatingCoupon: false,
+        isProcessingPayment: false,
+        isTransmittingOrder: false,
         discountCoupon: null,
-        paymentProcessing: null,
         stripeCharge: null,
-        error: null,
+        validateCouponError: null,
+        processPaymentError: null,
+        transmitOrderError: null,
       };
-    case ActionTypes.LOAD_ERROR_DETECTED:
+    case ActionTypes.VALIDATE_COUPON_ERROR:
       return {
         ...state,
-        error: action.payload.error,
-        paymentProcessing: false
+        isValidatingCoupon: false,
+        validateCouponError: action.payload.error
+      };
+    case ActionTypes.PROCESS_PAYMENT_ERROR:
+      return {
+        ...state,
+        isProcessingPayment: false,
+        processPaymentError: action.payload.error
       };
 
     default: {

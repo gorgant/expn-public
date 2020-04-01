@@ -38,6 +38,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   paymentSucceeded: boolean;
 
   billingError$: Observable<any>;
+  stripeErrorMessage: string;
 
 
 
@@ -66,11 +67,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   }
 
   private monitorBillingErrorStatus() {
-    this.billingError$ = this.store$.select(BillingStoreSelectors.selectBillingError);
-
-    this.billingError$.subscribe(error => {
-      console.log('Billing error detected', error);
-    });
+    this.billingError$ = this.store$.select(BillingStoreSelectors.selectProcessPaymentError);
   }
 
   private checkCouponStatus() {
@@ -99,6 +96,8 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   }
 
   async onSubmitPayment(e: Event) {
+    this.stripeErrorMessage = null; // Reset stripe error message if it exists
+    this.store$.dispatch(new BillingStoreActions.PurgeStripeCharge());
     e.preventDefault();
     const billingDetails: BillingDetails = this.billingDetailsForm.value;
     const owner: stripe.OwnerInfo = {
@@ -153,7 +152,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
             this.paymentSucceeded = false;
             this.paymentSubmitted = false;
             this.cardErrors = `Fatal billing error. Please contact ${EmailSenderAddresses.EXPLEARNING_SUPPORT}`;
-            console.log('Billing function error, resetting payment loop');
+            console.log('Billing function error, resetting payment loop', billingError);
           }
 
           // Listen for success
@@ -167,6 +166,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
           if (stripeError && stripeError.stripeErrorType) {
             this.paymentSucceeded = false;
             this.paymentSubmitted = false;
+            this.stripeErrorMessage = stripeError.message;
             console.log('Stripe error detected, resetting payment loop');
           }
         });
@@ -237,7 +237,7 @@ export class StripeElementsComponent implements OnInit, OnDestroy {
   }
 
   private initializePaymentStatus() {
-    this.paymentProcessing$ = this.store$.select(BillingStoreSelectors.selectPaymentProcessing);
+    this.paymentProcessing$ = this.store$.select(BillingStoreSelectors.selectIsProcessingPayment);
     this.paymentResponse$ = this.store$.select(BillingStoreSelectors.selectStripeCharge);
   }
 

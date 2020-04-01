@@ -4,10 +4,13 @@ import { Stripe as StripeDefs } from 'stripe';
 import { StripeError } from 'shared-models/billing/stripe-error.model';
 import { DiscountCouponChild } from 'shared-models/billing/discount-coupon.model';
 
-const getError = (state: State): any => state.error;
-const getCouponValidationProcessing = (state: State): boolean => state.couponValidationProcessing;
+const getIsValidatingCoupon = (state: State): any => state.isValidatingCoupon;
+const getIsProcessingPayment = (state: State): any => state.isProcessingPayment;
+const getIsTransmittingOrder = (state: State): any => state.isTransmittingOrder;
+const getValidateCouponError = (state: State): any => state.validateCouponError;
+const getProcessPaymentError = (state: State): any => state.processPaymentError;
+const getTransmitOrderError = (state: State): any => state.transmitOrderError;
 const getDiscountCoupon = (state: State): DiscountCouponChild => state.discountCoupon;
-const getPaymentProcessing = (state: State): boolean => state.paymentProcessing;
 const getStripeCharge = (state: State): StripeDefs.Charge | StripeError => state.stripeCharge;
 
 const selectBillingState: MemoizedSelector<object, State>
@@ -23,13 +26,21 @@ export const selectStripeCharge: MemoizedSelector<object, StripeDefs.Charge | St
   getStripeCharge
 );
 
-export const selectBillingError: MemoizedSelector<object, any> = createSelector(
-  selectBillingState,
-  getError
-);
+export const selectIsValidatingCoupon: MemoizedSelector<object, boolean>
+= createSelector(selectBillingState, getIsValidatingCoupon);
 
-export const selectCouponValidationProcessing: MemoizedSelector<object, boolean>
-= createSelector(selectBillingState, getCouponValidationProcessing);
+export const selectIsProcessingPayment: MemoizedSelector<object, boolean>
+= createSelector(selectBillingState, getIsProcessingPayment);
 
-export const selectPaymentProcessing: MemoizedSelector<object, boolean>
-= createSelector(selectBillingState, getPaymentProcessing);
+export const selectIsTransmittingOrder: MemoizedSelector<object, boolean>
+= createSelector(selectBillingState, getIsTransmittingOrder);
+
+export const selectValidateCouponError: MemoizedSelector<object, any>
+= createSelector(selectBillingState, getValidateCouponError);
+
+export const selectProcessPaymentError: MemoizedSelector<object, any>
+= createSelector(selectBillingState, getProcessPaymentError);
+
+export const selectTransmitOrderError: MemoizedSelector<object, any>
+= createSelector(selectBillingState, getTransmitOrderError);
+

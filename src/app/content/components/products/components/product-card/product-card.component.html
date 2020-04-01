@@ -5,7 +5,7 @@
   </div>
   <div class="card-text-container" fxFlex="60" fxLayout="column" fxLayoutAlign="center start" fxLayoutGap="16px" fxFlexOrder.gt-sm="1">
     <div class="card-title" fxHide.lt-md>{{ product.name }}</div>
-    <div class="card-subtitle">{{ product.productCardData.tagline }}</div>
+    <div class="card-subtitle">{{ product.tagline }}</div>
     <div class="card-description">
       <ul class="description-highlights">
         <li *ngFor="let highlight of product.productCardData.highlights">{{ highlight }}</li>

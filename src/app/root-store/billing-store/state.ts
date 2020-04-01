@@ -3,17 +3,23 @@ import { StripeError } from 'shared-models/billing/stripe-error.model';
 import { DiscountCouponChild } from 'shared-models/billing/discount-coupon.model';
 
 export interface State {
-  couponValidationProcessing: boolean;
+  isValidatingCoupon: boolean;
+  isProcessingPayment: boolean;
+  isTransmittingOrder: boolean;
   discountCoupon: DiscountCouponChild;
-  paymentProcessing: boolean;
   stripeCharge: StripeDefs.Charge | StripeError;
-  error?: any;
+  validateCouponError: any;
+  processPaymentError: any;
+  transmitOrderError: any;
 }
 
 export const initialState: State = {
-  couponValidationProcessing: false,
+  isValidatingCoupon: false,
+  isProcessingPayment: false,
+  isTransmittingOrder: false,
   discountCoupon: null,
-  paymentProcessing: false,
   stripeCharge: null,
-  error: null,
+  validateCouponError: null,
+  processPaymentError: null,
+  transmitOrderError: null,
 };

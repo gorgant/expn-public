@@ -9,9 +9,7 @@
     <div>
       <p class="card-input-errors">{{ cardErrors }}</p>
     </div>
-    <div *ngIf="(paymentResponse$ | async) as response">
-      <div *ngIf="response.stripeErrorType" class="payment-failed">{{ response.message }}</div>
-    </div>
+    <div *ngIf="stripeErrorMessage" class="payment-failed">{{ stripeErrorMessage }}</div>
     <div fxFlexAlign="center" class="buy-button-container" fxLayout="column" fxLayoutAlign="center center">
       <button [disabled]="paymentSubmitted || billingDetailsForm.invalid || paymentSucceeded" class="buy-button" mat-raised-button color="primary" type="submit">
         <span *ngIf="billingDetailsForm.valid">Get {{ product.name }}</span>

@@ -17,7 +17,7 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
 import { BILLING_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
 import { Country } from 'shared-models/forms-and-components/geography/country.model';
-import { BillingDetails } from 'shared-models/billing/billing-details.model';
+import { BillingDetails, BillingKeys } from 'shared-models/billing/billing-details.model';
 
 @Component({
   selector: 'app-purchase-data-form',
@@ -105,8 +105,8 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     if (country.code !== 'US' && this.usStateCode.value && this.usStateCode.value !== this.nonUsStateCodeValue) {
       console.log('State value detected, removing it bc country changed');
       this.billingDetailsGroup.patchValue({
-        state: '',
-        usStateCode: this.nonUsStateCodeValue
+        [BillingKeys.STATE]: '',
+        [BillingKeys.US_STATE_CODE]: this.nonUsStateCodeValue
       });
     }
 
@@ -114,12 +114,12 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     if (country.code === 'US') {
       console.log('U.S. selected, clearing default stateCodeValue');
       this.billingDetailsGroup.patchValue({
-        usStateCode: ''
+        [BillingKeys.US_STATE_CODE]: ''
       });
     }
 
     this.billingDetailsGroup.patchValue({
-      country: country.name
+      [BillingKeys.COUNTRY]: country.name
     });
 
   }
@@ -145,7 +145,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
   private patchPhoneDialPrefix(country: Country) {
     const dialPrefix = `+${country.dial} `;
-    let existingPhoneValue = this.phone.value as string;
+    let existingPhoneValue = this[BillingKeys.PHONE].value as string;
     if (existingPhoneValue.includes('+')) {
       if (existingPhoneValue.includes(' ')) {
         existingPhoneValue = existingPhoneValue.substr(existingPhoneValue.indexOf(' ') + 1);
@@ -154,7 +154,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
       }
     }
     this.billingDetailsGroup.patchValue({
-      phone: existingPhoneValue ? `${dialPrefix}${existingPhoneValue}` : dialPrefix
+      [BillingKeys.PHONE]: existingPhoneValue ? `${dialPrefix}${existingPhoneValue}` : dialPrefix
     });
   }
 
@@ -165,7 +165,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(usState => {
         this.billingDetailsGroup.patchValue({
-          state: usState.name
+          [BillingKeys.STATE]: usState.name
         });
       });
   }
@@ -190,17 +190,17 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   private initializeBillingDetailsForm(): void {
     this.purchaseDataForm = this.fb.group({
       billingDetailsGroup: this.fb.group({
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]],
-        phone: ['', [Validators.required]],
-        billingOne: ['', [Validators.required]],
-        billingTwo: [''],
-        city: ['', [Validators.required]],
-        state: ['', []],
-        usStateCode: [this.nonUsStateCodeValue, [Validators.required]],
-        country: [''],
-        countryCode: ['', [Validators.required]]
+        [BillingKeys.FIRST_NAME]: ['', [Validators.required]],
+        [BillingKeys.LAST_NAME]: ['', [Validators.required]],
+        [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email]],
+        [BillingKeys.PHONE]: ['', [Validators.required]],
+        [BillingKeys.BILLING_ONE]: ['', [Validators.required]],
+        [BillingKeys.BILLING_TWO]: [''],
+        [BillingKeys.CITY]: ['', [Validators.required]],
+        [BillingKeys.STATE]: ['', []],
+        [BillingKeys.US_STATE_CODE]: [this.nonUsStateCodeValue, [Validators.required]],
+        [BillingKeys.COUNTRY]: [''],
+        [BillingKeys.COUNTRY_CODE]: ['', [Validators.required]]
       })
     });
     console.log('Form initialized');
@@ -254,7 +254,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     }
 
     // Prevents auto-save from overwriting final form submission data
-    this.store$.select(BillingStoreSelectors.selectPaymentProcessing)
+    this.store$.select(BillingStoreSelectors.selectIsProcessingPayment)
       .pipe(take(1))
       .subscribe(paymentProcessing => {
         if (paymentProcessing) {
@@ -312,33 +312,33 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   // These getters are used for easy access in the HTML template
   get billingDetailsGroup() { return this.purchaseDataForm.get('billingDetailsGroup'); }
   // get billingDetailsData(): BillingDetails { return this.trimmedBillingDetailsData; }
-  get firstName() { return this.purchaseDataForm.get('billingDetailsGroup.firstName'); }
-  get lastName() { return this.purchaseDataForm.get('billingDetailsGroup.lastName'); }
-  get email() { return this.purchaseDataForm.get('billingDetailsGroup.email'); }
-  get phone() { return this.purchaseDataForm.get('billingDetailsGroup.phone'); }
-  get billingOne() { return this.purchaseDataForm.get('billingDetailsGroup.billingOne'); }
-  get billingTwo() { return this.purchaseDataForm.get('billingDetailsGroup.billingTwo'); }
-  get city() { return this.purchaseDataForm.get('billingDetailsGroup.city'); }
-  get state() { return this.purchaseDataForm.get('billingDetailsGroup.state'); }
-  get usStateCode() { return this.purchaseDataForm.get('billingDetailsGroup.usStateCode'); }
-  get country() { return this.purchaseDataForm.get('billingDetailsGroup.country'); }
-  get countryCode() { return this.purchaseDataForm.get('billingDetailsGroup.countryCode'); }
+  get [BillingKeys.FIRST_NAME]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.FIRST_NAME}`); }
+  get [BillingKeys.LAST_NAME]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.LAST_NAME}`); }
+  get [BillingKeys.EMAIL]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.EMAIL}`); }
+  get [BillingKeys.PHONE]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.PHONE}`); }
+  get [BillingKeys.BILLING_ONE]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.BILLING_ONE}`); }
+  get [BillingKeys.BILLING_TWO]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.BILLING_TWO}`); }
+  get [BillingKeys.CITY]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.CITY}`); }
+  get [BillingKeys.STATE]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.STATE}`); }
+  get [BillingKeys.US_STATE_CODE]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.US_STATE_CODE}`); }
+  get [BillingKeys.COUNTRY]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.COUNTRY}`); }
+  get [BillingKeys.COUNTRY_CODE]() { return this.purchaseDataForm.get(`billingDetailsGroup.${BillingKeys.COUNTRY_CODE}`); }
   // Get trimmed version of billing details
   get trimmedBillingDetailsData(): Partial<BillingDetails> {
     // Partial because postal code isn't collected in this form
     const trimmedData: Partial<BillingDetails> = {
-      firstName: (this.firstName.value as string).trim(),
-      lastName: (this.lastName.value as string).trim(),
-      email: (this.email.value as string).trim(),
-      phone: (this.phone.value as string).trim(),
-      billingOne: (this.billingOne.value as string).trim(),
-      billingTwo: (this.billingTwo.value as string).trim(),
-      city: (this.city.value as string).trim(),
-      state: (this.state.value as string).trim(),
-      usStateCode: (this.usStateCode.value as string).trim(),
-      // postalCode: null, // Not included because not collected on this form
-      country: (this.country.value as string).trim(),
-      countryCode: (this.countryCode.value as string).trim()
+      [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
+      [BillingKeys.LAST_NAME]: (this[BillingKeys.LAST_NAME].value as string).trim(),
+      [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim(),
+      [BillingKeys.PHONE]: (this[BillingKeys.PHONE].value as string).trim(),
+      [BillingKeys.BILLING_ONE]: (this[BillingKeys.BILLING_ONE].value as string).trim(),
+      [BillingKeys.BILLING_TWO]: (this[BillingKeys.BILLING_TWO].value as string).trim(),
+      [BillingKeys.CITY]: (this[BillingKeys.CITY].value as string).trim(),
+      [BillingKeys.STATE]: (this[BillingKeys.STATE].value as string).trim(),
+      [BillingKeys.US_STATE_CODE]: (this[BillingKeys.US_STATE_CODE].value as string).trim(),
+      // [BillingKeys.POSTAL_CODE]: null, // Not included because not collected on this form
+      [BillingKeys.COUNTRY]: (this[BillingKeys.COUNTRY].value as string).trim(),
+      [BillingKeys.COUNTRY_CODE]: (this[BillingKeys.COUNTRY_CODE].value as string).trim()
     };
     return trimmedData;
   }

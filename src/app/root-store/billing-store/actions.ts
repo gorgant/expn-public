@@ -13,7 +13,9 @@ export enum ActionTypes {
   TRANSMIT_ORDER_TO_ADMIN_COMPLETE = '[Billing] Transmit Order to Admin Complete',
   PURGE_STRIPE_CHARGE = '[Billing] Stripe Charge Purged',
   PURGE_BILLING_STATE = '[Billing] Invoice State Purged',
-  LOAD_ERROR_DETECTED = '[Billing] Billing Load Error',
+  VALIDATE_COUPON_ERROR = '[Billing] Validate Coupon Error',
+  PROCESS_PAYMENT_ERROR = '[Billing] Process Payment Error',
+  TRANSMIT_ORDER_ERROR = '[Billing] Transmit Order Error'
 }
 
 export class ValidateCouponRequested implements Action {
@@ -58,8 +60,18 @@ export class PurgeBillingState implements Action {
   readonly type = ActionTypes.PURGE_BILLING_STATE;
 }
 
-export class LoadErrorDetected implements Action {
-  readonly type = ActionTypes.LOAD_ERROR_DETECTED;
+export class ValidateCouponError implements Action {
+  readonly type = ActionTypes.VALIDATE_COUPON_ERROR;
+  constructor(public payload: { error: string }) {}
+}
+
+export class ProcessPaymentError implements Action {
+  readonly type = ActionTypes.PROCESS_PAYMENT_ERROR;
+  constructor(public payload: { error: string }) {}
+}
+
+export class TransmitOrderError implements Action {
+  readonly type = ActionTypes.TRANSMIT_ORDER_ERROR;
   constructor(public payload: { error: string }) {}
 }
 
@@ -72,5 +84,7 @@ TransmitOrderToAdminRequested |
 TransmitOrderToAdminComplete |
 PurgeStripeCharge |
 PurgeBillingState |
-LoadErrorDetected
+ValidateCouponError |
+ProcessPaymentError |
+TransmitOrderError
 ;

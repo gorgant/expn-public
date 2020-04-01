@@ -1,7 +1,7 @@
 <div *ngIf="(purchaseData$ | async) as purchaseData" class="page-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start">
   <div class="header">Purchase Successful</div>
   <div class="next-steps">
-    <p>Congratulations on joining the Explearning family! You will receive an email to <b>{{ purchaseData.billing_details.email }}</b> shortly with instructions on how to create an account and activate your purchase.</p>
+    <p>Congratulations on joining the {{ shorthandBusinessName }} family! You will receive an email to <b>{{ purchaseData.billing_details.email }}</b> shortly with instructions on how to create an account and activate your purchase.</p>
     <p>Your receipt will be included in that email. You can also view it <span><a target="_blank" rel="noopener noreferrer" [href]="purchaseData.receipt_url">here</a></span>.</p>
     <p>We hope you are as excited as we are to get started!</p>
   </div>

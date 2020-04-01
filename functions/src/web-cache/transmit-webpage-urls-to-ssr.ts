@@ -21,7 +21,7 @@ const publishUrltoSsrTopic = async (url: string) => {
   const topic = pubSub.topic(`projects/${projectId}/topics/${topicName}`);
   const pubsubMsg: WebpageUrl = { url };
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
   console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
@@ -42,7 +42,7 @@ export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, r
   }
 
   const postCollectionSnapshot: FirebaseFirestore.QuerySnapshot = await db.collection(SharedCollectionPaths.POSTS).get()
-    .catch(err => {console.log(`Failed to fetch post collection from public database:`, err); return err;});
+    .catch(err => {console.log(`Failed to fetch post collection from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   const blogSlugWithSlashPrefix = PublicAppRoutes.BLOG;
   const postUrlArray: string[] = postCollectionSnapshot.docs.map(doc => {
     const post: Post = doc.data() as Post;
@@ -52,7 +52,7 @@ export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, r
   });
 
   const productCollectionSnapshot: FirebaseFirestore.QuerySnapshot = await db.collection(SharedCollectionPaths.PRODUCTS).get()
-    .catch(err => {console.log(`Failed to fetch product collection from public database:`, err); return err;});
+    .catch(err => {console.log(`Failed to fetch product collection from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   const productListSlugWithSlashPrefix = PublicAppRoutes.PRODUCTS;
   const productUrlArray: string[] = productCollectionSnapshot.docs.map(doc => {
     const product: Product = doc.data() as Product;
@@ -75,12 +75,10 @@ export const transmitWebpageUrlsToSsr = functions.https.onRequest( async (req, r
   
   const transmitCacheRequests = webpageUrlArray.map( async (url) => {
     console.log('Transmit url to ssr received with this data', url);
-    await publishUrltoSsrTopic(url)
-      .catch(err => {console.log(`Error transmitting url to ssr:`, err); return err;});
+    await publishUrltoSsrTopic(url);
   })
 
-  const transmissionResponse = await Promise.all(transmitCacheRequests)
-    .catch(err => {console.log(`Error in group promise to transmit url to ssr:`, err); return err;});
+  const transmissionResponse = await Promise.all(transmitCacheRequests);
   
   console.log('All cache update requests sent', res);
   return res.status(200).send(transmissionResponse);

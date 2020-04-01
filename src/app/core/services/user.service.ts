@@ -45,34 +45,37 @@ export class UserService {
   }
 
   storeUserData(user: PublicUser): Observable<string> {
-    const userDoc = this.getUserDoc(user.id);
+    const userDoc = this.getUserDoc(user.id) as AngularFirestoreDocument<PublicUser | Partial<PublicUser>>;
     // Use set here because may be generating a new user or updating existing user
-    const fbResponse = userDoc.set(user, {merge: true})
-      .then(res => {
+    const fbResponse = from(userDoc.set(user, {merge: true}));
+    return fbResponse.pipe(
+      take(1),
+      map(empty => {
         console.log('User data stored in database');
         return user.id;
-      } )
-      .catch(error => {
-        console.log('Error storing data in database', error);
-        return error;
-      });
-    return from(fbResponse);
+      }),
+      catchError(error => {
+        console.log('Error storing user data', error);
+        return throwError(error);
+      })
+    );
   }
 
   storeNavStamp(user: PublicUser, navStamp: NavigationStamp): Observable<string> {
     const navStampDoc = this.getNavStampDoc(user.id, navStamp.id);
     // Use set here because may be generating a new user or updating existing user
-    const fbResponse = navStampDoc.set(navStamp, {merge: true})
-    .then(res => {
-      console.log('Nav stamp stored in database', navStamp);
-      return user.id;
-    } )
-    .catch(error => {
-      console.log('Error storing data in database', error);
-      return error;
-    });
-    return from(fbResponse);
-
+    const fbResponse = from(navStampDoc.set(navStamp, {merge: true}));
+    return fbResponse.pipe(
+      take(1),
+      map(empty => {
+        console.log('Nav stamp stored in database', navStamp);
+        return user.id;
+      }),
+      catchError(error => {
+        console.log('Error storing data in database', error);
+        return throwError(error);
+      })
+    );
   }
 
   // Add user subscription to admin database

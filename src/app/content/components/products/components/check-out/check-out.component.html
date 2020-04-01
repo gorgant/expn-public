@@ -4,12 +4,12 @@
       <app-product-summary [product]="product"></app-product-summary>
       <div class="purchase-data-form-container" fxLayout="column" fxLayoutAlign="center center">
         <app-purchase-data-form [product]="product" [publicUser]="publicUser$ | async"></app-purchase-data-form>
-        <div class="checkout-disclaimer">I authorize Explearning, LLC to charge me for the order total. I further affirm that the name and personal information provided on this form are true and correct. I further declare that I have read, understand and accept Explearning's business terms as published on their website. By pressing the order button, I agree to pay Explearning.</div>
+        <div class="checkout-disclaimer">I authorize {{ legalBusinessName }} to charge me for the order total. I further affirm that the name and personal information provided on this form are true and correct. I further declare that I have read, understand and accept Explearning's business terms as published on their website. By pressing the order button, I agree to pay {{ shorthandBusinessName }}.</div>
       </div>
     </div>
     <div class="md-avatar">
       <img class="avatar-image" [src]="imagePaths.MD_CHECKOUT_AVATAR" alt="Mary Daphne Explearning Headshot">
-      <div class="md-blurb">{{ product.checkoutData.tagline }}</div>
+      <div class="md-blurb">{{ product.tagline }}</div>
       <img class="signature-image" [src]="imagePaths.MD_CHECKOUT_SIGNATURE" alt="Mary Daphne Explearning Signature">
     </div>
   </div>

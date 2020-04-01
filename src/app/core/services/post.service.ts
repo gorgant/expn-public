@@ -7,8 +7,7 @@ import { UiService } from './ui.service';
 import { SharedCollectionPaths, PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
-import { BlogIndexPostRef } from 'shared-models/posts/blog-index-post-ref.model';
-import { Post } from 'shared-models/posts/post.model';
+import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
 
 @Injectable({
@@ -23,41 +22,6 @@ export class PostService {
     @Inject(PLATFORM_ID) private platformId,
     private transferState: TransferState
   ) { }
-
-
-  // fetchAllPosts(): Observable<Post[]> {
-
-  //   const ALL_POSTS_KEY = makeStateKey<Post[]>(TransferStateKeys.ALL_POSTS_KEY); // A key to identify data in USSR
-  //   // If data exists in state transfer, use that
-  //   if (this.transferState.hasKey(ALL_POSTS_KEY)) {
-  //     console.log('Fetching posts from transfer state');
-  //     const cacheData = this.transferState.get<Post[]>(ALL_POSTS_KEY, {} as any);
-  //     // Sort by publish date because must be same order as in Root Store in order to sync properly
-  //     cacheData.sort((a, b) => (b.publishedDate > a.publishedDate) ? 1 : ((a.publishedDate > b.publishedDate) ? -1 : 0));
-  //     this.transferState.remove(ALL_POSTS_KEY); // Clean up the cache
-  //     return of(cacheData);
-  //   }
-
-  //   // Otherwise, fetch from database
-  //   const postCollection = this.getPostsCollection();
-  //   return postCollection.valueChanges()
-  //     .pipe(
-  //       takeUntil(this.authService.unsubTrigger$),
-  //       map(posts => {
-  //         console.log('Fetched all posts');
-  //         return posts;
-  //       }),
-  //       tap(posts => {
-  //         if (isPlatformServer(this.platformId)) {
-  //           this.transferState.set(ALL_POSTS_KEY, posts); // Stash item in transfer state
-  //         }
-  //       }),
-  //       catchError(error => {
-  //         this.uiService.showSnackBar(error, null, 5000);
-  //         return throwError(error);
-  //       })
-  //     );
-  // }
 
   // Load a partial version of the post collection that omits the post content
   fetchBlogIndex(): Observable<BlogIndexPostRef[]> {

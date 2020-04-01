@@ -25,7 +25,7 @@ const submitDiscountCouponUpdateRequest = async (validationData: DiscountCouponV
   const pubsubMsg: DiscountCouponValidationData = validationData;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); return err;});
+    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
   console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
@@ -99,7 +99,7 @@ const handleStripeChargeResponse = (err: any) => {
 export const getSingleCharge = (chargeId: string) => {
   return stripe.charges.retrieve(chargeId, {
     expand: ['customer']
-  }).catch(err => {console.log(`Error fetching stripe charge:`, err); return err;});
+  }).catch(err => {console.log(`Error fetching stripe charge:`, err); throw err;});
 }
 
 /**
@@ -133,12 +133,10 @@ const calculateChargeAmount = (product: Product, quantity: number, discountCoupo
  */
 export const createCharge = async(userId: string, source: StripeDefs.Source, product: Product, quantity: number, discountCoupon: DiscountCouponChild | null): Promise<StripeDefs.Charge | void> => {
   
-  const customer: StripeDefs.Customer = await getOrCreateCustomer(userId)
-    .catch(err => {console.log(`Error getting or creating customer:`, err); throw err;});
+  const customer: StripeDefs.Customer = await getOrCreateCustomer(userId);
   const amount: number = calculateChargeAmount(product, quantity, discountCoupon); // Produce a clean number in cents, factoring in discount
 
-  await attachSource(userId, source)
-    .catch(err => {console.log(`Error attaching source:`, err); throw err;});
+  await attachSource(userId, source);
 
   const chargeData: StripeDefs.ChargeCreateParams = {
     amount,
@@ -169,15 +167,20 @@ const updateDiscountCoupon = async(source: StripeDefs.Source, discountCoupon: Di
     };
     
   await submitDiscountCouponUpdateRequest(validationData)
-    .catch(err => {console.log(`Error submitting discount coupon update:`, err);});
+    .catch(err => {console.error(`Error submitting discount coupon update:`, err);}); // Catch error for logging purposes but don't throw it because this is a secondary operation that shouldn't prevent the charge from going through
 }
 
 
 
 // Perform a server-side validation of product data and coupon data on admin
 const validateChargeData = async (product: Product, source: StripeDefs.Source, discountCoupon: DiscountCouponChild | null, userId: string): Promise<{validCharge: boolean, stripeError?: StripeError}>  => {
+  
   const validProductData: boolean = await validateProductOnAdmin(product)
-    .catch(err => {console.log(`Error validating product on admin:`, err); return err;});
+    .catch(err => {
+      // Return custom error if failed so that the client UI updates accordingly
+      console.error(`System error validating product`, err); 
+      return false;
+    });
   
   // If product is not valid, return an error indicating as much
   if (!validProductData) {
@@ -200,7 +203,13 @@ const validateChargeData = async (product: Product, source: StripeDefs.Source, d
       isStripeCharge: true
     };
 
-    const validDiscountCoupon: DiscountCouponChild = await validateCouponOnAdmin(validationData);
+    const validDiscountCoupon: DiscountCouponChild | boolean = await validateCouponOnAdmin(validationData)
+      .catch(err => {
+        // Return custom error if failed so that the client UI updates accordingly
+        console.error(`System error validating coupon`, err); 
+        return false;
+      });
+
     if (!validDiscountCoupon) {
       const failedCouponCheckStripeError: StripeError = {
         stripeErrorType: 'FailedCouponCheck',
@@ -224,8 +233,7 @@ export const stripeProcessCharge = functions.https.onCall( async (data: StripeCh
   const quantity: number = data.quantity;
   const discountCoupon: DiscountCouponChild | null = data.discountCoupon ? data.discountCoupon : null; // Coupon validity pre-check performed on client
 
-  const {validCharge, stripeError} = await validateChargeData(product, source, discountCoupon, userId)
-    .catch(err => {console.log(`Error validating charge data:`, err); return err;});
+  const {validCharge, stripeError} = await validateChargeData(product, source, discountCoupon, userId);
   
   // If invalid charge data, exit function with stripe error
   if (!validCharge) {

@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import { getOrCreateCustomer, updateUser } from "./customers";
 import { stripe } from './config';
 import { Stripe as StripeDefs} from 'stripe';
-import { catchErrors, assertUID, assert } from '../config/global-helpers';
+import { assertUID, assert } from '../config/global-helpers';
 import { BillingDetails } from '../../../shared-models/billing/billing-details.model';
 import { PublicUser } from '../../../shared-models/user/public-user.model';
 
@@ -22,7 +22,8 @@ export const attachSource = async(uid: string, source: StripeDefs.Source) => {
     return existingSource;
   } else {
     // Create source on customer
-    await stripe.customers.createSource(customer.id, { source: source.id });
+    await stripe.customers.createSource(customer.id, { source: source.id })
+      .catch(err => {console.log(`Error generating source:`, err); throw err;});
     
     // Use source zip to update FB user (which isn't collected on the FB form)
     const updatedZip: Partial<BillingDetails> = { postalCode: (sourceOwner.address as StripeDefs.Address).postal_code as string};
@@ -38,7 +39,9 @@ export const attachSource = async(uid: string, source: StripeDefs.Source) => {
       phone: sourceOwner.phone as string,
       address: sourceOwner.address as StripeDefs.AddressParam,
     }
-    return await stripe.customers.update(customer.id, completeData);
+    const updatedCustomer = await stripe.customers.update(customer.id, completeData)
+      .catch(err => {console.log(`Error updating customer:`, err); throw err;});
+    return updatedCustomer;
   }
 }
 
@@ -48,5 +51,5 @@ export const stripeAttachSource = functions.https.onCall( async (data, context) 
   const uid = assertUID(context);
   const source = assert(data, 'source');
 
-  return catchErrors(attachSource(uid, source));
+  return attachSource(uid, source);
 });

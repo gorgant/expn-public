@@ -21,7 +21,7 @@ const isExpiredUser = (user: admin.auth.UserRecord): boolean => {
 
   const expirationPeriod = 1000 * 60 * 60 * 24 * 14; // 14 days
   const lastSignIn = Date.parse(user.metadata.lastSignInTime);
-  if (lastSignIn < now() - expirationPeriod) {
+  if (lastSignIn < (now() - expirationPeriod)) {
     return true;
   }
   return false;
@@ -33,7 +33,7 @@ const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
   console.log('Scanning users with this token', nextPageToken);
 
   const publicUserList: admin.auth.ListUsersResult = await publicApp.auth().listUsers(50, nextPageToken)
-    .catch(err => {console.log(`Failed to fetch users from public database:`, err); return err;});
+    .catch(err => {console.log(`Failed to fetch users from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   
   let expiredUserCount = 0;
 
@@ -42,13 +42,12 @@ const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
       
     if (userExpired) {
       await publicApp.auth().deleteUser(user.uid)
-        .catch(err => {console.log(`Error deleting user from public database:`, err); return err;});
+        .catch(err => {console.log(`Error deleting user from public database:`, err); throw new functions.https.HttpsError('internal', err);});
       expiredUserCount ++;
     }
   });
 
-  await Promise.all(deleteQualifiedUsersRequests)
-    .catch(err => {console.log(`Error in group promise deleting users:`, err); return err;});
+  await Promise.all(deleteQualifiedUsersRequests);
   
   console.log(`This batch of ${expiredUserCount} expired users deleted`);
 
@@ -67,15 +66,13 @@ export const purgeInactiveUsers = functions.https.onRequest( async (req, res ) =
     return;
   }
 
-  let userScanResults = await identifyAndDeleteExpiredUsers()
-    .catch(err => {console.log(`Error scanning users:`, err); return err;});
+  let userScanResults = await identifyAndDeleteExpiredUsers();
 
   // If more than 1000 users, run scan again
   while (userScanResults.pageToken) {
     console.log('Running next batch of users');
     // List next batch of users.
-    userScanResults = await identifyAndDeleteExpiredUsers(userScanResults.pageToken)
-      .catch(err => {console.log(`Error scanning next batch of users:`, err); return err;});
+    userScanResults = await identifyAndDeleteExpiredUsers(userScanResults.pageToken);
   }
 
   
