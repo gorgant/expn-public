@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
   @ViewChild('matButton', { static: false }) matButton;
   activeUrl$: Observable<string>;
   appRoutes = PublicAppRoutes;
-  siteName = metaTagDefaults.explearningPublic.metaTagSiteName;
+  shorthandBusinessName = ShorthandBusinessNames.EXPLEARNING;
 
   constructor(
     private uiService: UiService,
