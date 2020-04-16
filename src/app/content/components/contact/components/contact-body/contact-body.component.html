@@ -33,11 +33,29 @@
           <mat-error *ngIf="message.hasError(validation.type) && message.invalid && (message.dirty || message.touched)">{{ validation.message }}</mat-error>
         </mat-error>
       </mat-form-field>
-      <button class="submit-button" color="primary" [disabled]="contactForm.invalid || formSubmitted" type="submit" mat-raised-button>
+      <mat-progress-spinner *ngIf="isTransmittingContactForm$ | async" diameter=40 color="accent" mode="indeterminate"></mat-progress-spinner>
+      <button 
+        *ngIf="!(isTransmittingContactForm$ | async)"
+        class="submit-button" 
+        color="primary" 
+        [disabled]="contactForm.invalid || formSubmitted" 
+        type="submit" 
+        mat-raised-button>
           Submit
       </button>
+      <mat-checkbox class="opt-in-box" formControlName="optIn">
+        <span fxHide fxShow.gt-sm class="opt-in-box-text">
+          Yes, I'd love to receive a weekly newsletter with the latest {{ shorthandBusinessName }} communications strategies!
+        </span>
+        <span fxHide.gt-sm class="opt-in-box-text">
+          Keep me updated with the latest {{ shorthandBusinessName }} communications strategies!
+        </span>
+      </mat-checkbox>
       <div *ngIf="formSubmitted" class="post-submit-message">
         Thank you for contacting us. We look forward to reading your message.
+      </div>
+      <div *ngIf="transmitContactFormError$ | async" class="post-submit-error">
+        Hmm, that didn't work. Please save your text in a separate editor, refresh the page, and try again.
       </div>
     </form>
 

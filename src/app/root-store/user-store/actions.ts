@@ -16,7 +16,6 @@ export enum ActionTypes {
   UPDATE_PASSWORD_COMPLETE = '[User] Password Updated',
   UPDATE_PROFILE_IMAGE_REQUESTED = '[User] Update Profile Image Requested',
   UPDATE_PROFILE_IMAGE_COMPLETE = '[User] Update Profile Image Complete',
-  USER_DATA_LOAD_ERROR = '[User] Load Failure',
   SET_CART_DATA = '[User] Cart Data Set',
   PURGE_CART_DATA = '[User] Cart Data Purged',
   SUBSCRIBE_USER_REQUESTED = '[User] Subscribe User Requested',
@@ -28,7 +27,12 @@ export enum ActionTypes {
   SET_USER_SESSION_ID = '[User] Create User Session Id',
   CONFIRM_SUB_OPT_IN_REQUESTED = '[User] Confirm Sub Opt In Requested',
   CONFIRM_SUB_OPT_IN_COMPLETE = '[User] Confirm Sub Opt In Complete',
-  CONFIRM_SUB_OPT_IN_ERROR_DETECTED = '[User] Confirm Sub Opt In Error Detected'
+  LOAD_FAILED = '[User] Load Failed',
+  SAVE_FAILED = '[User] Save Failed',
+  SUBSCRIBE_USER_FAILED = '[User] Subscribe User Failed',
+  TRANSMIT_CONTACT_FORM_FAILED = '[User] Transmit Contact Form Failed',
+  STORE_NAV_STAMP_FAILED = '[User] Store Nav Stamp Failed',
+  CONFIRM_SUB_OPT_IN_FAILED = '[User] Confirm Sub Opt In Failed',
 }
 
 export class UserDataRequested implements Action {
@@ -51,11 +55,6 @@ export class StoreUserDataRequested implements Action {
 
 export class StoreUserDataComplete implements Action {
   readonly type = ActionTypes.STORE_USER_DATA_COMPLETE;
-}
-
-export class LoadErrorDetected implements Action {
-  readonly type = ActionTypes.USER_DATA_LOAD_ERROR;
-  constructor(public payload: { error: string }) {}
 }
 
 export class SetCartData implements Action {
@@ -106,11 +105,34 @@ export class ConfirmSubOptInRequested implements Action {
 
 export class ConfirmSubOptInComplete implements Action {
   readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_COMPLETE;
-  constructor(public payload: {subConfirmed: boolean}) {}
 }
 
-export class ConfirmSubOptInErrorDetected implements Action {
-  readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_ERROR_DETECTED;
+export class LoadFailed implements Action {
+  readonly type = ActionTypes.LOAD_FAILED;
+  constructor(public payload: { error: string }) {}
+}
+
+export class SaveFailed implements Action {
+  readonly type = ActionTypes.SAVE_FAILED;
+  constructor(public payload: { error: string }) {}
+}
+
+export class SubscribeUserFailed implements Action {
+  readonly type = ActionTypes.SUBSCRIBE_USER_FAILED;
+  constructor(public payload: { error: any }) {}
+}
+export class TransmitContactFormFailed implements Action {
+  readonly type = ActionTypes.TRANSMIT_CONTACT_FORM_FAILED;
+  constructor(public payload: { error: any }) {}
+}
+
+export class StoreNavStampFailed implements Action {
+  readonly type = ActionTypes.STORE_NAV_STAMP_FAILED;
+  constructor(public payload: { error: any }) {}
+}
+
+export class ConfirmSubOptInFailed implements Action {
+  readonly type = ActionTypes.CONFIRM_SUB_OPT_IN_FAILED;
   constructor(public payload: { error: any }) {}
 }
 
@@ -119,7 +141,6 @@ UserDataRequested |
 UserDataLoaded |
 StoreUserDataRequested |
 StoreUserDataComplete |
-LoadErrorDetected |
 SetCartData |
 PurgeCartData |
 SubscribeUserRequested |
@@ -131,5 +152,10 @@ StoreNavStampComplete |
 SetUserSessionId |
 ConfirmSubOptInRequested |
 ConfirmSubOptInComplete |
-ConfirmSubOptInErrorDetected
+LoadFailed |
+SaveFailed |
+SubscribeUserFailed |
+TransmitContactFormFailed |
+StoreNavStampFailed |
+ConfirmSubOptInFailed
 ;

@@ -39,6 +39,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   testamonialData: TestamonialData[];
   imagePaths = PublicImagePaths;
 
+  showBuyNowBox: boolean;
+
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
@@ -70,9 +72,22 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     // Check if id params are available
     const idParamName = 'id';
     const idParam = this.route.snapshot.params[idParamName];
-    if (idParam) {
-      this.productId = idParam.toLowerCase(); // Remove any possible erroneous lowercasing (IDs are specifically set to lower case in admin)
-      this.getProduct();
+    if (!idParam) {
+      console.log('Error No product data found in url');
+      return;
+    }
+    this.productId = idParam.toLowerCase(); // Remove any possible erroneous lowercasing (IDs are specifically set to lower case in admin)
+    this.getProduct();
+    this.configureBuyNowBox();
+  }
+
+  // Hide buynowbox if product is not yet live
+  private configureBuyNowBox() {
+    if (
+      this.productId !== this.productIdList.EXPLEARNING_EXECUTIVE_PRESENCE &&
+      this.productId !== this.productIdList.EXPLEARNING_SANDBOX_WEB_COURSE
+      ) {
+        this.showBuyNowBox = true;
     }
   }
 

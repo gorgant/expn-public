@@ -128,6 +128,9 @@ export class UserService {
         take(1),
         tap(subConfirmed => {
           console.log('Subscriber confirmation status', subConfirmed);
+          if (!subConfirmed) {
+            throw new Error(`Error confirming subscriber: ${subConfirmed}`);
+          }
         }),
         catchError(error => {
           console.log('Error confirming subscriber', error);

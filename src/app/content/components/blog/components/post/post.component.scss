@@ -100,17 +100,20 @@ app-page-hero {
   }
   
   h2 {
-    color: $accent;
+    color: $primary;
+    font-weight: $font-weight-light;
     font-size: 1.5em;
   }
 
   h3 {
-    color: $accent;
+    color: $primary;
+    font-weight: $font-weight-light;
     font-size: 1.3em;
   }
 
   h4 {
-    color: $accent;
+    color: $primary;
+    font-weight: $font-weight-light;
     font-size: 1.1em;
   }
   

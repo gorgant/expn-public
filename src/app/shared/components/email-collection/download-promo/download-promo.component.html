@@ -25,8 +25,10 @@
         <mat-error *ngIf="email.hasError(validation.type) && email.invalid && (email.dirty || email.touched)">{{ validation.message }}</mat-error>
       </mat-error>
     </mat-form-field>
+    <mat-progress-spinner *ngIf="isSubscribingUser$ | async" diameter=40 color="accent" mode="indeterminate"></mat-progress-spinner>
     <button 
-      [disabled]="(email.invalid && (email.dirty || email.touched)) || (subscribeProcessing$ | async) || (subscribeSubmitted$ | async) "
+      *ngIf="!(isSubscribingUser$ | async)"
+      [disabled]="(email.invalid && (email.dirty || email.touched))"
       class="submit-button" 
       type="submit" 
       mat-raised-button 
@@ -35,8 +37,14 @@
     </button>
   </form>
 
-  <div *ngIf="(subscribeSubmitted$ | async) && emailSubmitted" class="post-submit-message">
-    Please check your inbox for a confirmation email from {{ senderEmail }}. If it isn't there, be sure to check your spam folder and add that address to your trusted contacts.
+  <div *ngIf="userSubscribed && !existingSubscriber" class="post-submit-message">
+    Please check your inbox for a confirmation email from {{ senderEmail }}. If it isn't there, be sure to check your spam folder and promotions tab.
+  </div>
+  <div *ngIf="userSubscribed && existingSubscriber" class="post-submit-message">
+    It looks like you've already subscribed! Be sure to check your spam folder and promotions tab for an email from {{ senderEmail }}.
+  </div>
+  <div *ngIf="subscribeUserError$ | async" class="post-submit-error">
+    Hmm, looks like that didn't work. Please refresh the page and try again.
   </div>
 </div>
 <div class="exit-container" fxLayoutAlign="center center">

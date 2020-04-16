@@ -1,0 +1,25 @@
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ExecutivePresenceComponent } from './executive-presence.component';
+
+describe('ExecutivePresenceComponent', () => {
+  let component: ExecutivePresenceComponent;
+  let fixture: ComponentFixture<ExecutivePresenceComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ ExecutivePresenceComponent ]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ExecutivePresenceComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

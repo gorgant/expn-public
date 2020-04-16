@@ -1,0 +1,60 @@
+@import '../../../../../../variables';
+
+:host {
+  width: 100%;
+  max-width: $max-screen-width;
+}
+
+.header {
+  font-size: 32px;
+  font-weight: $font-weight-light;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  max-width: 1000px;
+  padding: 16px;
+}
+
+.intro-text {
+  font-weight: $font-weight-medium;
+  margin: 0;
+}
+
+.body-container {
+  padding: $text-block-padding;
+  max-width: $text-block-max-width;
+  font-size: $text-block-font-size;
+  font-weight: $text-block-font-weight;
+}
+
+.body-text {
+  @include textBlockBullets()
+}
+
+.waitlist-signup {
+  @include background-opacity($primary, $opacity-medium);
+  width: 100%;
+}
+
+.section-title {
+  font-weight: $font-weight-light;
+  color: $primary;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  
+  .header {
+    font-size: 24px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .intro-text {
+    font-size: $text-block-mobile-font-size;
+  }
+
+  .body-container {
+    font-size: $text-block-mobile-font-size;
+  }
+
+}

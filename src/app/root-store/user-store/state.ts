@@ -2,33 +2,37 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { Product } from 'shared-models/products/product.model';
 
 export interface State {
-  user: PublicUser | null;
   isLoading: boolean;
-  userLoaded: boolean;
-  error?: any;
+  isSaving: boolean;
+  isSubscribingUser: boolean;
+  isTransmittingContactForm: boolean;
+  isStoringNavStamp: boolean;
+  isConfirmingSubOptIn: boolean;
+  loadError: any;
+  saveError: any;
+  subscribeUserError: any;
+  transmitContactFormError: any;
+  storeNavStampError: any;
+  confirmSubOptInError: any;
+  user: PublicUser | null;
   cartItem: Product;
-  subscribeProcessing: boolean;
-  subscribeSubmitted: boolean;
-  contactFormProcessing: boolean;
-  contactFormSubmitted: boolean;
   userSessionId: string;
-  confirmSubscriberProcessing: boolean;
-  subMarkedConfirmed: boolean;
-  confirmSubscriberError: any;
 }
 
 export const initialState: State = {
-  user: null,
   isLoading: false,
-  userLoaded: false,
-  error: null,
+  isSaving: false,
+  isSubscribingUser: false,
+  isTransmittingContactForm: false,
+  isStoringNavStamp: false,
+  isConfirmingSubOptIn: false,
+  loadError: false,
+  saveError: false,
+  subscribeUserError: false,
+  transmitContactFormError: false,
+  storeNavStampError: false,
+  confirmSubOptInError: false,
+  user: null,
   cartItem: null,
-  subscribeProcessing: false,
-  subscribeSubmitted: false,
-  contactFormProcessing: false,
-  contactFormSubmitted: false,
   userSessionId: null,
-  confirmSubscriberProcessing: false,
-  subMarkedConfirmed: null,
-  confirmSubscriberError: null,
 };

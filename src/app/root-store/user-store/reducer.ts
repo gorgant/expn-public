@@ -7,33 +7,26 @@ export function featureReducer(state = initialState, action: Actions): State {
       return {
         ...state,
         isLoading: true,
-        error: null
+        loadError: null,
       };
     case ActionTypes.USER_DATA_LOADED:
       return {
         ...state,
         user: action.payload.userData,
         isLoading: false,
-        error: null,
-        userLoaded: true,
+        loadError: null,
       };
     case ActionTypes.STORE_USER_DATA_REQUESTED:
       return {
         ...state,
-        isLoading: true,
+        isSaving: true,
+        saveError: null,
       };
     case ActionTypes.STORE_USER_DATA_COMPLETE:
       return {
         ...state,
-        error: null,
-      };
-    case ActionTypes.USER_DATA_LOAD_ERROR:
-      return {
-        ...state,
-        isLoading: false,
-        contactFormProcessing: false,
-        subscribeProcessing: false,
-        error: action.payload.error
+        isSaving: false,
+        saveError: null,
       };
     case ActionTypes.SET_CART_DATA:
       return {
@@ -48,28 +41,39 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.SUBSCRIBE_USER_REQUESTED:
       return {
         ...state,
-        subscribeProcessing: true
+        isSubscribingUser: true,
+        subscribeUserError: null,
       };
     case ActionTypes.SUBSCRIBE_USER_COMPLETE:
       return {
         ...state,
-        subscribeProcessing: false,
-        subscribeSubmitted: true
+        isSubscribingUser: false,
+        subscribeUserError: null,
       };
     case ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED:
       return {
         ...state,
-        contactFormProcessing: true
+        isTransmittingContactForm: true,
+        transmitContactFormError: null,
+
       };
     case ActionTypes.TRANSMIT_CONTACT_FORM_COMPLETE:
       return {
         ...state,
-        contactFormProcessing: false,
-        contactFormSubmitted: true
+        isTransmittingContactForm: false,
+        transmitContactFormError: null,
+      };
+    case ActionTypes.STORE_NAV_STAMP_REQUESTED:
+      return {
+        ...state,
+        isStoringNavStamp: true,
+        storeNavStampError: null,
       };
     case ActionTypes.STORE_NAV_STAMP_COMPLETE:
       return {
         ...state,
+        isStoringNavStamp: false,
+        storeNavStampError: null
       };
     case ActionTypes.SET_USER_SESSION_ID:
       return {
@@ -79,20 +83,64 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.CONFIRM_SUB_OPT_IN_REQUESTED:
       return {
         ...state,
-        confirmSubscriberProcessing: true,
-        confirmSubscriberError: null,
+        isConfirmingSubOptIn: true,
+        confirmSubOptInError: null
       };
     case ActionTypes.CONFIRM_SUB_OPT_IN_COMPLETE:
       return {
         ...state,
-        confirmSubscriberProcessing: false,
-        subMarkedConfirmed: action.payload.subConfirmed,
+        isConfirmingSubOptIn: false,
+        confirmSubOptInError: null
       };
-    case ActionTypes.CONFIRM_SUB_OPT_IN_ERROR_DETECTED:
+
+    case ActionTypes.LOAD_FAILED: {
       return {
         ...state,
-        confirmSubscriberError: action.payload.error,
+        user: null,
+        isLoading: false,
+        loadError: action.payload.error
       };
+    }
+
+    case ActionTypes.SAVE_FAILED: {
+      return {
+        ...state,
+        isSaving: false,
+        saveError: action.payload.error
+      };
+    }
+
+    case ActionTypes.SUBSCRIBE_USER_FAILED: {
+      return {
+        ...state,
+        isSubscribingUser: false,
+        subscribeUserError: action.payload.error
+      };
+    }
+
+    case ActionTypes.TRANSMIT_CONTACT_FORM_FAILED: {
+      return {
+        ...state,
+        isTransmittingContactForm: false,
+        transmitContactFormError: action.payload.error
+      };
+    }
+
+    case ActionTypes.STORE_NAV_STAMP_FAILED: {
+      return {
+        ...state,
+        isStoringNavStamp: false,
+        storeNavStampError: action.payload.error
+      };
+    }
+
+    case ActionTypes.CONFIRM_SUB_OPT_IN_FAILED: {
+      return {
+        ...state,
+        isConfirmingSubOptIn: false,
+        confirmSubOptInError: action.payload.error
+      };
+    }
 
     default: {
       return state;

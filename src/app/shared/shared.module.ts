@@ -14,8 +14,11 @@ import { AvatarPortraitComponent } from './components/avatar-portrait/avatar-por
 import { ScrollableDirective } from './directives/scrollable.directive';
 import { AppShellNoRenderDirective } from './directives/app-shell-no-render.directive';
 import { AppShellRenderDirective } from './directives/app-shell-render.directive';
-import { LazyLoadImageModule, scrollPreset } from 'ng-lazyload-image';
+import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { DownloadPromoComponent } from './components/email-collection/download-promo/download-promo.component';
+import { ServiceProductPipe } from './pipes/service-product.pipe';
+import { WebcourseProductPipe } from './pipes/webcourse-product.pipe';
+import { WaitListComponent } from './components/email-collection/wait-list/wait-list.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { DownloadPromoComponent } from './components/email-collection/download-p
     ScrollableDirective,
     AppShellNoRenderDirective,
     AppShellRenderDirective,
-    DownloadPromoComponent
+    DownloadPromoComponent,
+    ServiceProductPipe,
+    WebcourseProductPipe,
+    WaitListComponent,
   ],
   imports: [
     CommonModule,
@@ -57,7 +63,10 @@ import { DownloadPromoComponent } from './components/email-collection/download-p
     AppShellNoRenderDirective,
     AppShellRenderDirective,
     LazyLoadImageModule,
-    DownloadPromoComponent
+    DownloadPromoComponent,
+    ServiceProductPipe,
+    WebcourseProductPipe,
+    WaitListComponent
   ]
 })
 export class SharedModule { }

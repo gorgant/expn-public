@@ -32,7 +32,7 @@ export class UserStoreEffects {
             return new userFeatureActions.UserDataLoaded({userData: user});
           }),
           catchError(error => {
-            return of(new userFeatureActions.LoadErrorDetected({ error }));
+            return of(new userFeatureActions.LoadFailed({ error }));
           })
         )
     )
@@ -57,7 +57,7 @@ export class UserStoreEffects {
         }),
         map(userId => new userFeatureActions.StoreUserDataComplete()),
         catchError(error => {
-          return of(new userFeatureActions.LoadErrorDetected({ error }));
+          return of(new userFeatureActions.SaveFailed({ error }));
         })
       )
     )
@@ -103,7 +103,7 @@ export class UserStoreEffects {
             return new userFeatureActions.SubscribeUserComplete();
           }),
           catchError(error => {
-            return of(new userFeatureActions.LoadErrorDetected({ error }));
+            return of(new userFeatureActions.SubscribeUserFailed({ error }));
           })
         )
     )
@@ -124,7 +124,7 @@ export class UserStoreEffects {
             return new userFeatureActions.TransmitContactFormComplete();
           }),
           catchError(error => {
-            return of(new userFeatureActions.LoadErrorDetected({ error }));
+            return of(new userFeatureActions.TransmitContactFormFailed({ error }));
           })
         )
     )
@@ -145,7 +145,7 @@ export class UserStoreEffects {
             return new userFeatureActions.StoreNavStampComplete();
           }),
           catchError(error => {
-            return of(new userFeatureActions.LoadErrorDetected({ error }));
+            return of(new userFeatureActions.StoreNavStampFailed({ error }));
           })
         )
     )
@@ -163,13 +163,10 @@ export class UserStoreEffects {
             if (!response) {
               throw new Error('No response from admin while confirming subscriber');
             }
-            return new userFeatureActions.ConfirmSubOptInComplete({subConfirmed: response});
+            return new userFeatureActions.ConfirmSubOptInComplete();
           }),
           catchError(error => {
-            this.store$.dispatch(
-              new userFeatureActions.ConfirmSubOptInComplete({subConfirmed: false})
-            );
-            return of(new userFeatureActions.ConfirmSubOptInErrorDetected({ error }));
+            return of(new userFeatureActions.ConfirmSubOptInFailed({ error }));
           })
         )
     )

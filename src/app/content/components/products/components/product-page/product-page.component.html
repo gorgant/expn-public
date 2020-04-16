@@ -6,16 +6,20 @@
     <!-- DYNAMICALLY POPULATE PRODUCT TEMPLATE BASED ON ID -->
     <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_COACH ? remoteCoach : null"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_COACH ? remoteCoach : null"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {productId: product.id}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_COACH ? remoteCoach : null" ></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null; context: {productId: product.id}" ></ng-container>
+      <!-- <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null" [ngTemplateOutletContext]="{productId: productId}" ></ng-container> -->
     </div>
 
     <div *appShellNoRender class="buy-now-container">
-      <app-buy-now-box [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
+      <app-buy-now-box *ngIf="showBuyNowBox" [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
       <div class="testamonial-section">
         <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
       </div>
-      <app-buy-now-box [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
+      <app-buy-now-box *ngIf="showBuyNowBox" [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
+      <app-wait-list [productId]="product.id"></app-wait-list>
     </div>
   </div>
 </div>
@@ -23,6 +27,11 @@
 <!-- SELECTION OF PRODUCT TEMPLATES TO DRAW FROM -->
 <ng-template #remoteCoach>
   <app-remote-coach></app-remote-coach>
+</ng-template>
+
+<!-- productId variable set in ng-container above -->
+<ng-template #executivePresence let-productId="productId">
+  <app-executive-presence [productId]="productId"></app-executive-presence>
 </ng-template>
 
 <ng-template #testProduct>

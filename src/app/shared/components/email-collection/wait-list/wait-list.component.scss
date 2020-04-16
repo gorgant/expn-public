@@ -1,5 +1,10 @@
 @import "../../../../variables";
 
+.subscribe-content {
+  padding: 32px;
+  width: 100%;
+}
+
 .title {
   font-size: 32px;
   color: white;
@@ -15,7 +20,8 @@
 }
 
 mat-form-field {
-  width: $desktop-form-width;
+  max-width: $desktop-form-width;
+  font-size: 16px;
 }
 
 .input-placeholder {
@@ -27,7 +33,8 @@ mat-form-field {
 }
 
 button {
-  width: $desktop-button-width;
+  width: 100%;
+  max-width: $desktop-button-width;
   opacity: $inactive-item-opacity;
 }
 
@@ -47,16 +54,22 @@ button:hover {
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
+  .subscribe-content {
+    padding: 16px;
+  }
+  
   .description {
     text-align: center;
   }
 
   mat-form-field {
-    width: $mobile-form-width;
+    width: 100%;
+    // max-width: $mobile-form-width;
   }
 
   button {
-    width: $mobile-button-width;
+    width: 100%;
+    // max-width: $mobile-button-width;
     opacity: $active-item-opacity;
   }
   

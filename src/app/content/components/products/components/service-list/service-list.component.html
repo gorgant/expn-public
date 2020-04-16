@@ -1,0 +1,3 @@
+<div class="products-container" fxLayout="column" fxLayoutGap="40px">
+  <app-product-card *ngFor="let product of products$ | async | serviceProductPipe" [product]="product"></app-product-card>
+</div>

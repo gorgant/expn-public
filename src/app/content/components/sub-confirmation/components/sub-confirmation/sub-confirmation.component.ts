@@ -1,26 +1,26 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
 import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 import { SubOptInConfirmationData } from 'shared-models/subscribers/sub-opt-in-confirmation-data.model';
 import { isPlatformServer } from '@angular/common';
+import { withLatestFrom } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirmation',
   templateUrl: './sub-confirmation.component.html',
   styleUrls: ['./sub-confirmation.component.scss']
 })
-export class SubConfirmationComponent implements OnInit {
+export class SubConfirmationComponent implements OnInit, OnDestroy {
 
   confirmSubscriberProcessing$: Observable<boolean>;
-  subMarkedConfirmed$: Observable<boolean>;
   confirmSubcriberError$: Observable<any>;
+  confirmSubOptInSubscription: Subscription;
+  subMarkedConfirmed: boolean;
 
   supportEmail = EmailSenderAddresses.EXPLEARNING_SUPPORT;
-  // subConfCheckStarted: boolean;
-  // subConfCheckFailed: boolean;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -37,9 +37,8 @@ export class SubConfirmationComponent implements OnInit {
   }
 
   private initializeSubConfirmationStatus() {
-    this.confirmSubscriberProcessing$ = this.store$.select(UserStoreSelectors.selectConfirmSubscriberProcessing);
-    this.subMarkedConfirmed$ = this.store$.select(UserStoreSelectors.selectSubMarkedConfrimed);
-    this.confirmSubcriberError$ = this.store$.select(UserStoreSelectors.selectConfirmSubscriberError);
+    this.confirmSubscriberProcessing$ = this.store$.select(UserStoreSelectors.selectIsSubscribingUser);
+    this.confirmSubcriberError$ = this.store$.select(UserStoreSelectors.selectSubscribeUserError);
   }
 
   private markSubscriberConfirmed() {
@@ -58,6 +57,32 @@ export class SubConfirmationComponent implements OnInit {
 
       this.store$.dispatch(new UserStoreActions.ConfirmSubOptInRequested({subConfData}));
       console.log('marking subscriber confirmed with this id data', subConfData);
+      this.reactToConfirmSubOptInOutcome();
+    }
+  }
+
+  private reactToConfirmSubOptInOutcome() {
+    this.confirmSubOptInSubscription = this.store$.select(UserStoreSelectors.selectIsSaving)
+      .pipe(
+        withLatestFrom(
+          this.store$.select(UserStoreSelectors.selectSaveError)
+        )
+      )
+      .subscribe(([isConfirmingOptIn, optInError]) => {
+        if (!isConfirmingOptIn && !optInError) {
+          console.log('Sub marked confirmed');
+          this.subMarkedConfirmed = true;
+        }
+        if (optInError) {
+          console.log('Error marking sub confirmed');
+          this.subMarkedConfirmed = false;
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.confirmSubOptInSubscription) {
+      this.confirmSubOptInSubscription.unsubscribe();
     }
   }
 

@@ -55,6 +55,11 @@ mat-form-field {
   width: $desktop-button-width;
 }
 
+.opt-in-box-text {
+  // width: 100%;
+  white-space: normal;
+}
+
 .post-submit-message {
   color: $accent;
   text-align: center;

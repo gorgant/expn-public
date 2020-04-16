@@ -75,6 +75,11 @@ mat-form-field {
   text-align: center;
 }
 
+.post-submit-error {
+  color: $warn;
+  text-align: center;
+}
+
 @media screen and (max-width: $mobile-cutoff-width) {
 
   .box-container {

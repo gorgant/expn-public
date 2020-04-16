@@ -1,0 +1,16 @@
+@import '../../../../../variables';
+
+.products-container {
+  max-width: 900px;
+  margin-top: 64px;
+  margin-bottom: 32px;
+  font-size: 16px;
+  padding: 16px;
+}
+
+@media screen and (max-width: $mobile-cutoff-width) {
+  .products-container {
+    margin-top: 32px;
+  }
+}
+

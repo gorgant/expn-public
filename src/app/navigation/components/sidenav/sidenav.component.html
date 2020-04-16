@@ -19,11 +19,19 @@
   
   <a mat-list-item 
     routerLinkActive="active-list-item"
-    [routerLink]="appRoutes.PRODUCTS"
+    [routerLink]="appRoutes.WEBCOURSES"
+    (click)="onToggleSideNav()">
+    <mat-icon mat-list-icon>chrome_reader_mode</mat-icon>
+    <p mat-line>Web Courses</p>
+  </a>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="appRoutes.SERVICES"
     (click)="onToggleSideNav()">
     <mat-icon mat-list-icon>people</mat-icon>
     <p mat-line>Services</p>
-</a>
+  </a>
   
   <a mat-list-item 
     routerLinkActive="active-list-item"
