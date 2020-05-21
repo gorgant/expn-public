@@ -43,14 +43,14 @@ const reloadLimit = 2; // Set a max number of reload attempts
 const blogFullyLoaded = (blogIndex: BlogIndexPostRef[]): boolean => {
   const blogIndexLength = blogIndex.length;
   console.log(`Found ${blogIndexLength} posts in blog index`);
-  if (blogIndexLength > minBlogPostCount) return true;
+  if (blogIndexLength > (minBlogPostCount - 1)) return true;
   return false;
 }
 
 const podcastFullyLoaded = (podcastIndex: PodcastEpisode[]): boolean => {
   const podcastIndexLength = podcastIndex.length;
   console.log(`Found ${podcastIndexLength} episodes in podcast index`);
-  if (podcastIndexLength > minPodcastEpisodeCount) return true;
+  if (podcastIndexLength > (minPodcastEpisodeCount - 1)) return true;
   return false;
 }
 
@@ -145,13 +145,17 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       return result;
     }, [] as PublicAppRoutes[]);
 
+    console.log('Generated this list of cachable app routes', cachableAppRoutes);
+
     // Only cache request path if it matches a cachable route as defined above or matches the home route
     for (const validRoute of cachableAppRoutes) {
-      if (requestPath.includes(validRoute) || requestPath === '/') {
+      // Match a valid route exactly or a valid route plus an 8-character ID plus a slash followed by a wild card (https://regex101.com/ for info on the regex string)
+      if (requestPath === validRoute || requestPath === '/' || requestPath.match(new RegExp(validRoute + '\/[a-zA-Z0-9]{8,8}\/.*'))) {
         console.log(`Cachable route detected, submitted for caching`);
         // Cache HTML in database for easy future retrieval
         await storeWebPageCache(requestPath, userAgent, html)
           .catch(err => {console.error(`Error storing webpagecache:`, err);}); // Don't throw error, just log it to console
+        break; // Break loop if match is found to prevent multiple caches per request
       }
     }
 

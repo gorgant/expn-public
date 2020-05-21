@@ -101,18 +101,23 @@ export class AppComponent implements OnInit {
   private firePopup() {
 
     this.store$.select(UserStoreSelectors.selectUser)
-      .pipe(take(1))
+      .pipe(
+        takeWhile(() => !this.promoFired) // Instead of take(1) because instapop fires before user loads, so needs >1 takes
+      )
       .subscribe(user => {
+        console.log('Popup user check returned this value', user);
 
         // Check if user email already exists
-        if (user.optInConfirmed) {
+        if (user && user.optInConfirmed) {
           console.log('User has already opted in, no popup');
+          this.promoFired = true;
           return;
         }
 
         // Check if promo already fired
         if (this.promoFired) {
           console.log('Promo already fired, canceling duplicate');
+          this.promoFired = true;
           return;
         }
 
@@ -132,6 +137,7 @@ export class AppComponent implements OnInit {
         // Check if user is at checkout
         if (invalidRouteDetected) {
           console.log('No popup because invalid route detected');
+          this.promoFired = true;
           return;
         }
 

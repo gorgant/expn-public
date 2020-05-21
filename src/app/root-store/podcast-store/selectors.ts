@@ -26,7 +26,7 @@ export const selectEpisodeError: MemoizedSelector<object, any> = createSelector(
   getError
 );
 
-export const selectEpisodeIsLoading: MemoizedSelector<object, boolean>
+export const selectIsLoading: MemoizedSelector<object, boolean>
 = createSelector(selectEpisodeState, getIsLoading);
 
 export const selectEpisodesLoaded: MemoizedSelector<object, boolean>

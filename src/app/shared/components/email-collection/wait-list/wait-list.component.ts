@@ -50,6 +50,7 @@ export class WaitListComponent implements OnInit, OnDestroy {
 
   // Assign subscription source based on product id;
   private assignSubscriptionSource() {
+    console.log('Using this product id to assign sub source', this.productId);
     this.subscriptionSource = SubSourceProductIdReferences[this.productId].subSource;
     // Exit function if no matching waitlist found
     if (!this.subscriptionSource) {
@@ -124,10 +125,12 @@ export class WaitListComponent implements OnInit, OnDestroy {
         if (!isSubscribingUser && !subscribeError) {
           console.log('User subscribed', updatedUser);
           this.userSubscribed = true;
+          this.subscribeUserSubscription.unsubscribe();
         }
         if (subscribeError) {
           console.log('Error subscribing user');
           this.userSubscribed = false;
+          this.subscribeUserSubscription.unsubscribe();
         }
       });
   }

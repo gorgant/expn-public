@@ -10,7 +10,9 @@ export enum ActionTypes {
   FEATURED_POSTS_LOADED = '[Posts] Featured Posts Loaded',
   BLOG_INDEX_REQUESTED = '[Posts] Post Index Requested',
   BLOG_INDEX_LOADED = '[Posts] Post Index Loaded',
-  POST_LOAD_FAILURE = '[Posts] Load Failure',
+  LOAD_FAILED = '[Posts] Load Failed',
+  FEATURED_POSTS_LOAD_FAILED = '[Posts] Featured Posts Load Failed',
+  BLOG_INDEX_LOAD_FAILED = '[Posts] Blog Index Load Failed'
 }
 
 export class SinglePostRequested implements Action {
@@ -50,10 +52,22 @@ export class BlogIndexLoaded implements Action {
   constructor(public payload: { blogIndex: BlogIndexPostRef[] }) {}
 }
 
-export class LoadErrorDetected implements Action {
-  readonly type = ActionTypes.POST_LOAD_FAILURE;
+export class LoadFailed implements Action {
+  readonly type = ActionTypes.LOAD_FAILED;
   constructor(public payload: { error: string }) {}
 }
+
+export class FeaturedPostsLoadFailed implements Action {
+  readonly type = ActionTypes.FEATURED_POSTS_LOAD_FAILED;
+  constructor(public payload: { error: string }) {}
+}
+
+export class BlogIndexLoadFailed implements Action {
+  readonly type = ActionTypes.BLOG_INDEX_LOAD_FAILED;
+  constructor(public payload: { error: string }) {}
+}
+
+
 
 export type Actions =
   SinglePostRequested |
@@ -64,5 +78,7 @@ export type Actions =
   FeaturedPostsLoaded |
   BlogIndexRequested |
   BlogIndexLoaded |
-  LoadErrorDetected
+  LoadFailed |
+  FeaturedPostsLoadFailed |
+  BlogIndexLoadFailed
   ;

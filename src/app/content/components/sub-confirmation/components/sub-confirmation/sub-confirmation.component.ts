@@ -72,10 +72,12 @@ export class SubConfirmationComponent implements OnInit, OnDestroy {
         if (!isConfirmingOptIn && !optInError) {
           console.log('Sub marked confirmed');
           this.subMarkedConfirmed = true;
+          this.confirmSubOptInSubscription.unsubscribe();
         }
         if (optInError) {
           console.log('Error marking sub confirmed');
           this.subMarkedConfirmed = false;
+          this.confirmSubOptInSubscription.unsubscribe();
         }
       });
   }

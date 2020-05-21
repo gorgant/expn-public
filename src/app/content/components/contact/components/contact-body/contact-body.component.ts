@@ -133,10 +133,12 @@ export class ContactBodyComponent implements OnInit {
       if (!isTransmittingContactForm && !transmissionError) {
         console.log('Contact form transmitted', contactForm);
         this.formSubmitted = true;
+        this.contactFormSubmissionSubscription.unsubscribe();
       }
       if (transmissionError) {
         console.log('Error transmitting contact form');
         this.formSubmitted = false;
+        this.contactFormSubmissionSubscription.unsubscribe();
       }
     });
   }

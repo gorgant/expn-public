@@ -8,7 +8,7 @@ export function featureReducer(state = initialState, action: Actions): State {
       return {
         ...state,
         isLoading: true,
-        error: null
+        loadError: null
       };
     }
 
@@ -17,7 +17,7 @@ export function featureReducer(state = initialState, action: Actions): State {
         action.payload.post, {
           ...state,
           isLoading: false,
-          error: null
+          loadError: null
         }
       );
     }
@@ -26,7 +26,7 @@ export function featureReducer(state = initialState, action: Actions): State {
       return {
         ...state,
         isLoading: true,
-        error: null
+        loadError: null
       };
     }
 
@@ -35,8 +35,8 @@ export function featureReducer(state = initialState, action: Actions): State {
         action.payload.posts, {
           ...state,
           isLoading: false,
-          error: null,
-          postsLoaded: true,
+          loadError: null,
+          postsLoaded: true
         }
       );
     }
@@ -44,8 +44,8 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.FEATURED_POSTS_REQUESTED: {
       return {
         ...state,
-        isLoading: true,
-        error: null
+        isLoadingFeaturedPosts: true,
+        featuredPostLoadError: null
       };
     }
 
@@ -53,9 +53,8 @@ export function featureReducer(state = initialState, action: Actions): State {
       return featureAdapter.addMany(
         action.payload.posts, {
           ...state,
-          isLoading: false,
-          error: null,
-          featuredPostsLoaded: true,
+          isLoadingFeaturedPosts: false,
+          featuredPostLoadError: null,
         }
       );
     }
@@ -63,8 +62,8 @@ export function featureReducer(state = initialState, action: Actions): State {
     case ActionTypes.BLOG_INDEX_REQUESTED: {
       return {
         ...state,
-        isLoading: true,
-        error: null
+        isLoadingBlogIndex: true,
+        blogIndexLoadError: null
       };
     }
 
@@ -72,18 +71,34 @@ export function featureReducer(state = initialState, action: Actions): State {
       return featureAdapter.addMany(
         action.payload.blogIndex, {
           ...state,
-          isLoading: false,
-          error: null,
+          isLoadingBlogIndex: false,
+          blogIndexLoadError: null,
           blogIndexLoaded: true
         }
       );
     }
 
-    case ActionTypes.POST_LOAD_FAILURE: {
+    case ActionTypes.LOAD_FAILED: {
       return {
         ...state,
         isLoading: false,
-        error: action.payload.error
+        loadError: action.payload.error
+      };
+    }
+
+    case ActionTypes.FEATURED_POSTS_LOAD_FAILED: {
+      return {
+        ...state,
+        isLoadingFeaturedPosts: false,
+        featuredPostLoadError: action.payload.error
+      };
+    }
+
+    case ActionTypes.BLOG_INDEX_LOAD_FAILED: {
+      return {
+        ...state,
+        isLoadingBlogIndex: false,
+        blogIndexLoadError: action.payload.error,
       };
     }
 

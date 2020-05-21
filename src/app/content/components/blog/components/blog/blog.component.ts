@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/root-store';
 import { Observable } from 'rxjs';
-import { withLatestFrom, map, filter } from 'rxjs/operators';
+import { map, filter, withLatestFrom } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
@@ -21,6 +21,7 @@ export class BlogComponent implements OnInit, OnDestroy {
   posts$: Observable<BlogIndexPostRef[]>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
+  requestBlogIndex: boolean;
 
   heroData: PageHeroData;
 
@@ -66,15 +67,16 @@ export class BlogComponent implements OnInit, OnDestroy {
   }
 
   private initializePosts() {
+
+    this.error$ = this.store$.select(PostStoreSelectors.selectLoadError);
+
     this.posts$ = this.store$.select(PostStoreSelectors.selectblogIndex)
       .pipe(
-          withLatestFrom(
-            this.store$.select(PostStoreSelectors.selectPostsLoaded),
-            this.store$.select(PostStoreSelectors.selectblogIndexLoaded)
-          ),
-          map(([posts, postsLoaded, blogIndexLoaded]) => {
-            if (!postsLoaded && !blogIndexLoaded) {
+          withLatestFrom(this.store$.select(PostStoreSelectors.selectBlogIndexLoaded)),
+          map(([posts, blogIndexLoaded]) => {
+            if (!blogIndexLoaded && !this.requestBlogIndex) {
               console.log('No post index loaded, loading that now');
+              this.requestBlogIndex = true;
               this.store$.dispatch(new PostStoreActions.BlogIndexRequested());
             }
             return posts as BlogIndexPostRef[];
@@ -82,12 +84,8 @@ export class BlogComponent implements OnInit, OnDestroy {
           filter(posts => posts.length > 0), // Catches the first emission which is an empty array
         );
 
-    this.error$ = this.store$.select(
-      PostStoreSelectors.selectPostError
-    );
-
     this.isLoading$ = this.store$.select(
-      PostStoreSelectors.selectPostIsLoading
+      PostStoreSelectors.selectIsLoading
     );
   }
 

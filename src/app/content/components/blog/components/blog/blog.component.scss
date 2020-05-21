@@ -26,6 +26,12 @@ app-page-hero {
   @include collection-container-bounds;
 }
 
+.load-error {
+  margin-top: 32px;
+  font-size: $text-block-font-size;
+  text-align: center;
+}
+
 @media screen and (max-width: $mobile-cutoff-width) {
   
   .header {

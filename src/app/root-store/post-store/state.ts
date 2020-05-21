@@ -16,19 +16,25 @@ export const featureAdapter: EntityAdapter<Post | BlogIndexPostRef>
   );
 
 export interface State extends EntityState<Post | BlogIndexPostRef> {
-  isLoading?: boolean;
-  error?: any;
-  postsLoaded?: boolean;
-  featuredPostsLoaded?: boolean;
-  blogIndexLoaded?: boolean;
+  isLoading: boolean;
+  isLoadingFeaturedPosts: boolean;
+  isLoadingBlogIndex: boolean;
+  loadError: any;
+  featuredPostLoadError: any;
+  blogIndexLoadError: any;
+  postsLoaded: boolean;
+  blogIndexLoaded: boolean;
 }
 
 export const initialState: State = featureAdapter.getInitialState(
   {
     isLoading: false,
-    error: null,
+    isLoadingFeaturedPosts: false,
+    isLoadingBlogIndex: false,
+    loadError: null,
+    featuredPostLoadError: null,
+    blogIndexLoadError: null,
     postsLoaded: false,
-    featuredPostsLoaded: false,
-    blogIndexLoaded: false,
+    blogIndexLoaded: false
   }
 );

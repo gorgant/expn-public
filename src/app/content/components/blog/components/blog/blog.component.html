@@ -5,4 +5,7 @@
   <div class="collection-container">
     <app-post-collection [posts]="posts$ | async"></app-post-collection>
   </div>
+  <div class="load-error" *ngIf="!(posts$ | async) && error$ | async">
+    Error loading posts. Please refresh page.
+  </div>
 </div>

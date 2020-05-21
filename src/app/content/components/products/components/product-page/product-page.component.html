@@ -19,7 +19,9 @@
         <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
       </div>
       <app-buy-now-box *ngIf="showBuyNowBox" [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
-      <app-wait-list [productId]="product.id"></app-wait-list>
+      <div class="waitlist-signup">
+        <app-wait-list *ngIf="!showBuyNowBox" [productId]="product.id"></app-wait-list>
+      </div>
     </div>
   </div>
 </div>

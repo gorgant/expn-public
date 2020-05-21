@@ -16,9 +16,9 @@ export const featureAdapter: EntityAdapter<PodcastEpisode>
   );
 
 export interface State extends EntityState<PodcastEpisode> {
-  isLoading?: boolean;
-  error?: any;
-  episodesLoaded?: boolean;
+  isLoading: boolean;
+  error: any;
+  episodesLoaded: boolean;
 }
 
 export const initialState: State = featureAdapter.getInitialState(

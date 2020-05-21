@@ -16,7 +16,7 @@ export class InActionComponent implements OnInit {
   posts$: Observable<BlogIndexPostRef[]>;
   error$: Observable<string>;
   isLoading$: Observable<boolean>;
-  postLoadTriggered: boolean;
+  requestedPosts: boolean;
 
   appRoutes = PublicAppRoutes;
 
@@ -29,15 +29,16 @@ export class InActionComponent implements OnInit {
   }
 
   private initializeFeaturedPosts() {
+
+    this.error$ = this.store$.select(PostStoreSelectors.selectLoadError);
+
     this.posts$ = this.store$.select(PostStoreSelectors.selectFeaturedPosts)
       .pipe(
-          withLatestFrom(
-            this.store$.select(PostStoreSelectors.selectPostsLoaded),
-            this.store$.select(PostStoreSelectors.selectFeaturedPostsLoaded)
-          ),
-          map(([posts, postsLoaded, featuredPostsLoaded]) => {
-            if (!postsLoaded && !featuredPostsLoaded) {
+          withLatestFrom(this.store$.select(PostStoreSelectors.selectBlogIndexLoaded)),
+          map(([posts, blogIndexLoaded]) => {
+            if (!blogIndexLoaded && !this.requestedPosts) {
               console.log('No featured posts loaded, loading those now');
+              this.requestedPosts = true;
               this.store$.dispatch(new PostStoreActions.FeaturedPostsRequested());
             }
             return posts as BlogIndexPostRef[];
@@ -45,13 +46,7 @@ export class InActionComponent implements OnInit {
           filter(posts => posts.length > 0), // Catches the first emission which is an empty array
         );
 
-    this.error$ = this.store$.select(
-      PostStoreSelectors.selectPostError
-    );
-
-    this.isLoading$ = this.store$.select(
-      PostStoreSelectors.selectPostIsLoading
-    );
+    this.isLoading$ = this.store$.select(PostStoreSelectors.selectIsLoading);
   }
 
 }

@@ -113,10 +113,12 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
         if (!isSubscribingUser && !subscribeError) {
           console.log('User subscribed', updatedUser);
           this.userSubscribed = true;
+          this.subscribeUserSubscription.unsubscribe();
         }
         if (subscribeError) {
           console.log('Error subscribing user');
           this.userSubscribed = false;
+          this.subscribeUserSubscription.unsubscribe();
         }
       });
   }

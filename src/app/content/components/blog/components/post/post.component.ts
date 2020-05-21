@@ -29,11 +29,11 @@ export class PostComponent implements OnInit, OnDestroy {
   error$: Observable<string>;
   errorSubscription: Subscription;
   isLoading$: Observable<boolean>;
-  loadPostTriggered: boolean;
+  requestedPosts: boolean;
   titleSet: boolean;
   postSubscription: Subscription;
 
-  podcastEpisodeLoaded: boolean;
+  episodeRequested: boolean;
 
   heroData: PageHeroData;
 
@@ -44,7 +44,6 @@ export class PostComponent implements OnInit, OnDestroy {
   private productionEnvironment: boolean = environment.production;
   private origin: string;
   sanitizedSubscribeButtonContent: SafeHtml;
-
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -91,30 +90,26 @@ export class PostComponent implements OnInit, OnDestroy {
 
   // Triggered after params are fetched
   private getPost() {
-    this.error$ = this.store$.select(PostStoreSelectors.selectPostError);
+
+    this.error$ = this.store$.select(PostStoreSelectors.selectLoadError);
+
     this.post$ = this.store$.select(PostStoreSelectors.selectPostById(this.postId))
     .pipe(
-      withLatestFrom(
-        this.store$.select(PostStoreSelectors.selectPostsLoaded)
-      ),
+      withLatestFrom(this.store$.select(PostStoreSelectors.selectPostsLoaded)),
       map(([post, postsLoaded]) => {
         // Check if items are loaded, if not fetch from server
-        if (!postsLoaded && !this.loadPostTriggered) {
+        if (!postsLoaded && !this.requestedPosts) {
           console.log('No post in store, fetching from server', this.postId);
-          this.loadPostTriggered = true; // Prevents loading from firing more than needed
+          this.requestedPosts = true; // Prevents loading from firing more than needed
           this.store$.dispatch(new PostStoreActions.SinglePostRequested({postId: this.postId}));
         }
-        this.loadPostTriggered = true; // Prevents loading from firing more than needed
+        this.requestedPosts = true; // Prevents loading from firing more than needed
         return post as Post;
       })
     );
 
-    this.error$ = this.store$.select(
-      PostStoreSelectors.selectPostError
-    );
-
     this.isLoading$ = this.store$.select(
-      PostStoreSelectors.selectPostIsLoading
+      PostStoreSelectors.selectIsLoading
     );
   }
 
@@ -257,16 +252,14 @@ export class PostComponent implements OnInit, OnDestroy {
 
     const podcastEpisode$ = this.store$.select(PodcastStoreSelectors.selectEpisodeById(episodeId))
       .pipe(
-        withLatestFrom(
-          this.store$.select(PodcastStoreSelectors.selectEpisodesLoaded)
-        ),
+        withLatestFrom(this.store$.select(PodcastStoreSelectors.selectEpisodesLoaded)),
         map(([episode, episodesLoaded]) => {
           // Check if items are loaded, if not fetch from server
-          if (!episodesLoaded && !this.podcastEpisodeLoaded) {
+          if (!episodesLoaded && !this.episodeRequested) {
             console.log('No episode in store, fetching from server', episodeId);
+            this.episodeRequested = true; // Prevents loading from firing more than needed
             this.store$.dispatch(new PodcastStoreActions.SingleEpisodeRequested({podcastId, episodeId}));
           }
-          this.podcastEpisodeLoaded = true; // Prevents loading from firing more than needed
           return episode;
         })
       );
@@ -291,7 +284,7 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   private handlePostError() {
-    this.error$.subscribe(error => {
+    this.errorSubscription = this.error$.subscribe(error => {
       if (error) {
         this.router.navigate([PublicAppRoutes.BLOG]);
         console.log('Post load error, routing to blog');

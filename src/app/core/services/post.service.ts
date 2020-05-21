@@ -52,7 +52,7 @@ export class PostService {
           }
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
@@ -87,7 +87,7 @@ export class PostService {
           }
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
@@ -120,7 +120,7 @@ export class PostService {
           }
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );

@@ -28,7 +28,7 @@ export class PostStoreEffects {
             return new postFeatureActions.SinglePostLoaded({ post });
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadErrorDetected({ error: error.message }));
+            return of(new postFeatureActions.LoadFailed({ error: error.message }));
           })
         )
     )
@@ -70,7 +70,7 @@ export class PostStoreEffects {
             return new postFeatureActions.FeaturedPostsLoaded({ posts });
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadErrorDetected({ error }));
+            return of(new postFeatureActions.LoadFailed({ error }));
           })
         )
     )
@@ -91,7 +91,7 @@ export class PostStoreEffects {
             return new postFeatureActions.BlogIndexLoaded({ blogIndex });
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadErrorDetected({ error }));
+            return of(new postFeatureActions.LoadFailed({ error }));
           })
         )
     )

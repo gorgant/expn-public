@@ -5,10 +5,11 @@ import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { UiService } from './ui.service';
-import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
+import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 import { makeStateKey, TransferState } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
+import { ProductionSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,7 @@ export class PodcastService {
           return podcast;
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
@@ -58,7 +59,7 @@ export class PodcastService {
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(episodes => {
-          console.log('Fetched all episodes');
+          console.log(`Fetched all ${episodes.length} episodes`, episodes);
           return episodes;
         }),
         tap(episodes => {
@@ -67,7 +68,7 @@ export class PodcastService {
           }
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
@@ -100,14 +101,14 @@ export class PodcastService {
           }
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
   }
 
   private getPodcastContainerCollection(): AngularFirestoreCollection<PodcastEpisode> {
-    return this.afs.collection<PodcastEpisode>(PublicCollectionPaths.PODCAST_FEED_CACHE);
+    return this.afs.collection<PodcastEpisode>(SharedCollectionPaths.PODCAST_FEED_CACHE);
   }
 
   private getPodcastContainerDoc(podcastId: string): AngularFirestoreDocument<PodcastEpisode> {
@@ -116,7 +117,9 @@ export class PodcastService {
 
   private getEpisodesCollection(podcastId: string): AngularFirestoreCollection<PodcastEpisode> {
     return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(
-      PublicCollectionPaths.PODCAST_FEED_EPISODES, ref => ref.where('blogPostUrlHandle', '>', '0') // This query confirms field exists
+      SharedCollectionPaths.PODCAST_FEED_EPISODES, ref => ref
+        .orderBy('pubDate', 'desc') // Ensures most recent podcasts come first
+        .limit(ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN) // Limit results to most recent for faster page load
     );
   }
 

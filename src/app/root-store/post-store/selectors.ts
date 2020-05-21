@@ -3,11 +3,14 @@ import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/s
 import * as fromPosts from './reducer';
 import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
 
-const getError = (state: State): any => state.error;
 const getIsLoading = (state: State): boolean => state.isLoading;
+const getFeaturedPostsLoading = (state: State): boolean => state.isLoadingFeaturedPosts;
+const getBlogIndexLoading = (state: State): boolean => state.isLoadingBlogIndex;
+const getLoadError = (state: State): any => state.loadError;
+const getFeaturedPostsLoadError = (state: State): any => state.featuredPostLoadError;
+const getBlogIndexLoadError = (state: State): any => state.blogIndexLoadError;
 const getPostsLoaded = (state: State): boolean => state.postsLoaded;
-const getFeaturedPostsLoaded = (state: State): boolean => state.featuredPostsLoaded;
-const getblogIndexLoaded = (state: State): boolean => state.blogIndexLoaded;
+const getBlogIndexLoaded = (state: State): boolean => state.blogIndexLoaded;
 
 export const selectPostState: MemoizedSelector<object, State>
 = createFeatureSelector<State>('posts');
@@ -34,19 +37,21 @@ export const selectPostById: (postId: string) => MemoizedSelector<object, Post |
   postsState => postsState.entities[postId]
 );
 
-export const selectPostError: MemoizedSelector<object, any> = createSelector(
-  selectPostState,
-  getError
-);
+export const selectLoadError: MemoizedSelector<object, any>
+  = createSelector(selectPostState, getLoadError);
+export const selectFeaturedPostsLoadError: MemoizedSelector<object, any>
+  = createSelector(selectPostState, getFeaturedPostsLoadError);
+export const selectBlogIndexLoadError: MemoizedSelector<object, any>
+  = createSelector(selectPostState, getBlogIndexLoadError);
 
-export const selectPostIsLoading: MemoizedSelector<object, boolean>
-= createSelector(selectPostState, getIsLoading);
 
+export const selectIsLoading: MemoizedSelector<object, boolean>
+  = createSelector(selectPostState, getIsLoading);
+export const selectFeaturedPostsLoading: MemoizedSelector<object, boolean>
+  = createSelector(selectPostState, getFeaturedPostsLoading);
+export const selectBlogIndexLoading: MemoizedSelector<object, boolean>
+  = createSelector(selectPostState, getBlogIndexLoading);
 export const selectPostsLoaded: MemoizedSelector<object, boolean>
-= createSelector(selectPostState, getPostsLoaded);
-
-export const selectFeaturedPostsLoaded: MemoizedSelector<object, boolean>
-= createSelector(selectPostState, getFeaturedPostsLoaded);
-
-export const selectblogIndexLoaded: MemoizedSelector<object, boolean>
-= createSelector(selectPostState, getblogIndexLoaded);
+  = createSelector(selectPostState, getPostsLoaded);
+export const selectBlogIndexLoaded: MemoizedSelector<object, boolean>
+  = createSelector(selectPostState, getBlogIndexLoaded);

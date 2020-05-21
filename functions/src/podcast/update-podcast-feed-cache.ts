@@ -2,18 +2,19 @@ import * as https from 'https';
 import { PodcastPaths } from '../../../shared-models/podcast/podcast-paths.model';
 import * as xml2js from 'xml2js'; // Also requires stream and timers packages
 import * as functions from 'firebase-functions';
-import { publicFirestore } from '../config/db-config';
-import { PublicCollectionPaths, SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
+import { publicFirestore, adminFirestore } from '../config/db-config';
+import { SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
 import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
 
-const db = publicFirestore;
+const publicDb = publicFirestore;
+const adminDb = adminFirestore;
 
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
-  const postsCollectionRef = db.collection(SharedCollectionPaths.POSTS);
+  const postsCollectionRef = publicDb.collection(SharedCollectionPaths.POSTS);
   const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get()
     .catch(err => {console.log(`Failed to fetch podcast episode from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   
@@ -78,8 +79,19 @@ const fetchPodcastFeed = async () => {
           modifiedDate: now()
         }
 
+        interface RawEpisode {
+          link: any[],
+          guid: any[],
+          title: any[],
+          pubDate: any[],
+          'itunes:duration': any[],
+          'itunes:author': any[],
+          description: any[],
+          'itunes:image': any[]
+        }
+
         // Parse Podcast Episodes
-        const rawEpisodeArray = podcastObject.item as any[];
+        const rawEpisodeArray = podcastObject.item as RawEpisode[];
 
         const podcastEpisodeArrayPromise = rawEpisodeArray.map(async rawEpisode => {
           
@@ -114,7 +126,7 @@ const fetchPodcastFeed = async () => {
             description: episodeDescription,
             imageUrl: episodeImageUrl,
             modifiedDate: now(),
-            blogPostId: episodeBlogPostId,
+            blogPostId:episodeBlogPostId,
             blogPostUrlHandle: episodeBlogPostUrlHandle
           }
 
@@ -122,9 +134,11 @@ const fetchPodcastFeed = async () => {
         })
 
         const podcastEpisodeArray = await Promise.all(podcastEpisodeArrayPromise);
-        
 
-        resolve({podcast, episodes: podcastEpisodeArray});
+        // Only include episodes that are referenced in a blog post
+        const filteredPodcastEpisodeArray = podcastEpisodeArray.filter((episode) => episode.blogPostUrlHandle.length > 0);
+        
+        resolve({podcast, episodes: filteredPodcastEpisodeArray});
       })
     });
     
@@ -141,11 +155,14 @@ const fetchPodcastFeed = async () => {
 
 let itemsProcessedCount = 0; // Keeps track of episodes cached between loops
 let loopCount = 0; // Prevents infinite looping in case of error
-const batchCacheEpisodes = async (episodes: PodcastEpisode[], podcastDocRef: FirebaseFirestore.DocumentReference) => {
-  const episodeCollectionRef = podcastDocRef.collection(PublicCollectionPaths.PODCAST_FEED_EPISODES);
+const batchCacheEpisodes = async (episodes: PodcastEpisode[], publicPodcastDocRef: FirebaseFirestore.DocumentReference, adminPodcastDocRef: FirebaseFirestore.DocumentReference) => {
+  const publicEpisodeCollectionRef = publicPodcastDocRef.collection(SharedCollectionPaths.PODCAST_FEED_EPISODES);
+  const adminEpisodeCollectionRef = adminPodcastDocRef.collection(SharedCollectionPaths.PODCAST_FEED_EPISODES);
+  
   const remainingEpisodesToCache = episodes.slice(itemsProcessedCount);
   
-  const batch = db.batch();
+  const publicBatch = publicDb.batch();
+  const adminBatch = adminDb.batch();
   const maxBatchSize = 450; // Firebase limit is 500
   let batchSize = 0;
   // Loop through array until the max batch size is reached
@@ -156,15 +173,19 @@ const batchCacheEpisodes = async (episodes: PodcastEpisode[], podcastDocRef: Fir
       break; // Abort loop if end of array reached before batch limit is hit
     }
     // Create a reference to the new doc using the episode id
-    const docRef = episodeCollectionRef.doc(episode.id);
-    batch.set(docRef, episode);
+    const publicDocRef = publicEpisodeCollectionRef.doc(episode.id);
+    const adminDocRef = adminEpisodeCollectionRef.doc(episode.id);
+    publicBatch.set(publicDocRef, episode);
+    adminBatch.set(adminDocRef, episode);
     batchSize = i+1;
   }
 
-  const batchCreate = await batch.commit()
+  const publicBatchCreate = await publicBatch.commit()
+    .catch(err => {console.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
+  const adminBatchCreate = await adminBatch.commit()
     .catch(err => {console.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
 
-  console.log(`Batch created ${batchCreate.length} items`);
+  console.log(`Batch created ${publicBatchCreate.length} items on public and ${adminBatchCreate.length} on admin`);
   itemsProcessedCount += batchSize; // Update global variable to keep track of remaining episodes to cache
   loopCount++;
 }
@@ -175,17 +196,21 @@ const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpis
   itemsProcessedCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
   loopCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
 
-  const podcastDocRef = db.collection(PublicCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
+  const publicPodcastDocRef = publicDb.collection(SharedCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
+  const adminPodcastDocRef = adminDb.collection(SharedCollectionPaths.PODCAST_FEED_CACHE).doc(podcast.id);
 
   // Cache the podcast
-  await podcastDocRef.set(podcast)
+  await publicPodcastDocRef.set(podcast)
     .catch(err => {console.log(`Error setting podcast in public database:`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log('Podcast updated');
+  console.log('Podcast updated on public database');
+  await adminPodcastDocRef.set(podcast)
+    .catch(err => {console.log(`Error setting podcast in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+  console.log('Podcast updated on admin database');
 
   // Cache each episode inside the podcast container
   const totalItemCount = episodes.length;
   while (itemsProcessedCount < totalItemCount && loopCount < 10) {
-    await batchCacheEpisodes(episodes, podcastDocRef);
+    await batchCacheEpisodes(episodes, publicPodcastDocRef, adminPodcastDocRef);
     if (itemsProcessedCount < totalItemCount) {
       console.log(`Repeating batch process: ${itemsProcessedCount} out of ${totalItemCount} items cached`);
     }

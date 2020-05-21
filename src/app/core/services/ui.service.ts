@@ -28,12 +28,16 @@ export class UiService {
     this.sideNavSignal$.next();
   }
 
-  showSnackBar(message, action, duration: number) {
+  showSnackBar(message: string, duration: number, action: string = 'Dismiss', ) {
     const config = new MatSnackBarConfig();
     config.duration = duration;
     config.panelClass = ['custom-snack-bar']; // CSS managed in global styles.css
 
     const snackBarRef = this.snackbar.open(message, action, config);
+
+    snackBarRef.onAction().subscribe(() => {
+      snackBarRef.dismiss();
+    });
   }
 
   fetchGeographicData(): Observable<GeographicData> {
@@ -48,7 +52,7 @@ export class UiService {
           return geographicData;
         }),
         catchError(error => {
-          this.uiService.showSnackBar(error, null, 5000);
+          this.uiService.showSnackBar(error, 5000);
           return throwError(error);
         })
       );
@@ -93,31 +97,31 @@ export class UiService {
     return podcastRssUrl.split('users:')[1].split('/')[0];
   }
 
-/**
- * Rounds a number to the nearest digits desired
- * @param numb Number to round
- * @param digitsToRoundTo Number of digits desired
- */
-// Courtesy of: https://stackoverflow.com/questions/15762768/javascript-math-round-to-two-decimal-places
-generateRoundedNumber(numb: number, digitsToRoundTo: number) {
-  let n = numb;
-  let digits = digitsToRoundTo;
-  let negative = false;
-  if (digits === undefined) {
-      digits = 0;
+  /**
+   * Rounds a number to the nearest digits desired
+   * @param numb Number to round
+   * @param digitsToRoundTo Number of digits desired
+   */
+  // Courtesy of: https://stackoverflow.com/questions/15762768/javascript-math-round-to-two-decimal-places
+  generateRoundedNumber(numb: number, digitsToRoundTo: number) {
+    let n = numb;
+    let digits = digitsToRoundTo;
+    let negative = false;
+    if (digits === undefined) {
+        digits = 0;
+    }
+    if ( n < 0) {
+      negative = true;
+      n = n * -1;
+    }
+    const multiplicator = Math.pow(10, digits);
+    n = parseFloat((n * multiplicator).toFixed(11));
+    n = parseFloat((Math.round(n) / multiplicator).toFixed(2));
+    if ( negative ) {
+        n = parseFloat((n * -1).toFixed(2));
+    }
+    return n;
   }
-  if ( n < 0) {
-    negative = true;
-    n = n * -1;
-  }
-  const multiplicator = Math.pow(10, digits);
-  n = parseFloat((n * multiplicator).toFixed(11));
-  n = parseFloat((Math.round(n) / multiplicator).toFixed(2));
-  if ( negative ) {
-      n = parseFloat((n * -1).toFixed(2));
-  }
-  return n;
-}
 
 
 }

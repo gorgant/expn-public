@@ -70,8 +70,8 @@ export const parseTransferState = (htmlString: string, routeType: PublicAppRoute
         return dataArray;
       case PublicAppRoutes.PODCAST:
         dataKey = TransferStateKeys.ALL_PODCAST_EPISODES_KEY;
-        console.log(`Found this data in podcast`, dataArray);
         dataArray = (initialState as any)[dataKey] as PodcastEpisode[];
+        console.log(`Found this data in podcast`, dataArray);
         return dataArray;
       default:
         dataKey = '';
