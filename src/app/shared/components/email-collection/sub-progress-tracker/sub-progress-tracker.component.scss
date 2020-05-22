@@ -1,0 +1,62 @@
+@import '../../../../variables';
+
+.title {
+  font-size: 32px;
+  font-weight: $font-weight-medium;
+  color: $primary;
+  text-align: center;
+}
+
+.description {
+  font-size: 16px;
+  color: $primary;
+  text-align: center;
+}
+
+.sender-email-text{
+  color: $accent;
+}
+
+.progress-icon-title {
+  text-align: center;
+}
+
+.progress-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+}
+
+.progress-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+}
+
+.icon-divider {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  color: grey;
+}
+
+.incomplete {
+  color: grey;
+}
+
+.complete {
+  color: $primary;
+}
+
+.flashing {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    color: grey;
+  }
+  100% {
+    color: $accent;
+  }
+}

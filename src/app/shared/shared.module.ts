@@ -19,6 +19,7 @@ import { DownloadPromoComponent } from './components/email-collection/download-p
 import { ServiceProductPipe } from './pipes/service-product.pipe';
 import { WebcourseProductPipe } from './pipes/webcourse-product.pipe';
 import { WaitListComponent } from './components/email-collection/wait-list/wait-list.component';
+import { SubProgressTrackerComponent } from './components/email-collection/sub-progress-tracker/sub-progress-tracker.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { WaitListComponent } from './components/email-collection/wait-list/wait-
     ServiceProductPipe,
     WebcourseProductPipe,
     WaitListComponent,
+    SubProgressTrackerComponent,
   ],
   imports: [
     CommonModule,
@@ -66,7 +68,8 @@ import { WaitListComponent } from './components/email-collection/wait-list/wait-
     DownloadPromoComponent,
     ServiceProductPipe,
     WebcourseProductPipe,
-    WaitListComponent
+    WaitListComponent,
+    SubProgressTrackerComponent,
   ]
 })
 export class SharedModule { }

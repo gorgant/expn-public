@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SUBSCRIBE_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
 import { Observable, Subscription } from 'rxjs';
@@ -11,6 +11,7 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { BillingKeys } from 'shared-models/billing/billing-details.model';
+import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
 
 @Component({
   selector: 'app-download-promo',
@@ -31,9 +32,11 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
   senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
 
   constructor(
+    private dialogRef: MatDialogRef<DownloadPromoComponent>,
     @Inject(MAT_DIALOG_DATA) public promoData: any,
     private fb: FormBuilder,
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -46,6 +49,7 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+
     this.userSubscribed = false; // Reset this variable
     // Prevent submission if either field is blank (allows submit button to stay illuminated even when blank)
     if (this[BillingKeys.EMAIL].value === '' || this[BillingKeys.FIRST_NAME].value === '') {
@@ -113,6 +117,7 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
         if (!isSubscribingUser && !subscribeError) {
           console.log('User subscribed', updatedUser);
           this.userSubscribed = true;
+          this.popSubProgressTracker(); // Pop sub progress tracker if submission succeeded
           this.subscribeUserSubscription.unsubscribe();
         }
         if (subscribeError) {
@@ -126,6 +131,14 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
   private initializeSubscribeObservers() {
     this.isSubscribingUser$ = this.store$.select(UserStoreSelectors.selectIsSubscribingUser);
     this.subscribeUserError$ = this.store$.select(UserStoreSelectors.selectSubscribeUserError);
+  }
+
+  private popSubProgressTracker() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.minWidth = 300;
+    dialogConfig.maxWidth = 600;
+    this.dialog.open(SubProgressTrackerComponent, dialogConfig);
+    this.dialogRef.close(); // Close existing dialogue box
   }
 
   ngOnDestroy() {

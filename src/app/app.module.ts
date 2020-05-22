@@ -19,6 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import { DownloadPromoComponent } from './shared/components/email-collection/download-promo/download-promo.component';
 import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
+import { SubProgressTrackerComponent } from './shared/components/email-collection/sub-progress-tracker/sub-progress-tracker.component';
 
 
 
@@ -50,7 +51,8 @@ import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-va
   providers: [],
   bootstrap: [AppComponent],
   entryComponents: [
-    DownloadPromoComponent
+    DownloadPromoComponent,
+    SubProgressTrackerComponent
   ]
 })
 export class AppModule { }

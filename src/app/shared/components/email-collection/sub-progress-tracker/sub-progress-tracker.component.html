@@ -1,0 +1,28 @@
+<div class="box-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center center" fxLayoutGap="8px">
+  <div class="title">Confirm Your Email</div>
+  <div class="description">
+    <p>Please check your inbox for a confirmation email from <span class="sender-email-text">{{ senderEmail }}</span></p>
+  </div>
+  <div class="progress-container" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="16px">
+    <div class="email-submitted" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+      <div class="progress-icon-title complete">Submit Your Details</div>
+      <!-- <mat-icon class="progress-icon complete">send</mat-icon> -->
+      <mat-icon class="progress-icon complete">check_circle_outline</mat-icon>
+    </div>
+    <mat-icon class="icon-divider" [ngClass]="userOptedIn ? 'complete' : 'incomplete flashing'">arrow_right_alt</mat-icon>
+    <div class="email-submitted" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+      <div class="progress-icon-title" [ngClass]="userOptedIn ? 'complete' : 'incomplete flashing'">Check Your Inbox</div>
+      <mat-icon *ngIf="!userOptedIn" class="progress-icon incomplete flashing">mail</mat-icon>
+      <mat-icon *ngIf="userOptedIn" class="progress-icon complete">check_circle_outline</mat-icon>
+    </div>
+    <mat-icon class="icon-divider" [ngClass]="userOptedIn ? 'complete' : 'incomplete'" fxHide fxShow.gt-sm>arrow_right_alt</mat-icon>
+    <div class="email-submitted" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px" fxHide fxShow.gt-sm>
+      <div class="progress-icon-title" [ngClass]="userOptedIn ? 'complete' : 'incomplete'">Confirm Your Email</div>
+      <mat-icon *ngIf="!userOptedIn" class="progress-icon incomplete">mouse</mat-icon>
+      <mat-icon *ngIf="userOptedIn" class="progress-icon complete">check_circle_outline</mat-icon>
+    </div>
+  </div>
+  <div class="description">
+    <p>If you don't see it in your inbox, be sure to check All Mail, Promotions, and Spam folders. Then add us to your trusted contacts.</p>
+  </div>
+</div>

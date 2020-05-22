@@ -10,6 +10,8 @@ import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 import { BillingKeys } from 'shared-models/billing/billing-details.model';
+import { MatDialogConfig, MatDialog } from '@angular/material';
+import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
 
 @Component({
   selector: 'app-subscribe',
@@ -31,7 +33,8 @@ export class SubscribeComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private store$: Store<RootStoreState.State>
+    private store$: Store<RootStoreState.State>,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -112,6 +115,7 @@ export class SubscribeComponent implements OnInit, OnDestroy {
         if (!isSubscribingUser && !subscribeError) {
           console.log('User subscribed', updatedUser);
           this.userSubscribed = true;
+          this.popSubProgressTracker(); // Pop sub progress tracker if submission succeeded
           this.subscribeUserSubscription.unsubscribe();
         }
         if (subscribeError) {
@@ -125,6 +129,13 @@ export class SubscribeComponent implements OnInit, OnDestroy {
   private initializeSubscribeObservers() {
     this.isSubscribingUser$ = this.store$.select(UserStoreSelectors.selectIsSubscribingUser);
     this.subscribeUserError$ = this.store$.select(UserStoreSelectors.selectSubscribeUserError);
+  }
+
+  private popSubProgressTracker() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.minWidth = 300;
+    dialogConfig.maxWidth = 600;
+    this.dialog.open(SubProgressTrackerComponent, dialogConfig);
   }
 
   ngOnDestroy() {
