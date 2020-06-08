@@ -31,7 +31,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 })
 export class AppComponent implements OnInit {
   title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
-  appVersion = '1.9.6';
+  appVersion = '1.9.7';
 
   private userAuthenticationRequested: boolean;
   private userLoaded: boolean;
