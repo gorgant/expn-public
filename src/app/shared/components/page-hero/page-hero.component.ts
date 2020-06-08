@@ -30,9 +30,9 @@ export class PageHeroComponent implements OnInit, OnDestroy {
 
   heroBackgroundImageAlignValue = 'center start';
   heroContentContainerAlignValue = 'end start';
-  heroContentContainerFlexValue = '50';
+  heroContentContainerFlexValue = '55';
   heroContentContainerMobileFlexValue = '60';
-  heroActionContainerFlexValue = '50';
+  heroActionContainerFlexValue = '45';
   heroActionContainerMobileFlexValue = '40';
 
   constructor(

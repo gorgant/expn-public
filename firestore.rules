@@ -1,3 +1,4 @@
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -37,36 +38,11 @@ service cloud.firestore {
       }
     }
 
-    
-
     /// FUNCTIONS ///
-    
-    // True if the user is authenticated
-    function isSignedIn() {
-    	return request.auth != null;
-    }
     
     // Confirm ID of requester matches ID in database
     function isOwner(userId) {
     	return request.auth.uid == userId;
-    }
-    
-    // Retrieve user data
-    // Note you need to explicitly escape variables using the $(variable) syntax.
-    function getUserData() {
-    	return get(/databases/$(database)/documents/publicUsers/$(request.auth.uid)).data
-    }
-  
-    function existingData() {
-      return resource.data
-    }
-
-    function incomingData() {
-      return request.resource.data
-    }
-
-    function currentUser() {
-      return request.auth
     }
   }
 }

@@ -7,9 +7,11 @@
     <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_COACH ? remoteCoach : null"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {productId: product.id}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {productId: product.id}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_COACH ? remoteCoach : null" ></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null; context: {productId: product.id}" ></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_WORK ? remoteWork : null; context: {productId: product.id}" ></ng-container>
       <!-- <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null" [ngTemplateOutletContext]="{productId: productId}" ></ng-container> -->
     </div>
 
@@ -34,6 +36,10 @@
 <!-- productId variable set in ng-container above -->
 <ng-template #executivePresence let-productId="productId">
   <app-executive-presence [productId]="productId"></app-executive-presence>
+</ng-template>
+
+<ng-template #remoteWork let-productId="productId">
+  <app-remote-work [productId]="productId"></app-remote-work>
 </ng-template>
 
 <ng-template #testProduct>
