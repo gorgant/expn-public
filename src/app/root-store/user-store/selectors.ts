@@ -2,6 +2,7 @@ import { State } from './state';
 import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { Product } from 'shared-models/products/product.model';
+import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 
 
 const getIsLoading = (state: State): boolean => state.isLoading;
@@ -24,7 +25,7 @@ const getCartData = (state: State): Product => state.cartItem;
 const getUserSessionId = (state: State): string => state.userSessionId;
 
 
-const selectUserState: MemoizedSelector<object, State> = createFeatureSelector<State>('user');
+const selectUserState: MemoizedSelector<object, State> = createFeatureSelector<State>(PublicFeatureNames.USER);
 
 export const selectIsLoading: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsLoading);
 export const selectIsSaving: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsSaving);

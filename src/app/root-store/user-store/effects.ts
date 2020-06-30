@@ -3,7 +3,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Observable, of } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import * as userFeatureActions from './actions';
-import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { switchMap, map, catchError, tap, concatMap, mergeMap } from 'rxjs/operators';
 import { UserService } from 'src/app/core/services/user.service';
 import { RootStoreState } from '..';
 import { Product } from 'shared-models/products/product.model';
@@ -43,7 +43,7 @@ export class UserStoreEffects {
     ofType<userFeatureActions.StoreUserDataRequested>(
       userFeatureActions.ActionTypes.STORE_USER_DATA_REQUESTED
     ),
-    switchMap(action =>
+    concatMap(action =>
       this.userService.storeUserData(action.payload.userData)
       .pipe(
         tap(userId => {
@@ -93,7 +93,7 @@ export class UserStoreEffects {
     ofType<userFeatureActions.SubscribeUserRequested>(
       userFeatureActions.ActionTypes.SUBSCRIBE_USER_REQUESTED
     ),
-    switchMap(action =>
+    mergeMap(action =>
       this.userService.publishEmailSubToAdminTopic(action.payload.emailSubData)
         .pipe(
           map(response => {
@@ -114,7 +114,7 @@ export class UserStoreEffects {
     ofType<userFeatureActions.TransmitContactFormRequested>(
       userFeatureActions.ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED
     ),
-    switchMap(action =>
+    mergeMap(action =>
       this.userService.publishContactFormToAdminTopic(action.payload.contactForm)
         .pipe(
           map(response => {
@@ -135,7 +135,7 @@ export class UserStoreEffects {
     ofType<userFeatureActions.StoreNavStampRequested>(
       userFeatureActions.ActionTypes.STORE_NAV_STAMP_REQUESTED
     ),
-    switchMap(action =>
+    mergeMap(action =>
       this.userService.storeNavStamp(action.payload.user, action.payload.navStamp)
         .pipe(
           map(response => {

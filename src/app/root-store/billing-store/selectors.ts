@@ -3,6 +3,7 @@ import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/s
 import { Stripe as StripeDefs } from 'stripe';
 import { StripeError } from 'shared-models/billing/stripe-error.model';
 import { DiscountCouponChild } from 'shared-models/billing/discount-coupon.model';
+import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 
 const getIsValidatingCoupon = (state: State): any => state.isValidatingCoupon;
 const getIsProcessingPayment = (state: State): any => state.isProcessingPayment;
@@ -14,7 +15,7 @@ const getDiscountCoupon = (state: State): DiscountCouponChild => state.discountC
 const getStripeCharge = (state: State): StripeDefs.Charge | StripeError => state.stripeCharge;
 
 const selectBillingState: MemoizedSelector<object, State>
-= createFeatureSelector<State>('billing');
+= createFeatureSelector<State>(PublicFeatureNames.BILLING);
 
 export const selectDiscountCoupon: MemoizedSelector<object, DiscountCouponChild> = createSelector(
   selectBillingState,

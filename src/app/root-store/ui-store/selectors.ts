@@ -3,6 +3,7 @@ import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/s
 import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
 import { Country } from 'shared-models/forms-and-components/geography/country.model';
 import { UsState } from 'shared-models/forms-and-components/geography/us-state.model';
+import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 
 const getError = (state: State): any => state.error;
 const getIsOnline = (state: State): boolean => state.isOnline;
@@ -13,7 +14,7 @@ const getBotDetected = (state: State): boolean => state.botDetected;
 const getAngularUniversalDetected = (state: State): boolean => state.angularUniversalDetected;
 
 export const selectUiState: MemoizedSelector<object, State>
-= createFeatureSelector<State>('ui');
+= createFeatureSelector<State>(PublicFeatureNames.UI);
 
 export const selectIsOnline: MemoizedSelector<object, boolean>
 = createSelector(

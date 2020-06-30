@@ -18,7 +18,7 @@ export class ProductStoreEffects {
     ofType<productFeatureActions.SingleProductRequested>(
       productFeatureActions.ActionTypes.SINGLE_PRODUCT_REQUESTED
     ),
-    mergeMap(action =>
+    switchMap(action =>
       this.productService.fetchSingleProduct(action.payload.productId)
         .pipe(
           map(product => {

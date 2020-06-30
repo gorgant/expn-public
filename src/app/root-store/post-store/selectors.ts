@@ -2,6 +2,7 @@ import { State } from './state';
 import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromPosts from './reducer';
 import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
+import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 
 const getIsLoading = (state: State): boolean => state.isLoading;
 const getFeaturedPostsLoading = (state: State): boolean => state.isLoadingFeaturedPosts;
@@ -13,7 +14,7 @@ const getPostsLoaded = (state: State): boolean => state.postsLoaded;
 const getBlogIndexLoaded = (state: State): boolean => state.blogIndexLoaded;
 
 export const selectPostState: MemoizedSelector<object, State>
-= createFeatureSelector<State>('posts');
+= createFeatureSelector<State>(PublicFeatureNames.POSTS);
 
 export const selectAllPosts: (state: object) => Post[] | BlogIndexPostRef[] = createSelector(
   selectPostState,

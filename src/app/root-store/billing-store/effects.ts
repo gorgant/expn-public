@@ -4,7 +4,7 @@ import { BillingService } from 'src/app/core/services/billing.service';
 import { Observable, of } from 'rxjs';
 import { Action } from '@ngrx/store';
 import * as billingFeatureActions from './actions';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, mergeMap } from 'rxjs/operators';
 
 @Injectable()
 export class BillingStoreEffects {
@@ -62,7 +62,7 @@ export class BillingStoreEffects {
     ofType<billingFeatureActions.TransmitOrderToAdminRequested>(
       billingFeatureActions.ActionTypes.TRANSMIT_ORDER_TO_ADMIN_REQUESTED
     ),
-    switchMap(action =>
+    mergeMap(action =>
       this.billingService.transmitOrderToAdmin(action.payload.stripeCharge, action.payload.user)
         .pipe(
           map(paymentResponse => {

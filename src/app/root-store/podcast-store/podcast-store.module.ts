@@ -4,12 +4,13 @@ import { StoreModule } from '@ngrx/store';
 import { featureReducer } from './reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { PodcastStoreEffects } from './effects';
+import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    StoreModule.forFeature('podcast', featureReducer),
+    StoreModule.forFeature(PublicFeatureNames.PODCASTS, featureReducer),
     EffectsModule.forFeature([PodcastStoreEffects])
   ],
   providers: [PodcastStoreEffects]
