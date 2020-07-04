@@ -7,11 +7,10 @@ import {
   UiStoreActions,
   BillingStoreActions,
   UserStoreActions,
-  UserStoreSelectors,
   BillingStoreSelectors,
 } from 'src/app/root-store';
-import { Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { withLatestFrom, map, take } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { withLatestFrom, map, take, skipWhile, debounceTime } from 'rxjs/operators';
 import { Product } from 'shared-models/products/product.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
@@ -49,6 +48,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
       }
     }
   }
+  private patchingFormData: boolean;
   // tslint:disable-next-line:variable-name
   private _publicUser: PublicUser;
   // tslint:disable-next-line:adjacent-overload-signatures
@@ -58,15 +58,14 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   private userLoaded: boolean;
   private formInitialized$ = new BehaviorSubject<boolean>(false);
 
-  private autoSaveTicker: NodeJS.Timer; // Add "types": ["node"] to tsconfig.app.json to remove TS error from NodeJS.Timer function
-  private autoSaveSubscription: Subscription;
-
   geographicData$: Observable<GeographicData>;
   private geographicDataRequested: boolean;
+  private nonUsStateCodeValue = 'non-us';
 
   purchaseDataForm: FormGroup;
   billingValidationMessages = BILLING_VALIDATION_MESSAGES;
-  private nonUsStateCodeValue = 'non-us';
+
+  processingPaymentSubscription: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -80,6 +79,9 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
 
     // Clear out any previous billing data in the state
     this.store$.dispatch(new BillingStoreActions.PurgeBillingState());
+
+    this.monitorFormChanges();
+    this.lockFormWhileProcessingPayment();
   }
 
   onSubmit(event: Event) {
@@ -101,6 +103,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   }
 
   private patchStateandCountryValues(country: Country) {
+    this.patchingFormData = true;
     // If switching from U.S. to another country and there is a U.S. state value present, purge it
     if (country.code !== 'US' && this.usStateCode.value && this.usStateCode.value !== this.nonUsStateCodeValue) {
       console.log('State value detected, removing it bc country changed');
@@ -121,7 +124,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     this.billingDetailsGroup.patchValue({
       [BillingKeys.COUNTRY]: country.name
     });
-
+    this.patchingFormData = false;
   }
 
   private setStateValidators() {
@@ -206,90 +209,34 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     console.log('Form initialized');
     this.formInitialized$.next(true);
     this.formInitialized$.complete();
-
-    this.createAutoSaveTicker();
-
   }
 
   private patchUserBillingInfo(): void {
+    this.patchingFormData = true;
     const billingDetails = this.publicUser.billingDetails ? this.publicUser.billingDetails : null;
     if (billingDetails) {
       this.billingDetailsGroup.patchValue(this.publicUser.billingDetails);
       this.setStateValidators();
     }
-
     console.log('User details patched in');
+    this.patchingFormData = false;
   }
 
-  private createAutoSaveTicker() {
-    // Set interval at 5 seconds
-    const step = 5000;
-
-    this.autoSaveSubscription = this.store$.select(UserStoreSelectors.selectUser)
-      .subscribe(user => {
-        if (this.autoSaveTicker) {
-          // Clear old interval
-          this.killAutoSaveTicker();
-          console.log('clearing old interval');
-        }
-        if (user) {
-          // Refresh interval every step count
-          console.log('Creating autosave ticker');
-          this.autoSaveTicker = setInterval(() => {
-            this.autoSave(user);
-          }, step);
-        }
-      });
-  }
-
-  private killAutoSaveTicker(): void {
-    clearInterval(this.autoSaveTicker);
-  }
-
-  private autoSave(user: PublicUser) {
-    // Cancel autosave if no changes to content
-    if (!this.changesDetected(user) || this.formIsBlank()) {
-      console.log('No changes to form, no auto save');
-      return;
-    }
-
-    // Prevents auto-save from overwriting final form submission data
-    this.store$.select(BillingStoreSelectors.selectIsProcessingPayment)
-      .pipe(take(1))
-      .subscribe(paymentProcessing => {
-        if (paymentProcessing) {
-          console.log('Payment processing, no auto save');
-          return;
-        }
+  // Keeps track of user changes and triggers auto save
+  private monitorFormChanges() {
+    this.purchaseDataForm.valueChanges
+      .pipe(
+        withLatestFrom(this.store$.select(BillingStoreSelectors.selectIsProcessingPayment)),
+        skipWhile(([valueChange, isProcessingPayment]) =>
+          this.patchingFormData || isProcessingPayment
+        ), // Prevents this from firing when patching in existing data or processing payment
+        debounceTime(1000)
+      )
+      .subscribe(([valueChange, isProcessingPayment]) => {
+        console.log('Logging form value change', valueChange);
+        this.purchaseDataForm.markAsTouched(); // Edits in the text editor don't automatically cause form to be touched until clicking out
         this.updateUserBillingDetails(); // Execute auto-save logic
-        console.log('Auto saving');
       });
-  }
-
-  private changesDetected(user: PublicUser): boolean {
-    const serverBillingDetailsNoPostal = {...user.billingDetails};
-    delete serverBillingDetailsNoPostal.postalCode; // Remove postal code from server version since it isn't collected in form
-    const serverBillingDetails = JSON.stringify(this.sortObjectByKeyName(serverBillingDetailsNoPostal));
-    const formBillingDetails = JSON.stringify(this.sortObjectByKeyName(this.trimmedBillingDetailsData));
-
-    // console.log('Server Billing Details', serverBillingDetails);
-    // console.log('Form Billing Details', formBillingDetails);
-
-    if (serverBillingDetails === formBillingDetails) {
-      return false;
-    }
-    return true;
-  }
-
-  private sortObjectByKeyName(object: {}): {} {
-    // Check for object, if new user, billing details don't yet exist
-    if (object) {
-      const keyArray = Object.keys(object);
-      keyArray.sort();
-      const sortedObject = keyArray.map(key => object[key]);
-      return sortedObject;
-    }
-    return {};
   }
 
   private updateUserBillingDetails() {
@@ -300,13 +247,15 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     this.store$.dispatch(new UserStoreActions.StoreUserDataRequested({userData: updatedUser}));
   }
 
-  private formIsBlank() {
-    const formTouched = this.purchaseDataForm.dirty;
-    if (formTouched) {
-      return false;
-    }
-    console.log('Form has not been touched');
-    return true;
+  private lockFormWhileProcessingPayment() {
+    this.processingPaymentSubscription = this.store$.select(BillingStoreSelectors.selectIsProcessingPayment)
+      .subscribe(processingPayment => {
+        if (processingPayment) {
+          this.purchaseDataForm.disable();
+        } else {
+          this.purchaseDataForm.enable();
+        }
+      });
   }
 
   // These getters are used for easy access in the HTML template
@@ -346,18 +295,13 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
 
     // Auto save product if navigating away
-    if (!this.formIsBlank()) {
+    if (this.purchaseDataForm.touched) {
       this.updateUserBillingDetails();
     }
 
-    if (this.autoSaveSubscription) {
-      this.autoSaveSubscription.unsubscribe();
+    if (this.processingPaymentSubscription) {
+      this.processingPaymentSubscription.unsubscribe();
     }
-
-    if (this.autoSaveTicker) {
-      this.killAutoSaveTicker();
-    }
-
   }
 
 }

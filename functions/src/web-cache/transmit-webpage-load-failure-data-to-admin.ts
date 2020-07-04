@@ -9,7 +9,7 @@ const pubSub = new PubSub();
 
 export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureData: WebpageLoadFailureData ) => {
 
-  console.log('Transmit webpage load failure data received with this data', webpageLoadFailureData);
+  functions.logger.log('Transmit webpage load failure data received with this data', webpageLoadFailureData);
 
   const projectId = adminProjectId;
   const topicName = AdminTopicNames.TRIGGER_EMAIL_SEND_TOPIC;
@@ -20,8 +20,8 @@ export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureDa
     webpageLoadFailureData
   }
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
+    .catch(err => {functions.logger.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
   
   return topicPublishRes;
 }

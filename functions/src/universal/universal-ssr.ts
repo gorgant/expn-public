@@ -42,14 +42,14 @@ const reloadLimit = 2; // Set a max number of reload attempts
 
 const blogFullyLoaded = (blogIndex: BlogIndexPostRef[]): boolean => {
   const blogIndexLength = blogIndex.length;
-  console.log(`Found ${blogIndexLength} posts in blog index`);
+  functions.logger.log(`Found ${blogIndexLength} posts in blog index`);
   if (blogIndexLength > (minBlogPostCount - 1)) return true;
   return false;
 }
 
 const podcastFullyLoaded = (podcastIndex: PodcastEpisode[]): boolean => {
   const podcastIndexLength = podcastIndex.length;
-  console.log(`Found ${podcastIndexLength} episodes in podcast index`);
+  functions.logger.log(`Found ${podcastIndexLength} episodes in podcast index`);
   if (podcastIndexLength > (minPodcastEpisodeCount - 1)) return true;
   return false;
 }
@@ -60,14 +60,14 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
   
   // Log in console page reload attempts if they exist
   if (reloadAttempts > 0) {
-    console.log(`Longpage reload attempt ${reloadAttempts} initiated`);
+    functions.logger.log(`Longpage reload attempt ${reloadAttempts} initiated`);
   }
 
   // Encode reserved characters found in URL (ngExpressEngine cannot process these and will produce a route error)
   const ngExpressSafeUrl = requestPath.replace(/[!'()*]/g, (c) => {
     return '%' + c.charCodeAt(0).toString(16);
   });
-  console.log('ngExpressSafeUrl', ngExpressSafeUrl);
+  functions.logger.log('ngExpressSafeUrl', ngExpressSafeUrl);
 
   // See more render options here: https://github.com/angular/universal/tree/master/modules/express-engine
   res.render('index-server', { 
@@ -75,10 +75,10 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       url: ngExpressSafeUrl
     }, async (error, html) => {
 
-      console.log('Rendering with Universal ngExpressEngine')
+      functions.logger.log('Rendering with Universal ngExpressEngine')
       // Exit function if error
       if (error) {
-        console.log('error rendering html', error);
+        functions.logger.log('error rendering html', error);
         res.sendStatus(500);
         return;
       }
@@ -94,19 +94,19 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
             const blogIndex: BlogIndexPostRef[] = transferStateData as BlogIndexPostRef[];
             if (!blogFullyLoaded(blogIndex)) {
               reloadAttempts ++;
-              console.log(`Blog failed to load fully on attempt number ${reloadAttempts}, trying again`)
+              functions.logger.log(`Blog failed to load fully on attempt number ${reloadAttempts}, trying again`)
               return renderAndCachePageWithUniversal(res, req, userAgent);
             }
-            console.log('Blog passed item length check');
+            functions.logger.log('Blog passed item length check');
             break;
           case PublicAppRoutes.PODCAST:
             const podcastIndex: PodcastEpisode[] = transferStateData as PodcastEpisode[];
             if (!podcastFullyLoaded(podcastIndex)) {
               reloadAttempts ++;
-              console.log(`Podcast failed to load fully on attempt number ${reloadAttempts}, trying again`)
+              functions.logger.log(`Podcast failed to load fully on attempt number ${reloadAttempts}, trying again`)
               return renderAndCachePageWithUniversal(res, req, userAgent);
             }
-            console.log('Podcast passed item length check');
+            functions.logger.log('Podcast passed item length check');
             break;
           default:
             break;
@@ -114,7 +114,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       }
     
     if (reloadAttempts >= reloadLimit) {
-      console.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
+      functions.logger.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
       const webpageLoadFailureData: WebpageLoadFailureData = {
         domain: currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.explearningPublicApp.websiteDomain : PRODUCTION_APPS.explearningPublicApp.websiteDomain,
         urlPath: requestPath,
@@ -145,13 +145,13 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       return result;
     }, [] as PublicAppRoutes[]);
 
-    console.log('Generated this list of cachable app routes', cachableAppRoutes);
+    functions.logger.log('Generated this list of cachable app routes', cachableAppRoutes);
 
     // Only cache request path if it matches a cachable route as defined above or matches the home route
     for (const validRoute of cachableAppRoutes) {
       // Match a valid route exactly or a valid route plus an 8-character ID plus a slash followed by a wild card (https://regex101.com/ for info on the regex string)
       if (requestPath === validRoute || requestPath === '/' || requestPath.match(new RegExp(validRoute + '\/[a-zA-Z0-9]{8,8}\/.*'))) {
-        console.log(`Cachable route detected, submitted for caching`);
+        functions.logger.log(`Cachable route detected, submitted for caching`);
         // Cache HTML in database for easy future retrieval
         await storeWebPageCache(requestPath, userAgent, html)
           .catch(err => {console.error(`Error storing webpagecache:`, err);}); // Don't throw error, just log it to console
@@ -159,7 +159,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       }
     }
 
-    console.log('Html rendered, first 100 chars are', html.substr(0, 100));
+    functions.logger.log('Html rendered, first 100 chars are', html.substr(0, 100));
     res.status(200).send(html);
     return;
   });
@@ -199,13 +199,13 @@ const customExpressApp = () => {
       // Render the index view (name of file w/ out extension)
       // The engine will use the reqest data to determine the correct route to render
       // It will then serve that view to the client
-      console.log('Received route request', req);
-      console.log('Req referrer:', req.headers.referer);
-      console.log('Found these headers', req.headers);
-      console.log('Found these parameters', req.query)
+      functions.logger.log('Received route request', req);
+      functions.logger.log('Req referrer:', req.headers.referer);
+      functions.logger.log('Found these headers', req.headers);
+      functions.logger.log('Found these parameters', req.query)
 
       const url = req.path;
-      console.log('Requested url is', url);
+      functions.logger.log('Requested url is', url);
       const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
       const isBot = detectUaBot(userAgent);
       const isGoogleBot: boolean = userAgent.toLowerCase().includes('googlebot') ? true : false;
@@ -214,11 +214,11 @@ const customExpressApp = () => {
             isBot ? WebpageRequestType.OTHER_BOT : WebpageRequestType.NO_BOT
           )
         );
-      console.log('Detected this request type', requestType);
+      functions.logger.log('Detected this request type', requestType);
 
       // If auto-cache request, bypass cache check and perform render request
       if (requestType === WebpageRequestType.AUTO_CACHE) {
-        console.log('Auto cache detected');
+        functions.logger.log('Auto cache detected');
         await renderAndCachePageWithUniversal(res, req, userAgent);
         return;
       }
@@ -228,7 +228,7 @@ const customExpressApp = () => {
 
       // If cached page exists, return that and end the function
       if (cachedPage) {
-        console.log('Returning cached page payload');
+        functions.logger.log('Returning cached page payload');
         res.status(200).send(cachedPage.payload);
         return;
       }

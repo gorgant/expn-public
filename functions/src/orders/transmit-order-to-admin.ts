@@ -14,8 +14,8 @@ const publishOrderToAdminTopic = async (order: Order) => {
   const pubsubMsg = order;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
+    .catch(err => {functions.logger.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -23,7 +23,7 @@ const publishOrderToAdminTopic = async (order: Order) => {
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const transmitOrderToAdmin = functions.https.onCall( async (data: Order, context ) => {
-  console.log('Transmit order request received with this data', data);
+  functions.logger.log('Transmit order request received with this data', data);
   assertUID(context);
 
   assert(data, 'orderNumber'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid

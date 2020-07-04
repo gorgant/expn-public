@@ -35,7 +35,7 @@ const customExpressApp = () => {
   
   app.route('*').get((req, res) => {
   
-      console.log('Received route request');
+      functions.logger.log('Received route request');
   
       renderModuleFactory(AppServerModuleNgFactory, {
           document: indexHtml,
@@ -43,11 +43,11 @@ const customExpressApp = () => {
           extraProviders: [provideModuleMap(LAZY_MODULE_MAP)]
       })
           .then(html => {
-              console.log('Sending route response');
+              functions.logger.log('Sending route response');
               res.status(200).send(html);
           })
           .catch(err => {
-              console.log(err);
+              functions.logger.log(err);
               res.sendStatus(500);
           });
   
@@ -79,7 +79,7 @@ const customExpressApp = () => {
   //     // Render the index view (name of file w/ out extension)
   //     // The engine will use the reqest data to determine the correct route to render
   //     // It will then serve that view to the client
-  //     console.log('Receiving route request');
+  //     functions.logger.log('Receiving route request');
   //     res.render('index-server', { req });
   // });
 

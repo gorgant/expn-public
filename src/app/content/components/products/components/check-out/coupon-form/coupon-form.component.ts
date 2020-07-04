@@ -33,6 +33,8 @@ export class CouponFormComponent implements OnInit, OnDestroy {
   billingFormInvalid: boolean;
   billingFormSubscription: Subscription;
 
+  processingPaymentSubscription: Subscription;
+
   constructor(
     private fb: FormBuilder,
     private store$: Store<RootStoreState.State>,
@@ -41,6 +43,7 @@ export class CouponFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeCouponForm();
     this.initializeCouponValidationStatus();
+    this.lockFormWhileProcessingPayment();
   }
 
   private submitCouponForValidation(couponCode: string, userEmail: string) {
@@ -169,6 +172,17 @@ export class CouponFormComponent implements OnInit, OnDestroy {
     this.submitCouponForValidation(couponCode, userEmail);
   }
 
+  private lockFormWhileProcessingPayment() {
+    this.processingPaymentSubscription = this.store$.select(BillingStoreSelectors.selectIsProcessingPayment)
+      .subscribe(processingPayment => {
+        if (processingPayment) {
+          this.couponForm.disable();
+        } else {
+          this.couponForm.enable();
+        }
+      });
+  }
+
 
   get couponCode() { return this.couponForm.get('couponCode'); }
 
@@ -177,6 +191,10 @@ export class CouponFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.billingFormSubscription) {
       this.billingFormSubscription.unsubscribe();
+    }
+
+    if (this.processingPaymentSubscription) {
+      this.processingPaymentSubscription.unsubscribe();
     }
   }
 

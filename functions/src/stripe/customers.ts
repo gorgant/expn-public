@@ -11,7 +11,7 @@ Read the user document from Firestore
 */
 export const getUser = async(uid: string) => {
 	const userDoc = await db.collection(PublicCollectionPaths.PUBLIC_USERS).doc(uid).get()
-		.catch(err => {console.log(`Error getting public user from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+		.catch(err => {functions.logger.log(`Error getting public user from public database:`, err); throw new functions.https.HttpsError('internal', err);});
 	const publicUser = userDoc.data() as PublicUser;
 	return publicUser;
 }
@@ -32,7 +32,7 @@ UID requred because sometimes user update is partial
 export const updateUser = async(uid: string, user: PublicUser | Partial<PublicUser>) => {
 	const userDoc = db.collection(PublicCollectionPaths.PUBLIC_USERS).doc(uid);
 	await userDoc.set(user, { merge: true })
-		.catch(err => {console.log(`Error updating user on public database:`, err); throw new functions.https.HttpsError('internal', err);});
+		.catch(err => {functions.logger.log(`Error updating user on public database:`, err); throw new functions.https.HttpsError('internal', err);});
 }
 
 /**
@@ -42,7 +42,7 @@ export const createCustomer = async(uid: any) => {
 	const customer = await stripe.customers.create({
 			metadata: { [StripeCustomerMetadata.PUBLIC_USER_ID]: uid }
 	})
-		.catch(err => {console.log(`Error creating customer on stripe:`, err); throw err;});
+		.catch(err => {functions.logger.log(`Error creating customer on stripe:`, err); throw err;});
 
 	const publicUser: Partial<PublicUser> = {
 			stripeCustomerId: customer.id
@@ -66,7 +66,7 @@ export const getOrCreateCustomer = async(uid: string): Promise<StripeDefs.Custom
 		return createCustomer(uid);
 	} else {
 		const customer = stripe.customers.retrieve(customerId)
-			.catch(err => {console.log(`Error creating customer on stripe:`, err); throw err;}) as Promise<StripeDefs.Customer>
+			.catch(err => {functions.logger.log(`Error creating customer on stripe:`, err); throw err;}) as Promise<StripeDefs.Customer>
 		return customer;
 	}
 

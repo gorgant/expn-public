@@ -16,11 +16,11 @@ const adminDb = adminFirestore;
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   const postsCollectionRef = publicDb.collection(SharedCollectionPaths.POSTS);
   const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get()
-    .catch(err => {console.log(`Failed to fetch podcast episode from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Failed to fetch podcast episode from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   
   // Handle situation where no matching post is found
   if (matchingPostQuerySnapshot.empty) {
-    console.log('No matching post found for this episodeUrl', episodeUrl);
+    functions.logger.log('No matching post found for this episodeUrl', episodeUrl);
     return;
   }
 
@@ -51,14 +51,14 @@ const fetchPodcastFeed = async () => {
       // Once the full data has been loaded, parse it
       res.on('end', async () => {
         const parsedXmlPromise = new Promise<{}>((resolv, rejec) => {
-          console.log('About to parse full data', fullData);
+          functions.logger.log('About to parse full data', fullData);
           xml2js.parseString(fullData, (err, result) => {
             resolv(result);
           });
         });
 
         const rawJson: any = await parsedXmlPromise;
-        console.log('Processing this raw json', rawJson);
+        functions.logger.log('Processing this raw json', rawJson);
         
         // Parse Podcast Container
         const podcastObject = rawJson.rss.channel[0];
@@ -108,7 +108,7 @@ const fetchPodcastFeed = async () => {
           let episodeBlogPostUrlHandle = '';
           
           const blogPostData = await fetchBlogPostIdAndHandle(episodeUrl)
-            .catch(err => {console.log(`Failed to fetch blog post id and handle:`, err); throw new functions.https.HttpsError('internal', err);});
+            .catch(err => {functions.logger.log(`Failed to fetch blog post id and handle:`, err); throw new functions.https.HttpsError('internal', err);});
           
           if (blogPostData) {
             episodeBlogPostId = blogPostData.postId;
@@ -144,7 +144,7 @@ const fetchPodcastFeed = async () => {
     
   
     req.on('error', (e) => {
-      console.log('Error with request', e);
+      functions.logger.log('Error with request', e);
       reject(e);
     });
     req.end();
@@ -181,11 +181,11 @@ const batchCacheEpisodes = async (episodes: PodcastEpisode[], publicPodcastDocRe
   }
 
   const publicBatchCreate = await publicBatch.commit()
-    .catch(err => {console.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
   const adminBatchCreate = await adminBatch.commit()
-    .catch(err => {console.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error with batch creation:`, err); throw new functions.https.HttpsError('internal', err);});
 
-  console.log(`Batch created ${publicBatchCreate.length} items on public and ${adminBatchCreate.length} on admin`);
+  functions.logger.log(`Batch created ${publicBatchCreate.length} items on public and ${adminBatchCreate.length} on admin`);
   itemsProcessedCount += batchSize; // Update global variable to keep track of remaining episodes to cache
   loopCount++;
 }
@@ -201,18 +201,18 @@ const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpis
 
   // Cache the podcast
   await publicPodcastDocRef.set(podcast)
-    .catch(err => {console.log(`Error setting podcast in public database:`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log('Podcast updated on public database');
+    .catch(err => {functions.logger.log(`Error setting podcast in public database:`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log('Podcast updated on public database');
   await adminPodcastDocRef.set(podcast)
-    .catch(err => {console.log(`Error setting podcast in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log('Podcast updated on admin database');
+    .catch(err => {functions.logger.log(`Error setting podcast in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log('Podcast updated on admin database');
 
   // Cache each episode inside the podcast container
   const totalItemCount = episodes.length;
   while (itemsProcessedCount < totalItemCount && loopCount < 10) {
     await batchCacheEpisodes(episodes, publicPodcastDocRef, adminPodcastDocRef);
     if (itemsProcessedCount < totalItemCount) {
-      console.log(`Repeating batch process: ${itemsProcessedCount} out of ${totalItemCount} items cached`);
+      functions.logger.log(`Repeating batch process: ${itemsProcessedCount} out of ${totalItemCount} items cached`);
     }
   }
 }
@@ -221,10 +221,10 @@ const cachePodcastFeed = async (podcast: PodcastContainer, episodes: PodcastEpis
 
 const executeActions = async (): Promise<PodcastContainer> => {
   const {podcast, episodes}: {podcast: PodcastContainer, episodes: PodcastEpisode[]} = await fetchPodcastFeed();
-  console.log(`Fetched podcast feed with ${episodes.length} episodes`);
+  functions.logger.log(`Fetched podcast feed with ${episodes.length} episodes`);
 
   await cachePodcastFeed(podcast, episodes);
-  console.log('Podcast caching complete');
+  functions.logger.log('Podcast caching complete');
   
   return podcast;
 }
@@ -233,16 +233,16 @@ const executeActions = async (): Promise<PodcastContainer> => {
 
 // This fires every day based on chron job
 export const updatePodcastFeedCache = functions.https.onRequest( async (req, resp) => {
-  console.log('Get podcast feed request detected with these headers', req.headers);
+  functions.logger.log('Get podcast feed request detected with these headers', req.headers);
 
   // Verify request is from chron job
   if (req.headers['user-agent'] !== 'Google-Cloud-Scheduler') {
-    console.log('Invalid request, ending operation');
+    functions.logger.log('Invalid request, ending operation');
     return;
   }
 
   const podcast: PodcastContainer = await executeActions();
 
   
-  return resp.status(200).send(podcast);
+  resp.status(200).send(podcast);
 });

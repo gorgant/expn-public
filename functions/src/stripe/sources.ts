@@ -23,7 +23,7 @@ export const attachSource = async(uid: string, source: StripeDefs.Source) => {
   } else {
     // Create source on customer
     await stripe.customers.createSource(customer.id, { source: source.id })
-      .catch(err => {console.log(`Error generating source:`, err); throw err;});
+      .catch(err => {functions.logger.log(`Error generating source:`, err); throw err;});
     
     // Use source zip to update FB user (which isn't collected on the FB form)
     const updatedZip: Partial<BillingDetails> = { postalCode: (sourceOwner.address as StripeDefs.Address).postal_code as string};
@@ -40,7 +40,7 @@ export const attachSource = async(uid: string, source: StripeDefs.Source) => {
       address: sourceOwner.address as StripeDefs.AddressParam,
     }
     const updatedCustomer = await stripe.customers.update(customer.id, completeData)
-      .catch(err => {console.log(`Error updating customer:`, err); throw err;});
+      .catch(err => {functions.logger.log(`Error updating customer:`, err); throw err;});
     return updatedCustomer;
   }
 }

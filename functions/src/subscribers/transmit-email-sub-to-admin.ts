@@ -15,8 +15,8 @@ const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>)
   const pubsubMsg = subscriber;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
+    .catch(err => {functions.logger.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -26,7 +26,7 @@ const publishEmailSubToAdminTopic = async (subscriber: Partial<EmailSubscriber>)
 
 
 export const transmitEmailSubToAdmin = functions.https.onCall( async (data: Partial<EmailSubscriber>, context ) => {
-  console.log('Transmit sub request received with this data', data);
+  functions.logger.log('Transmit sub request received with this data', data);
   assertUID(context);
   assert(data, 'lastSubSource'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid
 

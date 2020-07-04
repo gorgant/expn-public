@@ -15,7 +15,7 @@ const sendHttpRequest = async (wepageUrl: string) => {
     method: 'GET',
   }
 
-  console.log('Sending cache update request to universal with these options', reqOptions);
+  functions.logger.log('Sending cache update request to universal with these options', reqOptions);
 
 
   const requestResponse = new Promise<string>(async (resolve, reject) => {
@@ -44,7 +44,7 @@ const sendHttpRequest = async (wepageUrl: string) => {
   });
 
   await requestResponse
-    .catch(err => {console.log(`Http request failed:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Http request failed:`, err); throw new functions.https.HttpsError('internal', err);});
 }
 
 /////// DEPLOYABLE FUNCTIONS ///////
@@ -55,8 +55,8 @@ const opts = {memory: '256MB', timeoutSeconds: 20};
 export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC).onPublish( async (message, context) => {
   
   const wepageUrl = (message.json as WebpageUrl).url;
-  console.log('Update Webpage Cache request received with this data', wepageUrl)
-  console.log('Context from pubsub', context);
+  functions.logger.log('Update Webpage Cache request received with this data', wepageUrl)
+  functions.logger.log('Context from pubsub', context);
 
   return sendHttpRequest(wepageUrl);
 });

@@ -1,3 +1,5 @@
+import * as functions from 'firebase-functions';
+
 //// EXPORTED FUNCTIONS ////
 
 // List of bots to target, add more if you'd like
@@ -36,11 +38,11 @@ export const detectUaBot = (userAgent: any) => {
 
   for (const bot of bots) {
     if (agent.indexOf(bot) > -1) {
-      console.log(`bot detected ${bot}`);
+      functions.logger.log(`bot detected ${bot}`);
       return true;
     }
   }
 
-  console.log('no bots found');
+  functions.logger.log('no bots found');
   return false;
 }

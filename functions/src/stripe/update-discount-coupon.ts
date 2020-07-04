@@ -31,10 +31,10 @@ const updateCouponUserData = async (couponParentDoc: FirebaseFirestore.DocumentR
   
   // Use set here because we don't know if user data exists yet
   await discountUserIdDoc.set(discountUserDataUpdateCombined, {merge: true})
-    .catch(err => {console.log(`Error updating discount coupon user ID doc in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error updating discount coupon user ID doc in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
 
   await discountUserEmailDoc.set(discountUserDataUpdateCombined, {merge: true})
-    .catch(err => {console.log(`Error updating discount coupon user Email doc in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error updating discount coupon user Email doc in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
 
 };
 
@@ -44,7 +44,7 @@ const incrementParentCouponUseCount = async (couponParentDoc: FirebaseFirestore.
   };
   // Use update here because we know the coupon exists
   await couponParentDoc.update(incrementCouponUseCount)
-    .catch(err => {console.log(`Error incrementing discount use in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error incrementing discount use in admin database:`, err); throw new functions.https.HttpsError('internal', err);});
 };
 
 const updateCouponData = async (validationData: DiscountCouponValidationData) => {
@@ -65,8 +65,8 @@ const opts = {memory: '256MB', timeoutSeconds: 20};
 export const updateDiscountCoupon = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.UPDATE_DISCOUNT_COUPON_DATA).onPublish( async (message, context) => {
   
   const validationData = message.json as DiscountCouponValidationData;
-  console.log('Update discount coupon data request received with this data', validationData)
-  console.log('Context from pubsub', context);
+  functions.logger.log('Update discount coupon data request received with this data', validationData)
+  functions.logger.log('Context from pubsub', context);
 
   return updateCouponData(validationData);
 });

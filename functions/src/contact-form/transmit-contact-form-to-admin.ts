@@ -14,8 +14,8 @@ const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
   const pubsubMsg = contactForm;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
+    .catch(err => {functions.logger.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -24,7 +24,7 @@ const publishContactFormToAdminTopic = async (contactForm: ContactForm) => {
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const transmitContactFormToAdmin = functions.https.onCall( async (data: ContactForm, context ) => {
-  console.log('Transmit contact form request received with this data', data);
+  functions.logger.log('Transmit contact form request received with this data', data);
   assertUID(context);
   
   assert(data, 'message'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid

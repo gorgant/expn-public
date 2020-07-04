@@ -109,7 +109,7 @@ const customExpressApp = (config: FirebaseConfiguration) => {
     // Render the index view (name of file w/ out extension)
     // The engine will use the reqest data to determine the correct route to render
     // It will then serve that view to the client
-    console.log('Receiving route request');
+    functions.logger.log('Receiving route request');
     // res.render('index', { req });
     res.render('index-server', { req });
   });

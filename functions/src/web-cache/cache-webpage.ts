@@ -20,7 +20,7 @@ const tagCacheInHtml = (html: string): string => {
   const docTarget = '<head>';
   const cacheTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagCachedHtml}" content="true">`;
   const updatedHtml = updateHtml(html, docTarget, cacheTag);
-  console.log('Marking cache in HTML');
+  functions.logger.log('Marking cache in HTML');
   return updatedHtml;
 }
 
@@ -29,7 +29,7 @@ const tagBotInHtml = (html: string): string => {
   const docTarget = '<head>';
   const botTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagIsBot}" content="true">`;
   const updatedHtml = updateHtml(html, docTarget, botTag);
-  console.log('Marking bot in HTML');
+  functions.logger.log('Marking bot in HTML');
   return updatedHtml;
 }
 
@@ -87,26 +87,26 @@ const storePageHtmlSegments = async (url: string, userAgent: string, html: strin
   // Upload segments to database
   const uploadWebpageSegments = webpageArray.map( async (webpage, index) => {
     await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(webpage.segmentId as string).set(webpage)
-      .catch(err => {console.log(`Failed to update webpage on public database:`, err); throw new functions.https.HttpsError('internal', err);});
+      .catch(err => {functions.logger.log(`Failed to update webpage on public database:`, err); throw new functions.https.HttpsError('internal', err);});
   })
 
   const uploadResponse = await Promise.all(uploadWebpageSegments);
 
-  console.log('All blog html segments uploaded');
+  functions.logger.log('All blog html segments uploaded');
   return uploadResponse;
 }
 
 // Fetch the webpage segments using the ref doc
 const retrieveSegmentedWebPageCache = async (segmentRefData: Webpage, isBot: boolean) => {
   
-  console.log('Segmented data detected, parsing segments');
+  functions.logger.log('Segmented data detected, parsing segments');
 
   const htmlSegementIdArray: string[] = segmentRefData.htmlSegmentIdArray as string[];
   
   // Unpack the html segments using the array of ids
   const segementPromiseArray = htmlSegementIdArray.map( async (segementId) => {
     const blogSegmentDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(segementId).get()
-      .catch(err => {console.log(`Error fetching blog segment:`, err); throw new functions.https.HttpsError('internal', err);});
+      .catch(err => {functions.logger.log(`Error fetching blog segment:`, err); throw new functions.https.HttpsError('internal', err);});
     const segmentData = blogSegmentDoc.data() as Webpage;
     return segmentData.payload;
   });
@@ -155,7 +155,7 @@ export const storeWebPageCache = async (url: string, userAgent: string, html: st
   // If char limit exceeded, store as segments and exit function
   const htmlCharLength = updatedHtml.length;
   if (htmlCharLength > charLimit) {
-    console.log('Char length exceeded, attempting to store page html segements')
+    functions.logger.log('Char length exceeded, attempting to store page html segements')
     const segmentedWebpageFbRes = await storePageHtmlSegments(url, userAgent, html, htmlCharLength);
     return segmentedWebpageFbRes;
   }
@@ -171,8 +171,8 @@ export const storeWebPageCache = async (url: string, userAgent: string, html: st
   }
   
   const fbRes = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).set(webpage)
-    .catch(err => {console.log(`Error updating webpage cache on public database:`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log('Web page cached with this id', webpage.url);
+    .catch(err => {functions.logger.log(`Error updating webpage cache on public database:`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log('Web page cached with this id', webpage.url);
   return fbRes;
 }
 
@@ -197,15 +197,15 @@ export const retrieveWebPageCache = async (url: string, isBot: boolean): Promise
   
   const fbSafeUrl = createOrReverseFirebaseSafeUrl(url);
   
-  console.log('Attempting to retrieve cached page with id: ', fbSafeUrl);
+  functions.logger.log('Attempting to retrieve cached page with id: ', fbSafeUrl);
   const pageDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_SITE_CACHE).doc(fbSafeUrl).get()
-    .catch(err => {console.log(`Error fetching webpage doc from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error fetching webpage doc from public database:`, err); throw new functions.https.HttpsError('internal', err);});
 
   if (!pageDoc.exists) {
-    console.log('No cached page found');
+    functions.logger.log('No cached page found');
     return undefined;
   }
-  console.log('Cached page exists');
+  functions.logger.log('Cached page exists');
   const webPageData = pageDoc.data() as Webpage;
 
   return await executeActions(webPageData, isBot);

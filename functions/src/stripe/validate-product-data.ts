@@ -8,11 +8,11 @@ export const validateProductOnAdmin = async (product: Product): Promise<boolean>
   const db: FirebaseFirestore.Firestore = adminFirestore;
 
   const adminProductDoc: FirebaseFirestore.DocumentSnapshot = await db.collection(SharedCollectionPaths.PRODUCTS).doc(product.id).get()
-    .catch(err => {console.log(`Error fetching product from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error fetching product from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
   
   // Verify product exists
   if (!adminProductDoc.exists) {
-    console.log('Product does not exist');
+    functions.logger.log('Product does not exist');
     return false;
   }
 
@@ -20,11 +20,11 @@ export const validateProductOnAdmin = async (product: Product): Promise<boolean>
 
   // Verify product price matches admin record
   if (adminProduct.price !== product.price) {
-    console.log('Client product price does not match admin product price');
+    functions.logger.log('Client product price does not match admin product price');
     return false;
   }
 
-  console.log('Product price matches admin record');
+  functions.logger.log('Product price matches admin record');
   return true;
 }
 
@@ -32,7 +32,7 @@ export const validateProductOnAdmin = async (product: Product): Promise<boolean>
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const validateProductData = functions.https.onCall( async (product: Product, context) => {
-  console.log('Validate product data request received with this data', product);
+  functions.logger.log('Validate product data request received with this data', product);
   assertUID(context);
 
   return await validateProductOnAdmin(product);

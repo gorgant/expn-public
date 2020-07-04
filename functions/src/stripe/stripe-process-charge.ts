@@ -25,8 +25,8 @@ const submitDiscountCouponUpdateRequest = async (validationData: DiscountCouponV
   const pubsubMsg: DiscountCouponValidationData = validationData;
 
   const topicPublishRes = await topic.publishJSON(pubsubMsg)
-    .catch(err => {console.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
-  console.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
+    .catch(err => {functions.logger.log(`Failed to publish to topic "${topicName}" on project "${projectId}":`, err); throw new functions.https.HttpsError('internal', err);});
+  functions.logger.log(`Publish to topic "${topicName}" on project "${projectId}" succeeded:`, topicPublishRes);
 
   return topicPublishRes;
 }
@@ -41,49 +41,49 @@ const handleStripeChargeResponse = (err: any) => {
   switch (err.type) {
     case 'StripeCardError':
       // A declined card error
-      console.log('StripeCardError', err);
+      functions.logger.log('StripeCardError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     case 'RateLimitError':
       // Too many requests made to the API too quickly
-      console.log('RateLimitError', err);
+      functions.logger.log('RateLimitError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     case 'StripeInvalidRequestError':
       // Invalid parameters were supplied to Stripe's API
-      console.log('StripeInvalidRequestError', err);
+      functions.logger.log('StripeInvalidRequestError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     case 'StripeAPIError':
       // An error occurred internally with Stripe's API
-      console.log('StripeAPIError', err);
+      functions.logger.log('StripeAPIError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     case 'StripeConnectionError':
       // Some kind of error occurred during the HTTPS communication
-      console.log('StripeConnectionError', err);
+      functions.logger.log('StripeConnectionError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     case 'StripeAuthenticationError':
       // You probably used an incorrect API key
-      console.log('StripeAuthenticationError', err);
+      functions.logger.log('StripeAuthenticationError', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
       break;
     default:
       // Handle any other types of unexpected errors
-      console.log('Unknown charge error', err);
+      functions.logger.log('Unknown charge error', err);
       stripeError.stripeErrorType = err.type;
       stripeError.message = err.message;
       stripeError.chargeId = err.raw.charge ? err.raw.charge : null
@@ -99,7 +99,7 @@ const handleStripeChargeResponse = (err: any) => {
 export const getSingleCharge = (chargeId: string) => {
   return stripe.charges.retrieve(chargeId, {
     expand: ['customer']
-  }).catch(err => {console.log(`Error fetching stripe charge:`, err); throw err;});
+  }).catch(err => {functions.logger.log(`Error fetching stripe charge:`, err); throw err;});
 }
 
 /**
@@ -120,7 +120,7 @@ const calculateChargeAmount = (product: Product, quantity: number, discountCoupo
   const discountedAmount = baseAmountInCents * (1 - discountPercentage);
   const finalRoundedValueInCents = generateRoundedNumber(discountedAmount, 0); // Gets a clean number rounded to zero digits (sometimes multiplication and division cause wild integers)
 
-  console.log(`Charge amount calculated as $${finalRoundedValueInCents / 100} after a base price of $${baseAmountinDollars} and a discount of ${discountPercentage * 100}%`);
+  functions.logger.log(`Charge amount calculated as $${finalRoundedValueInCents / 100} after a base price of $${baseAmountinDollars} and a discount of ${discountPercentage * 100}%`);
 
   return finalRoundedValueInCents;
 }
@@ -153,7 +153,7 @@ export const createCharge = async(userId: string, source: StripeDefs.Source, pro
   }
 
   return stripe.charges.create(chargeData)
-    .catch(err => {console.log(`Error creating charge:`, err); throw err;});
+    .catch(err => {functions.logger.log(`Error creating charge:`, err); throw err;});
 }
 
 const updateDiscountCoupon = async(source: StripeDefs.Source, discountCoupon: DiscountCouponChild, userId: string, product: Product) => {
@@ -188,7 +188,7 @@ const validateChargeData = async (product: Product, source: StripeDefs.Source, d
       stripeErrorType: 'FailedProductDataCheck',
       message: 'Client product data does not match admin data',
     }
-    console.log('Product failed validation during charge processing', failedProductCheckStripeError);
+    functions.logger.log('Product failed validation during charge processing', failedProductCheckStripeError);
     return {validCharge: false, stripeError: failedProductCheckStripeError};
   }
 
@@ -215,7 +215,7 @@ const validateChargeData = async (product: Product, source: StripeDefs.Source, d
         stripeErrorType: 'FailedCouponCheck',
         message: 'Coupon failed validation check during charge processing.',
       }
-      console.log('Product failed validation during charge processing', failedCouponCheckStripeError);
+      functions.logger.log('Product failed validation during charge processing', failedCouponCheckStripeError);
       return {validCharge: false, stripeError: failedCouponCheckStripeError};
     }
   }
@@ -226,7 +226,7 @@ const validateChargeData = async (product: Product, source: StripeDefs.Source, d
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const stripeProcessCharge = functions.https.onCall( async (data: StripeChargeData, context) => {
-  console.log('Create charge request received with this data', data);
+  functions.logger.log('Create charge request received with this data', data);
   const userId: string = assertUID(context);
   const source: StripeDefs.Source = data.source;
   const product: Product = data.product;
@@ -237,7 +237,7 @@ export const stripeProcessCharge = functions.https.onCall( async (data: StripeCh
   
   // If invalid charge data, exit function with stripe error
   if (!validCharge) {
-    console.log('Invalid charge data, aborting charge processing');
+    functions.logger.log('Invalid charge data, aborting charge processing');
     return stripeError;
   }
 

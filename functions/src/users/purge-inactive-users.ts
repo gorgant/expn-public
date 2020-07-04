@@ -10,11 +10,11 @@ const isExpiredUser = (user: admin.auth.UserRecord): boolean => {
 
   // const publicUserDocSnapshot: FirebaseFirestore.DocumentSnapshot = await db.collection(PublicCollectionPaths.PUBLIC_USERS).doc(user.uid).get();
   // const publicUser: PublicUser = publicUserDocSnapshot.data() as PublicUser;
-  // console.log(`Fetched this user data ${publicUser} from this user ${user}`, );
+  // functions.logger.log(`Fetched this user data ${publicUser} from this user ${user}`, );
   // const expirationPeriod = 1000 * 60 * 60 * 24 * 14;
   
   // if (publicUser && publicUser.lastAuthenticated < now() - expirationPeriod) {
-  //   console.log(`Expired user detected, no auth in the last ${expirationPeriod} ms`)
+  //   functions.logger.log(`Expired user detected, no auth in the last ${expirationPeriod} ms`)
   //   return true;
   // }
   // return false;
@@ -30,10 +30,10 @@ const isExpiredUser = (user: admin.auth.UserRecord): boolean => {
 // Scan users and delete expired ones
 const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
 
-  console.log('Scanning users with this token', nextPageToken);
+  functions.logger.log('Scanning users with this token', nextPageToken);
 
   const publicUserList: admin.auth.ListUsersResult = await publicApp.auth().listUsers(50, nextPageToken)
-    .catch(err => {console.log(`Failed to fetch users from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Failed to fetch users from public database:`, err); throw new functions.https.HttpsError('internal', err);});
   
   let expiredUserCount = 0;
 
@@ -42,14 +42,14 @@ const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
       
     if (userExpired) {
       await publicApp.auth().deleteUser(user.uid)
-        .catch(err => {console.log(`Error deleting user from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+        .catch(err => {functions.logger.log(`Error deleting user from public database:`, err); throw new functions.https.HttpsError('internal', err);});
       expiredUserCount ++;
     }
   });
 
   await Promise.all(deleteQualifiedUsersRequests);
   
-  console.log(`This batch of ${expiredUserCount} expired users deleted`);
+  functions.logger.log(`This batch of ${expiredUserCount} expired users deleted`);
 
   return publicUserList;
 }
@@ -59,10 +59,10 @@ const identifyAndDeleteExpiredUsers = async (nextPageToken?: string) => {
 
 // A cron job triggers this function, scans the list of anonymous users and deletes expired ones
 export const purgeInactiveUsers = functions.https.onRequest( async (req, res ) => {
-  console.log('Purge inactive users request received with these headers', req.headers);
+  functions.logger.log('Purge inactive users request received with these headers', req.headers);
 
   if (req.headers['user-agent'] !== 'Google-Cloud-Scheduler') {
-    console.log('Invalid request, ending operation');
+    functions.logger.log('Invalid request, ending operation');
     return;
   }
 
@@ -70,12 +70,12 @@ export const purgeInactiveUsers = functions.https.onRequest( async (req, res ) =
 
   // If more than 1000 users, run scan again
   while (userScanResults.pageToken) {
-    console.log('Running next batch of users');
+    functions.logger.log('Running next batch of users');
     // List next batch of users.
     userScanResults = await identifyAndDeleteExpiredUsers(userScanResults.pageToken);
   }
 
   
   
-  return res.status(200).send('Scan completed');
+  res.status(200).send('Scan completed');
 })

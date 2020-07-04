@@ -1,3 +1,4 @@
+import * as functions from 'firebase-functions';
 import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS } from "../../../shared-models/environments/env-vars.model";
 import { currentEnvironmentType } from "../config/environments-config";
 import { PublicAppRoutes } from "../../../shared-models/routes-and-paths/app-routes.model";
@@ -26,26 +27,26 @@ const unescapeHtml = (text: string) => {
 // Locate the transfer state data in the HTML string and convert it to an object
 export const parseTransferState = (htmlString: string, routeType: PublicAppRoutes): BlogIndexPostRef[] | PodcastEpisode[] => {
 
-  console.log('Attempting to parse html doc');
+  functions.logger.log('Attempting to parse html doc');
 
   const appId: string = currentEnvironmentType === EnvironmentTypes.PRODUCTION ? PRODUCTION_APPS.explearningPublicApp.projectId : SANDBOX_APPS.explearningPublicApp.projectId;
 
   const scriptId = `${appId}-state`;
 
   
-  console.log(`Parsing html doc using this script tag ${scriptId}`)
+  functions.logger.log(`Parsing html doc using this script tag ${scriptId}`)
 
   const openingString = `${scriptId}" type="application/json">`;
   const closingString = `</script>`;
 
   const regex = new RegExp(`${openingString}(.*?)${closingString}`);
 
-  console.log(`Using this regex to search: ${regex}`);
+  functions.logger.log(`Using this regex to search: ${regex}`);
 
   try {
     const scriptContent = (htmlString.match(regex) as RegExpMatchArray)[1];
 
-    console.log(`Found this script content`, scriptContent);
+    functions.logger.log(`Found this script content`, scriptContent);
 
     let initialState = {};
     if (scriptContent.length > 0) {
@@ -66,21 +67,21 @@ export const parseTransferState = (htmlString: string, routeType: PublicAppRoute
       case PublicAppRoutes.BLOG:
         dataKey = TransferStateKeys.BLOG_INDEX_KEY;
         dataArray = (initialState as any)[dataKey] as BlogIndexPostRef[];
-        console.log(`Found this data in blog post`, dataArray);
+        functions.logger.log(`Found this data in blog post`, dataArray);
         return dataArray;
       case PublicAppRoutes.PODCAST:
         dataKey = TransferStateKeys.ALL_PODCAST_EPISODES_KEY;
         dataArray = (initialState as any)[dataKey] as PodcastEpisode[];
-        console.log(`Found this data in podcast`, dataArray);
+        functions.logger.log(`Found this data in podcast`, dataArray);
         return dataArray;
       default:
         dataKey = '';
-        console.log(`No data found in html`, dataArray);
+        functions.logger.log(`No data found in html`, dataArray);
         return [];
     }
 
   } catch (e) {
-    console.log(`Error parsing HTML for script content:`, e);
+    functions.logger.log(`Error parsing HTML for script content:`, e);
     return e;
   }
   

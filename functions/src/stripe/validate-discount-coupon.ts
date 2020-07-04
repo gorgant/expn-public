@@ -13,11 +13,11 @@ const currentTime = now();
 const validateUserSpecificLimits = async (couponParentDoc: FirebaseFirestore.DocumentReference, parentDiscountCoupon: DiscountCouponParent, validationData: DiscountCouponValidationData): Promise<boolean> => {
   const discountUserIdDoc: FirebaseFirestore.DocumentReference = couponParentDoc.collection(AdminCollectionPaths.DISCOUNT_COUPON_USER_IDS).doc(validationData.userId);
   const discountUserIdDocSnapshot: FirebaseFirestore.DocumentSnapshot = await discountUserIdDoc.get()
-    .catch(err => {console.log(`Error fetching discount discountUserIdDoc from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error fetching discount discountUserIdDoc from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
     
   const discountUserEmailDoc: FirebaseFirestore.DocumentReference = couponParentDoc.collection(AdminCollectionPaths.DISCOUNT_COUPON_USER_EMAILS).doc(validationData[DiscountCouponKeys.USER_EMAIL]);
   const discountUserEmailDocSnapshot: FirebaseFirestore.DocumentSnapshot = await discountUserEmailDoc.get()
-    .catch(err => {console.log(`Error fetching discount discountUserEmailDoc from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
+    .catch(err => {functions.logger.log(`Error fetching discount discountUserEmailDoc from admin database:`, err); throw new functions.https.HttpsError('internal', err);});
 
   let discountUserIdDocData: DiscountCouponUser | null = null;
   let discountUserEmailDocData: DiscountCouponUser | null = null;
@@ -26,7 +26,7 @@ const validateUserSpecificLimits = async (couponParentDoc: FirebaseFirestore.Doc
   if (discountUserIdDocSnapshot.exists) {
     discountUserIdDocData = discountUserIdDocSnapshot.data() as DiscountCouponUser;
     if (parentDiscountCoupon.maxUsesPerUser && discountUserIdDocData.useCount >= parentDiscountCoupon.maxUsesPerUser) {
-      console.log('User exceeded max uses based on user ID match');
+      functions.logger.log('User exceeded max uses based on user ID match');
       return false;
     }
   }
@@ -35,7 +35,7 @@ const validateUserSpecificLimits = async (couponParentDoc: FirebaseFirestore.Doc
   if (discountUserEmailDocSnapshot.exists) {
     discountUserEmailDocData = discountUserEmailDocSnapshot.data() as DiscountCouponUser;
     if (parentDiscountCoupon.maxUsesPerUser && discountUserEmailDocData.useCount >= parentDiscountCoupon.maxUsesPerUser) {
-      console.log('User exceeded max uses based on user email match');
+      functions.logger.log('User exceeded max uses based on user email match');
       return false;
     }
   }
@@ -79,7 +79,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 
   // Verify coupon exists
   if (couponParentSnapshot && !couponParentSnapshot.exists) {
-    console.log('Coupon does not exist');
+    functions.logger.log('Coupon does not exist');
     const invalidCoupon: DiscountCouponChild = {
       couponCode: validationData.couponCode,
       discountPercentage: 0,
@@ -93,7 +93,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 
   // Verify is active
   if (!parentDiscountCoupon.active) {
-    console.log('Coupon not active');
+    functions.logger.log('Coupon not active');
     const invalidCoupon: DiscountCouponChild = {
       couponCode: validationData.couponCode,
       discountPercentage: 0,
@@ -105,7 +105,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 
   // Verify below use limit
   if (parentDiscountCoupon.useCount >= parentDiscountCoupon.maxUses) {
-    console.log('Coupon exceeds max use limit');
+    functions.logger.log('Coupon exceeds max use limit');
     const invalidCoupon: DiscountCouponChild = {
       couponCode: validationData.couponCode,
       discountPercentage: 0,
@@ -117,7 +117,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 
   // Verify coupon has not expired
   if (currentTime > parentDiscountCoupon.expirationDate) {
-    console.log('Coupon has expired');
+    functions.logger.log('Coupon has expired');
     const invalidCoupon: DiscountCouponChild = {
       couponCode: validationData.couponCode,
       discountPercentage: 0,
@@ -148,7 +148,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 
     // Screen user specific limits
     if (!passesUserSpecificLimitValidation) {
-      console.log('User has exceeded max uses for this coupon');
+      functions.logger.log('User has exceeded max uses for this coupon');
       const invalidCoupon: DiscountCouponChild = {
         couponCode: validationData.couponCode,
         discountPercentage: 0,
@@ -180,7 +180,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
   
     // Screen product specific limits
     if (!passesProductSpecificValidation) {
-      console.log('Product is not valid for this coupon');
+      functions.logger.log('Product is not valid for this coupon');
       const invalidCoupon: DiscountCouponChild = {
         couponCode: validationData.couponCode,
         discountPercentage: 0,
@@ -198,7 +198,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
     valid: true
   };
 
-  console.log('Valid coupon detected', validCoupon);
+  functions.logger.log('Valid coupon detected', validCoupon);
   return validCoupon;
 }
 
@@ -206,7 +206,7 @@ export const validateCouponOnAdmin = async (validationData: DiscountCouponValida
 /////// DEPLOYABLE FUNCTIONS ///////
 
 export const validateDiscountCoupon = functions.https.onCall( async (validationData: DiscountCouponValidationData, context): Promise<DiscountCouponChild> => {
-  console.log('Validate discount coupon request received with this data', validationData);
+  functions.logger.log('Validate discount coupon request received with this data', validationData);
   assertUID(context);
 
   return await validateCouponOnAdmin(validationData);
