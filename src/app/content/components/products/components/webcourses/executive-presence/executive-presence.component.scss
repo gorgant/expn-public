@@ -31,11 +31,6 @@
   @include textBlockBullets()
 }
 
-.waitlist-signup {
-  @include background-opacity($primary, $opacity-medium);
-  width: 100%;
-}
-
 .section-title {
   font-weight: $font-weight-light;
   color: $primary;

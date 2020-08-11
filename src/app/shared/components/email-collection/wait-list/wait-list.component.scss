@@ -1,8 +1,14 @@
 @import "../../../../variables";
 
-.subscribe-content {
+:host {
+  width: 100%;
+}
+
+.box-background {
+  @include background-opacity($primary, $opacity-medium);
   padding: 32px;
   width: 100%;
+  max-width: $text-block-max-width;
 }
 
 .title {
@@ -54,7 +60,7 @@ button:hover {
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
-  .subscribe-content {
+  .box-background {
     padding: 16px;
   }
   

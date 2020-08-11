@@ -3,9 +3,10 @@
     <div class="product-icon-container" fxLayoutAlign="center center">
       <img class="product-icon" [src]="product.cardImageProps.src" [alt]="product.name">
     </div>
-    <div class="subtitle">{{ buyNowData.buyNowBoxSubtitle }}</div>
-    <button class="buy-now-button" mat-raised-button (click)="onBuyNow()">{{ buyNowData.buttonText }}</button>
-    <div class="cards-icon-container" fxLayoutAlign="center center">
+    <div class="subtitle">{{ product.buyNowData.buyNowBoxSubtitle }}</div>
+    <button *ngIf="!product.skillshareActive" class="buy-now-button" mat-raised-button (click)="onBuyNow()">{{ product.buyNowData.buttonText }}</button>
+    <a *ngIf="product.skillshareActive" class="buy-now-button link" mat-raised-button color="primary" target="_blank" rel="noopener noreferrer" [href]="product.skillshareUrl">{{ product.buyNowData.buttonText }}</a>
+    <div *ngIf="!product.skillshareActive" class="cards-icon-container" fxLayoutAlign="center center">
       <img [src]="iconPaths.CREDIT_CARDS" alt="accepted credit cards">
     </div>
     <div class="footer">

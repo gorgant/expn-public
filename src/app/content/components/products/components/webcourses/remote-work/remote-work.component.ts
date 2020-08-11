@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
+import { Product } from 'shared-models/products/product.model';
+import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
 
 @Component({
   selector: 'app-remote-work',
@@ -10,7 +12,8 @@ export class RemoteWorkComponent implements OnInit {
 
   imagePaths = PublicImagePaths;
 
-  @Input() productId: string;
+  @Input() product: Product;
+  @Input() buyNowData: BuyNowBoxData;
 
   constructor() { }
 

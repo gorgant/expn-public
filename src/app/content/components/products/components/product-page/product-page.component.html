@@ -6,24 +6,23 @@
     <!-- DYNAMICALLY POPULATE PRODUCT TEMPLATE BASED ON ID -->
     <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_COACH ? remoteCoach : null"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {productId: product.id}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {productId: product.id}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_COACH ? remoteCoach : null" ></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null; context: {productId: product.id}" ></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_WORK ? remoteWork : null; context: {productId: product.id}" ></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null; context: {product: product}" ></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_WORK ? remoteWork : null; context: {product: product}" ></ng-container>
       <!-- <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null" [ngTemplateOutletContext]="{productId: productId}" ></ng-container> -->
     </div>
 
     <div *appShellNoRender class="buy-now-container">
-      <app-buy-now-box *ngIf="showBuyNowBox" [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
+      <app-buy-now-box *ngIf="!product.waitlistActive" [product]="product"></app-buy-now-box>
+      <app-wait-list *ngIf="product.waitlistActive" [productId]="product.id"></app-wait-list>
       <div class="testamonial-section">
         <app-testamonial *ngFor="let testamonial of testamonialData" [testamonialData]="testamonial" ></app-testamonial>
       </div>
-      <app-buy-now-box *ngIf="showBuyNowBox" [buyNowData]="buyNowData" [product]="product"></app-buy-now-box>
-      <div class="waitlist-signup">
-        <app-wait-list *ngIf="!showBuyNowBox" [productId]="product.id"></app-wait-list>
-      </div>
+      <app-buy-now-box *ngIf="!product.waitlistActive" [product]="product"></app-buy-now-box>
+      <app-wait-list *ngIf="product.waitlistActive" [productId]="product.id"></app-wait-list>
     </div>
   </div>
 </div>
@@ -34,12 +33,12 @@
 </ng-template>
 
 <!-- productId variable set in ng-container above -->
-<ng-template #executivePresence let-productId="productId">
-  <app-executive-presence [productId]="productId"></app-executive-presence>
+<ng-template #executivePresence let-product="product">
+  <app-executive-presence [product]="product"></app-executive-presence>
 </ng-template>
 
-<ng-template #remoteWork let-productId="productId">
-  <app-remote-work [productId]="productId"></app-remote-work>
+<ng-template #remoteWork let-product="product">
+  <app-remote-work [product]="product"></app-remote-work>
 </ng-template>
 
 <ng-template #testProduct>

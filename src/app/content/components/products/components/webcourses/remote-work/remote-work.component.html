@@ -25,8 +25,11 @@
         </ul>
         <p>Are you ready to take your remote work skills to the next level?</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-two">
         <h2 class="section-title">Who Is this Course For?</h2>
@@ -38,8 +41,11 @@
         <p>An investment in this skillset is an investment in your professional trajectory.</p>
         <p>There is no better time than now to get started.</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-three">
         <h2 class="section-title">Challenges of Remote Work</h2>
@@ -56,8 +62,11 @@
         <p>This course equips you with a selection of powerful systems and mental models for maximizing your output and enhancing your time management, all while preventing burnout that frequently accompanies working from home.</p>
         <p>Are you ready to take control of your remote work life?</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-four">
         <h2 class="section-title">The End of the Office</h2>
@@ -75,8 +84,11 @@
         <p>This course embraces the modern concept of a distributed remote office and equips you to thrive in a web- and cloud-based work environment, where the only facilities you need are a power outlet and a WiFi connection.</p>
         <p>Are you ready to secure your future with remote work skills?</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-five">
         <h2 class="section-title">Workshop Modules</h2>
@@ -95,9 +107,6 @@
           <li>Establishing Personal Routines</li>
           <li>Setting Work-Life Boundaries</li>
         </ul>
-      </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
       </div>
     </div>
   </div>

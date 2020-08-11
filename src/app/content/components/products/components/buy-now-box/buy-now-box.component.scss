@@ -52,6 +52,10 @@
   height: $desktop-buy-button-height;
 }
 
+.buy-now-button.link {
+  padding-top: 4px;
+}
+
 .cards-icon-container {
   margin-bottom: 16px;
 }
@@ -76,6 +80,10 @@
     margin-top: 32px;
     margin-bottom: 32px;
     height: $mobile-buy-button-height;
+  }
+
+  .buy-now-button.link {
+    padding-top: 8px;
   }
   
   .cards-icon-container {

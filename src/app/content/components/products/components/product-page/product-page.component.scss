@@ -23,8 +23,3 @@ app-buy-now-box {
   margin-top: 16px;
   margin-bottom: 16px;
 }
-
-.waitlist-signup {
-  @include background-opacity($primary, $opacity-medium);
-  width: 100%;
-}

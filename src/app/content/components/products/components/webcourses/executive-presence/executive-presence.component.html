@@ -49,8 +49,11 @@
         <p>This web course is under development and coming soon.</p>
         <p>Join the waiting list below to be notified about our early bird special when the course is released.</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-two">
         <h2 class="section-title">What is Executive Presence</h2>
@@ -62,8 +65,11 @@
         <p>When we are willing to accept a decision made by someone else, when we are confident that the person making the recommendation knows what they are doing, then we know that person possesses executive presence.</p>
         <p>Are you ready to be that person?</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-three">
         <h2 class="section-title">The Executive Presence Spectrum</h2>
@@ -78,8 +84,11 @@
         <p>These people <b>have</b> executive presence. </p>
         <p>Are you ready to project executive presence?</p>
       </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
+      <div *ngIf="product.waitlistActive" class="waitlist-signup">
+        <app-wait-list [productId]="product.id"></app-wait-list>
+      </div>
+      <div *ngIf="!product.waitlistActive" class="buy-now-box">
+        <app-buy-now-box [product]="product"></app-buy-now-box>
       </div>
       <div class="section-four">
         <h2 class="section-title">Impression Management</h2>
@@ -91,9 +100,6 @@
         <p>By the end of this course, you will have a much deeper understanding of how what you say and do influences others. More importantly, you will know how to leverage this knowledge to dramatically amplify the level of executive presence you project. In turn, you will benefit from the increased trust and confidence others place in you.</p>
         <p>These are skills that will last a lifetime. And the dividends they will pay are priceless.</p>
         <p>Are you ready to invest in your future?</p>
-      </div>
-      <div class="waitlist-signup">
-        <app-wait-list [productId]="productId"></app-wait-list>
       </div>
     </div>
   </div>

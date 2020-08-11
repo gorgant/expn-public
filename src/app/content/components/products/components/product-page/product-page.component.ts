@@ -9,7 +9,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { Product } from 'shared-models/products/product.model';
 import { ProductIdList } from 'shared-models/products/product-id-list.model';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
-import { BuyNowBoxData, BuyNowBoxKeys } from 'shared-models/products/buy-now-box-data.model';
+import { BuyNowBoxData } from 'shared-models/products/buy-now-box-data.model';
 import { TestamonialData } from 'shared-models/forms-and-components/testamonial-data.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { testamonialsList } from 'shared-models/forms-and-components/testamonials.model';
@@ -78,19 +78,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     }
     this.productId = idParam.toLowerCase(); // Remove any possible erroneous lowercasing (IDs are specifically set to lower case in admin)
     this.getProduct();
-    this.configureBuyNowBox();
-  }
-
-  // Hide buynowbox if product is not yet live
-  private configureBuyNowBox() {
-    if (
-      this.productId !== this.productIdList.EXPLEARNING_EXECUTIVE_PRESENCE &&
-      this.productId !== this.productIdList.EXPLEARNING_REMOTE_WORK &&
-      this.productId !== this.productIdList.EXPLEARNING_SANDBOX_WEB_COURSE &&
-      this.productId !== this.productIdList.EXPLEARNING_SANDBOX_REMOTE_WORK
-      ) {
-        this.showBuyNowBox = true;
-    }
   }
 
   // Triggered after params are fetched
@@ -123,7 +110,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
       if (product) {
         // Once data loaded, initialize the other elements
         this.initializeHeroData(product);
-        this.initializeBuyNowData(product);
+        // this.initializeBuyNowData(product);
       }
     });
     this.initializeTestamonialData();
@@ -142,16 +129,6 @@ export class ProductPageComponent implements OnInit, OnDestroy {
       this.configSeoAndAnalytics(product); // Set page view once title is loaded
       this.titleSet = true;
     }
-  }
-
-
-  private initializeBuyNowData(product: Product) {
-    console.log('Initializing buy now data with this product', product);
-    this.buyNowData = {
-      title: product.buyNowData.title,
-      [BuyNowBoxKeys.BUY_NOW_BOX_SUBTITLE]: product.buyNowData[BuyNowBoxKeys.BUY_NOW_BOX_SUBTITLE],
-      buttonText: `Get Started - $${product.price}`
-    };
   }
 
   private initializeTestamonialData() {
