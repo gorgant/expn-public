@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
@@ -15,7 +14,6 @@ import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  private productionEnvironment: boolean = environment.production;
   remoteCoachProductId: string;
   remoteCoachUrlSlug: string;
 
@@ -29,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeHeroData();
     this.configSeoAndAnalytics();
-    this.setProductPathsBasedOnEnvironment();
+    this.setProductPaths();
   }
 
   // Add async data as needed and fire once loaded
@@ -46,23 +44,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.analyticsService.createNavStamp(canonicalUrlPath);
   }
 
-  private setProductPathsBasedOnEnvironment() {
-    switch (this.productionEnvironment) {
-      case true:
-        console.log('Setting productIdList to production');
-        this.remoteCoachProductId = ProductIdList.EXPLEARNING_REMOTE_COACH;
-        this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
-        break;
-      case false:
-        console.log('Setting productIdList to sandbox');
-        this.remoteCoachProductId = ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH;
-        this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
-        break;
-      default:
-        this.remoteCoachProductId = ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH;
-        this.remoteCoachUrlSlug = ProductUrlSlugList.SANDBOX_REMOTE_COACH;
-        break;
-    }
+  private setProductPaths() {
+    this.remoteCoachProductId = ProductIdList.EXPLEARNING_REMOTE_COACH;
+    this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
   }
 
   private initializeHeroData() {

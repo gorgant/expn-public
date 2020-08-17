@@ -18,6 +18,8 @@ import { WebcourseListComponent } from '../components/webcourse-list/webcourse-l
 import { ServiceListComponent } from '../components/service-list/service-list.component';
 import { ExecutivePresenceComponent } from '../components/webcourses/executive-presence/executive-presence.component';
 import { RemoteWorkComponent } from '../components/webcourses/remote-work/remote-work.component';
+import { OnlineInterviewsComponent } from '../components/webcourses/online-interviews/online-interviews.component';
+import { GroupInterviewsComponent } from '../components/webcourses/group-interviews/group-interviews.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,8 @@ import { RemoteWorkComponent } from '../components/webcourses/remote-work/remote
     ServiceListComponent,
     ExecutivePresenceComponent,
     RemoteWorkComponent,
+    OnlineInterviewsComponent,
+    GroupInterviewsComponent,
   ],
   imports: [
     SharedModule,

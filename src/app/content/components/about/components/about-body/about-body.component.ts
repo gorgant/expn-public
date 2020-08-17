@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { environment } from 'src/environments/environment';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
@@ -18,7 +17,6 @@ export class AboutBodyComponent implements OnInit {
 
   videoHtml: SafeHtml;
 
-  private productionEnvironment: boolean = environment.production;
   remoteCoachUrl: string;
 
   constructor(
@@ -27,27 +25,11 @@ export class AboutBodyComponent implements OnInit {
 
   ngOnInit() {
     this.configureVideoUrl(this.videoUrl);
-    this.setProductPathsBasedOnEnvironment();
+    this.setProductPath();
   }
 
-  private setProductPathsBasedOnEnvironment() {
-    switch (this.productionEnvironment) {
-      case true:
-        console.log('Setting productIdList to production');
-        // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
-        break;
-      case false:
-        console.log('Setting productIdList to sandbox');
-        // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
-        break;
-      default:
-        console.log('Setting productIdList to sandbox');
-        // tslint:disable-next-line:max-line-length
-        this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH}/${ProductUrlSlugList.SANDBOX_REMOTE_COACH}`;
-        break;
-    }
+  private setProductPath() {
+    this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
   }
 
   private configureVideoUrl(videoUrl: string) {

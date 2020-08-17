@@ -3,11 +3,11 @@ import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.mod
 import { Product } from 'shared-models/products/product.model';
 
 @Component({
-  selector: 'app-remote-work',
-  templateUrl: './remote-work.component.html',
-  styleUrls: ['./remote-work.component.scss']
+  selector: 'app-online-interviews',
+  templateUrl: './online-interviews.component.html',
+  styleUrls: ['./online-interviews.component.scss']
 })
-export class RemoteWorkComponent implements OnInit {
+export class OnlineInterviewsComponent implements OnInit {
 
   imagePaths = PublicImagePaths;
 

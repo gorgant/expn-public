@@ -8,11 +8,8 @@
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_COACH ? remoteCoach : null"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {product: product}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_COACH ? remoteCoach : null" ></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT ? testProduct : null"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null; context: {product: product}" ></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_REMOTE_WORK ? remoteWork : null; context: {product: product}" ></ng-container>
-      <!-- <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_SANDBOX_WEB_COURSE ? executivePresence : null" [ngTemplateOutletContext]="{productId: productId}" ></ng-container> -->
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_ONLINE_INTERVIEWS ? onlineInterivews : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_GROUP_INTERVIEWS ? groupInterivews : null; context: {product: product}"></ng-container>
     </div>
 
     <div *appShellNoRender class="buy-now-container">
@@ -41,8 +38,12 @@
   <app-remote-work [product]="product"></app-remote-work>
 </ng-template>
 
-<ng-template #testProduct>
-  Test Product Here
+<ng-template #onlineInterivews let-product="product">
+  <app-online-interviews [product]="product"></app-online-interviews>
+</ng-template>
+
+<ng-template #groupInterivews let-product="product">
+  <app-group-interviews [product]="product"></app-group-interviews>
 </ng-template>
 
 <ng-template #blank>
