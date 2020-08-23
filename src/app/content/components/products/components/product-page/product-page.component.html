@@ -10,6 +10,7 @@
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_ONLINE_INTERVIEWS ? onlineInterivews : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_GROUP_INTERVIEWS ? groupInterivews : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_ONLINE_TEAMWORK ? onlineTeamwork : null; context: {product: product}"></ng-container>
     </div>
 
     <div *appShellNoRender class="buy-now-container">
@@ -44,6 +45,9 @@
 
 <ng-template #groupInterivews let-product="product">
   <app-group-interviews [product]="product"></app-group-interviews>
+</ng-template>
+<ng-template #onlineTeamwork let-product="product">
+  <app-online-teamwork [product]="product"></app-online-teamwork>
 </ng-template>
 
 <ng-template #blank>

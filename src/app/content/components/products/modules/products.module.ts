@@ -20,6 +20,7 @@ import { ExecutivePresenceComponent } from '../components/webcourses/executive-p
 import { RemoteWorkComponent } from '../components/webcourses/remote-work/remote-work.component';
 import { OnlineInterviewsComponent } from '../components/webcourses/online-interviews/online-interviews.component';
 import { GroupInterviewsComponent } from '../components/webcourses/group-interviews/group-interviews.component';
+import { OnlineTeamworkComponent } from '../components/webcourses/online-teamwork/online-teamwork.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { GroupInterviewsComponent } from '../components/webcourses/group-intervi
     RemoteWorkComponent,
     OnlineInterviewsComponent,
     GroupInterviewsComponent,
+    OnlineTeamworkComponent,
   ],
   imports: [
     SharedModule,
