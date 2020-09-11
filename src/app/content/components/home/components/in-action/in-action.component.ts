@@ -5,6 +5,7 @@ import { RootStoreState, PostStoreSelectors, PostStoreActions } from 'src/app/ro
 import { withLatestFrom, map, filter } from 'rxjs/operators';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { BlogIndexPostRef } from 'shared-models/posts/post.model';
+import { ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
 
 @Component({
   selector: 'app-in-action',
@@ -19,6 +20,7 @@ export class InActionComponent implements OnInit {
   requestedPosts: boolean;
 
   appRoutes = PublicAppRoutes;
+  siteName = ShorthandBusinessNames.EXPLEARNING;
 
   constructor(
     private store$: Store<RootStoreState.State>

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
@@ -14,6 +14,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 export class PodcastComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
+  podcastUrl = metaTagsContentPages.explearningPublic.podcastSoundCloudUrl;
 
   constructor(
     private analyticsService: AnalyticsService
@@ -27,9 +28,9 @@ export class PodcastComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Podcast - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.podcastMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `Get our lastest communications strategies in audio form from our weekly Explearning podcast. Available on all the major directories, including Soundlcoud, iTunes, Google Podcast, Spotify, and more.`;
+    const description = metaTagsContentPages.explearningPublic.podcastMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.PODCAST;
 
@@ -47,10 +48,10 @@ export class PodcastComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: 'Podcast',
-      pageHeroSubtitle: 'Get our lastest communications strategies in audio form',
+      pageTitle: metaTagsContentPages.explearningPublic.podcastPageTitle,
+      pageHeroSubtitle: metaTagsContentPages.explearningPublic.podcastPageHeroSubtitle,
       imageProps: imgProps,
-      actionMessage: 'View Episodes'
+      actionMessage: metaTagsContentPages.explearningPublic.podcastActionMessage
     };
   }
 

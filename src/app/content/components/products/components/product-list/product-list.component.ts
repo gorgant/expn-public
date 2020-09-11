@@ -6,7 +6,7 @@ import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/p
 import { withLatestFrom, map, filter } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { Product } from 'shared-models/products/product.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
@@ -32,9 +32,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Services - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.productListMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `${metaTagDefaults.explearningPublic.metaTagSiteName} offers a variety of services to help you improve your speaking skills and communication skills. From professional communications coaching to high quality web courses, our goal is to make you the best communicator you can be.`;
+    const description = metaTagsContentPages.explearningPublic.productListMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.PRODUCTS;
 

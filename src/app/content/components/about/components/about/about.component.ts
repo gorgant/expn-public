@@ -3,7 +3,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
@@ -26,9 +26,9 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    const title = `About Me - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.aboutMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `Speaking skills and effective communication are at the core of who we are. My goal is to equip you for personal and professional success by improving your speaking skills and communication skills using our research-backed techniques. With an Ed.M from Columbia University, I've been teaching and coaching communications for over ten years.`;
+    const description = metaTagsContentPages.explearningPublic.aboutMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.ABOUT_ME;
 

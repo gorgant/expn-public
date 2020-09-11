@@ -4,7 +4,7 @@ import { Product } from 'shared-models/products/product.model';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
 import { withLatestFrom, map, filter } from 'rxjs/operators';
@@ -32,9 +32,9 @@ export class WebcourseListComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Web Courses - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.webcourseListMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `${metaTagDefaults.explearningPublic.metaTagSiteName} offers interactive, in-depth web courses that are designed to take your communication skills and social skills to new level.`;
+    const description = metaTagsContentPages.explearningPublic.webcourseListMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.WEBCOURSES;
 

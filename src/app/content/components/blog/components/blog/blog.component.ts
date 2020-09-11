@@ -7,7 +7,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { BlogIndexPostRef } from 'shared-models/posts/post.model';
 
@@ -39,9 +39,9 @@ export class BlogComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Blog - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.blogMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `On Explearning's blog you have access to our complete library of free lessons on speaking skills and effective communication. From public speaking techniques to interview strategies and negotiation tactics, our goal is to make you the best communicator you can be.`;
+    const description = metaTagsContentPages.explearningPublic.blogMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.BLOG;
 
@@ -59,10 +59,10 @@ export class BlogComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: 'Explearning Blog',
-      pageHeroSubtitle: `Access our complete library of free lessons on speaking skills and effective communication`,
+      pageTitle: metaTagsContentPages.explearningPublic.blogPageTitle,
+      pageHeroSubtitle: metaTagsContentPages.explearningPublic.blogPagHeroSubtitle,
       imageProps: blogImageProps,
-      actionMessage: 'View Collection'
+      actionMessage: metaTagsContentPages.explearningPublic.blogActionMessage
     };
   }
 

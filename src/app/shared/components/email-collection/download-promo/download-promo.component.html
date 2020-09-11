@@ -1,6 +1,6 @@
 <div class="box-container" fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.gt-sm="center start" fxLayoutGap="16px">
-  <div class="title">Afraid of Small Talk?</div>
-  <div class="description">Sign up to get our five foolproof strategies for mastering small talk.</div>
+  <div class="title">{{ promoTitle }}</div>
+  <div class="description">{{ promoDescription }}</div>
   <form 
       class="subscribe-form" 
       [formGroup]="subscribeForm" 
@@ -49,6 +49,6 @@
 </div>
 <div class="exit-container" fxLayoutAlign="center center">
   <button class="no-thanks" mat-button mat-dialog-close>
-    Nah, I'm already a small talk pro.
+    {{ promoDecline }}
   </button>
 </div>

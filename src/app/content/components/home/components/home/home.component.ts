@@ -5,7 +5,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-home',
@@ -58,10 +58,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: 'A Richer Life Begins with Better Communication',
+      pageTitle: metaTagsContentPages.explearningPublic.homePageTitle,
       pageHeroSubtitle: null,
       imageProps,
-      actionMessage: 'Learn More'
+      actionMessage: metaTagsContentPages.explearningPublic.homeActionMessage
     };
   }
 

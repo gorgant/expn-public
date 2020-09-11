@@ -3,7 +3,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
-import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
+import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 
 @Component({
@@ -27,9 +27,9 @@ export class ContactComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = `Contact Me - ${metaTagDefaults.explearningPublic.metaTagSiteName}`;
+    const title = metaTagsContentPages.explearningPublic.contactMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = `Get in touch with the Explearning team using this contact form. We welcome questions, suggestions, and any thoughtful input. Let us know if there is anything else we can do to help you improve your speaking and communication skills!`;
+    const description = metaTagsContentPages.explearningPublic.contactMetaDescription;
     const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.CONTACT;
 
@@ -47,10 +47,10 @@ export class ContactComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: 'Contact Me',
-      pageHeroSubtitle: 'Questions, suggestions, and thoughtful input are welcome',
+      pageTitle: metaTagsContentPages.explearningPublic.contactPageTitle,
+      pageHeroSubtitle: metaTagsContentPages.explearningPublic.contactPageHeroSubtitle,
       imageProps: aboutImageProps,
-      actionMessage: 'Get in Touch'
+      actionMessage: metaTagsContentPages.explearningPublic.contactActionMessage
     };
   }
 

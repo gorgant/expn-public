@@ -12,6 +12,7 @@ import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 import { BillingKeys } from 'shared-models/billing/billing-details.model';
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
+import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 
 @Component({
   selector: 'app-subscribe',
@@ -30,6 +31,9 @@ export class SubscribeComponent implements OnInit, OnDestroy {
   existingSubscriber: boolean;
 
   senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
+
+  boxTitle = metaTagsContentPages.explearningPublic.subscribeBoxTitle;
+  boxDescription = metaTagsContentPages.explearningPublic.subscribeBoxDescription;
 
   constructor(
     private fb: FormBuilder,

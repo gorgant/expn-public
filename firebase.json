@@ -13,7 +13,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "appAssociation": "AUTO",
     "rewrites": [
+      {
+        "source": "/courses/**",
+        "dynamicLinks": true
+      },
       {
         "source": "*.*",
         "destination": "./"
