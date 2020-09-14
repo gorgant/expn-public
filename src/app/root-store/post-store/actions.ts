@@ -10,9 +10,12 @@ export enum ActionTypes {
   FEATURED_POSTS_LOADED = '[Posts] Featured Posts Loaded',
   BLOG_INDEX_REQUESTED = '[Posts] Post Index Requested',
   BLOG_INDEX_LOADED = '[Posts] Post Index Loaded',
+  NEXT_BLOG_INDEX_BATCH_REQUESTED = '[Posts] Next Blog Index Batch Requested',
+  NEXT_BLOG_INDEX_BATCH_LOADED = '[Posts] Next Blog Index Batch Loaded',
   LOAD_FAILED = '[Posts] Load Failed',
   FEATURED_POSTS_LOAD_FAILED = '[Posts] Featured Posts Load Failed',
-  BLOG_INDEX_LOAD_FAILED = '[Posts] Blog Index Load Failed'
+  BLOG_INDEX_LOAD_FAILED = '[Posts] Blog Index Load Failed',
+  NEXT_BLOG_INDEX_BATCH_LOAD_FAILED = '[Posts] Next Blog Index Batch Load Failed'
 }
 
 export class SinglePostRequested implements Action {
@@ -52,6 +55,15 @@ export class BlogIndexLoaded implements Action {
   constructor(public payload: { blogIndex: BlogIndexPostRef[] }) {}
 }
 
+export class NextBlogIndexBatchRequested implements Action {
+  readonly type = ActionTypes.NEXT_BLOG_INDEX_BATCH_REQUESTED;
+}
+
+export class NextBlogIndexBatchLoaded implements Action {
+  readonly type = ActionTypes.NEXT_BLOG_INDEX_BATCH_LOADED;
+  constructor(public payload: { nextBlogIndexBatch: BlogIndexPostRef[] }) {}
+}
+
 export class LoadFailed implements Action {
   readonly type = ActionTypes.LOAD_FAILED;
   constructor(public payload: { error: string }) {}
@@ -67,6 +79,10 @@ export class BlogIndexLoadFailed implements Action {
   constructor(public payload: { error: string }) {}
 }
 
+export class NextBlogIndexBatchLoadFailed implements Action {
+  readonly type = ActionTypes.NEXT_BLOG_INDEX_BATCH_LOAD_FAILED;
+  constructor(public payload: { error: string }) {}
+}
 
 
 export type Actions =
@@ -78,7 +94,10 @@ export type Actions =
   FeaturedPostsLoaded |
   BlogIndexRequested |
   BlogIndexLoaded |
+  NextBlogIndexBatchRequested |
+  NextBlogIndexBatchLoaded |
   LoadFailed |
   FeaturedPostsLoadFailed |
-  BlogIndexLoadFailed
+  BlogIndexLoadFailed |
+  NextBlogIndexBatchLoadFailed
   ;

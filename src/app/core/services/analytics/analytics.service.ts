@@ -1,4 +1,4 @@
-import { Injectable, Inject, Injector } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { withLatestFrom, takeWhile } from 'rxjs/operators';
-import { Location, DOCUMENT } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { PartialCustomDimensionsSet } from 'shared-models/analytics/custom-dimensions-set.model';
@@ -40,9 +40,7 @@ export class AnalyticsService {
     private router: Router,
     private afs: AngularFirestore, // Used exclusively to generate an id
     private store$: Store<RootStoreState.State>,
-    private location: Location,
     @Inject(DOCUMENT) private domDoc: Document,
-    private injector: Injector,
   ) {
     this.checkForBot();
     this.checkForAngularUniversal();

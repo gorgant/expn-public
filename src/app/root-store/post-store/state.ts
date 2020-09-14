@@ -19,9 +19,11 @@ export interface State extends EntityState<Post | BlogIndexPostRef> {
   isLoading: boolean;
   isLoadingFeaturedPosts: boolean;
   isLoadingBlogIndex: boolean;
+  isLoadingNextBlogIndexBatch: boolean;
   loadError: any;
   featuredPostLoadError: any;
   blogIndexLoadError: any;
+  nextBlogIndexBatchLoadError: any;
   postsLoaded: boolean;
   blogIndexLoaded: boolean;
 }
@@ -31,10 +33,12 @@ export const initialState: State = featureAdapter.getInitialState(
     isLoading: false,
     isLoadingFeaturedPosts: false,
     isLoadingBlogIndex: false,
+    isLoadingNextBlogIndexBatch: false,
     loadError: null,
     featuredPostLoadError: null,
     blogIndexLoadError: null,
+    nextBlogIndexBatchLoadError: null,
     postsLoaded: false,
-    blogIndexLoaded: false
+    blogIndexLoaded: false,
   }
 );

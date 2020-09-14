@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { catchError, takeUntil, map, take, tap } from 'rxjs/operators';
 import { throwError, Observable, of } from 'rxjs';
-import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
+import { PodcastEpisode, PodcastEpisodeKeys } from 'shared-models/podcast/podcast-episode.model';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { UiService } from './ui.service';
@@ -9,12 +9,16 @@ import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collect
 import { makeStateKey, TransferState } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
-import { ProductionSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
+import { ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PodcastService {
+
+  private podcastEpisodeQueryField = PodcastEpisodeKeys.PUB_DATE;
+  private podcastEpisodeQuerySize: number;
 
   constructor(
     private afs: AngularFirestore,
@@ -23,6 +27,14 @@ export class PodcastService {
     private transferState: TransferState,
     @Inject(PLATFORM_ID) private platformId,
   ) { }
+
+  setPodcastQuerySizeBasedOnEnvironment() {
+    if (environment.production) {
+      this.podcastEpisodeQuerySize = ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN + 1;
+    } else {
+      this.podcastEpisodeQuerySize = SandboxSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN + 1;
+    }
+  }
 
   fetchPodcastContainer(podcastId) {
     const podcastDoc = this.getPodcastContainerDoc(podcastId);
@@ -118,8 +130,8 @@ export class PodcastService {
   private getEpisodesCollection(podcastId: string): AngularFirestoreCollection<PodcastEpisode> {
     return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(
       SharedCollectionPaths.PODCAST_FEED_EPISODES, ref => ref
-        .orderBy('pubDate', 'desc') // Ensures most recent podcasts come first
-        .limit(ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN) // Limit results to most recent for faster page load
+        .orderBy(this.podcastEpisodeQueryField, 'desc') // Ensures most recent podcasts come first
+        .limit(this.podcastEpisodeQuerySize) // Limit results to most recent for faster page load
     );
   }
 

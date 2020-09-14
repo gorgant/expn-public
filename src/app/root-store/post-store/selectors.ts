@@ -7,9 +7,11 @@ import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
 const getIsLoading = (state: State): boolean => state.isLoading;
 const getFeaturedPostsLoading = (state: State): boolean => state.isLoadingFeaturedPosts;
 const getBlogIndexLoading = (state: State): boolean => state.isLoadingBlogIndex;
+const getNextBlogIndexBatchLoading = (state: State): boolean => state.isLoadingNextBlogIndexBatch;
 const getLoadError = (state: State): any => state.loadError;
 const getFeaturedPostsLoadError = (state: State): any => state.featuredPostLoadError;
 const getBlogIndexLoadError = (state: State): any => state.blogIndexLoadError;
+const getNextBlogIndexBatchLoadError = (state: State): any => state.nextBlogIndexBatchLoadError;
 const getPostsLoaded = (state: State): boolean => state.postsLoaded;
 const getBlogIndexLoaded = (state: State): boolean => state.blogIndexLoaded;
 
@@ -44,6 +46,8 @@ export const selectFeaturedPostsLoadError: MemoizedSelector<object, any>
   = createSelector(selectPostState, getFeaturedPostsLoadError);
 export const selectBlogIndexLoadError: MemoizedSelector<object, any>
   = createSelector(selectPostState, getBlogIndexLoadError);
+export const selectNextBlogIndexBatchLoadError: MemoizedSelector<object, any>
+  = createSelector(selectPostState, getNextBlogIndexBatchLoadError);
 
 
 export const selectIsLoading: MemoizedSelector<object, boolean>
@@ -52,6 +56,8 @@ export const selectFeaturedPostsLoading: MemoizedSelector<object, boolean>
   = createSelector(selectPostState, getFeaturedPostsLoading);
 export const selectBlogIndexLoading: MemoizedSelector<object, boolean>
   = createSelector(selectPostState, getBlogIndexLoading);
+export const selectNextBlogIndexBatchLoading: MemoizedSelector<object, boolean>
+  = createSelector(selectPostState, getNextBlogIndexBatchLoading);
 export const selectPostsLoaded: MemoizedSelector<object, boolean>
   = createSelector(selectPostState, getPostsLoaded);
 export const selectBlogIndexLoaded: MemoizedSelector<object, boolean>

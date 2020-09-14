@@ -78,6 +78,24 @@ export function featureReducer(state = initialState, action: Actions): State {
       );
     }
 
+    case ActionTypes.NEXT_BLOG_INDEX_BATCH_REQUESTED: {
+      return {
+        ...state,
+        isLoadingNextBlogIndexBatch: true,
+        nextBlogIndexBatchLoadError: null
+      };
+    }
+
+    case ActionTypes.NEXT_BLOG_INDEX_BATCH_LOADED: {
+      return featureAdapter.addMany(
+        action.payload.nextBlogIndexBatch, {
+          ...state,
+          isLoadingNextBlogIndexBatch: false,
+          nextBlogIndexBatchLoadError: null,
+        }
+      );
+    }
+
     case ActionTypes.LOAD_FAILED: {
       return {
         ...state,
@@ -99,6 +117,14 @@ export function featureReducer(state = initialState, action: Actions): State {
         ...state,
         isLoadingBlogIndex: false,
         blogIndexLoadError: action.payload.error,
+      };
+    }
+
+    case ActionTypes.NEXT_BLOG_INDEX_BATCH_LOAD_FAILED: {
+      return {
+        ...state,
+        isLoadingNextBlogIndexBatch: false,
+        nextBlogIndexBatchLoadError: action.payload.error,
       };
     }
 

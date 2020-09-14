@@ -7,13 +7,19 @@ import { UiService } from './ui.service';
 import { SharedCollectionPaths, PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
-import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
+import { Post, BlogIndexPostRef, PostKeys } from 'shared-models/posts/post.model';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
+import { ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
+
+  private blogIndexQueryField = PostKeys.PUBLISHED_DATE;
+  private blogIndexQuerySize: number;
+  private lastItemInBlogIndexQuery: BlogIndexPostRef;
 
   constructor(
     private afs: AngularFirestore,
@@ -21,7 +27,17 @@ export class PostService {
     private uiService: UiService,
     @Inject(PLATFORM_ID) private platformId,
     private transferState: TransferState
-  ) { }
+  ) {
+    this.setBlogIndexQuerySizeBasedOnEnvironment();
+  }
+
+  setBlogIndexQuerySizeBasedOnEnvironment() {
+    if (environment.production) {
+      this.blogIndexQuerySize = ProductionSsrDataLoadChecks.EXPLEARNING_BLOG_MIN + 1;
+    } else {
+      this.blogIndexQuerySize = SandboxSsrDataLoadChecks.EXPLEARNING_BLOG_MIN + 1;
+    }
+  }
 
   // Load a partial version of the post collection that omits the post content
   fetchBlogIndex(): Observable<BlogIndexPostRef[]> {
@@ -34,16 +50,28 @@ export class PostService {
       // Sort by publish date because must be same order as in Root Store in order to sync properly
       cacheData.sort((a, b) => (b.publishedDate > a.publishedDate) ? 1 : ((a.publishedDate > b.publishedDate) ? -1 : 0));
       this.transferState.remove(BLOG_INDEX_KEY); // Clean up the cache
+      // Store last item for pagination functionality
+      if (cacheData.length > 0) {
+        const lastItem = cacheData[cacheData.length - 1];
+        console.log('last item in blog index query', lastItem);
+        this.lastItemInBlogIndexQuery = lastItem;
+      }
       return of(cacheData);
     }
 
     // Otherwise, fetch from database
-    const blogIndexCollection = this.getBlogIndexCollection();
-    return blogIndexCollection.valueChanges()
+    const firstBatchOfBlogIndexCollection = this.getFirstBatchOfBlogIndexCollection();
+    return firstBatchOfBlogIndexCollection.valueChanges()
       .pipe(
         takeUntil(this.authService.unsubTrigger$),
         map(blogIndex => {
           console.log('Fetched blogIndex');
+          // Store last item for pagination functionality
+          if (blogIndex.length > 0) {
+            const lastItem = blogIndex[blogIndex.length - 1];
+            console.log('last item in blog index query', lastItem);
+            this.lastItemInBlogIndexQuery = lastItem;
+          }
           return blogIndex;
         }),
         tap(blogIndex => {
@@ -57,6 +85,31 @@ export class PostService {
         })
       );
 
+  }
+
+  fetchNextBlogIndexBatch(): Observable<BlogIndexPostRef[]> {
+    // Otherwise, fetch from database
+    const nextBlogIndexBatch = this.getNextBatchOfBlogIndexItems();
+    return nextBlogIndexBatch.valueChanges()
+      .pipe(
+        take(1),
+        map(nextIndexBatch => {
+          console.log('Fetched next blog index batch');
+          // Store last item for pagination functionality
+          if (nextIndexBatch.length > 0) {
+            const lastItem = nextIndexBatch[nextIndexBatch.length - 1];
+            console.log('last item in blog index query', lastItem);
+            this.lastItemInBlogIndexQuery = nextIndexBatch[nextIndexBatch.length - 1];
+          } else {
+            console.log('No additional index items available');
+          }
+          return nextIndexBatch;
+        }),
+        catchError(error => {
+          this.uiService.showSnackBar(error, 5000);
+          return throwError(error);
+        })
+      );
   }
 
   fetchFeaturedPosts(): Observable<BlogIndexPostRef[]> {
@@ -132,14 +185,37 @@ export class PostService {
   }
 
   private getFeaturedPostsCollection(): AngularFirestoreCollection<BlogIndexPostRef> {
-    return this.afs.collection<BlogIndexPostRef>(PublicCollectionPaths.BLOG_INDEX, ref => ref.where('featured', '==', true));
+    return this.afs.collection<BlogIndexPostRef>(PublicCollectionPaths.BLOG_INDEX, ref => ref.where(PostKeys.FEATURED, '==', true));
   }
 
-  private getBlogIndexCollection(): AngularFirestoreCollection<BlogIndexPostRef> {
-    return this.afs.collection<BlogIndexPostRef>(PublicCollectionPaths.BLOG_INDEX);
-  }
+  // private getBlogIndexCollection(): AngularFirestoreCollection<BlogIndexPostRef> {
+  //   return this.afs.collection<BlogIndexPostRef>(PublicCollectionPaths.BLOG_INDEX);
+  // }
 
   private getPostDoc(postId: string): AngularFirestoreDocument<Post> {
     return this.getPostsCollection().doc<Post>(postId);
+  }
+
+  private getFirstBatchOfBlogIndexCollection(): AngularFirestoreCollection<BlogIndexPostRef> {
+    return this.afs.collection<BlogIndexPostRef>(
+      PublicCollectionPaths.BLOG_INDEX,
+      ref => ref
+        .orderBy(this.blogIndexQueryField, 'desc')
+        .limit(this.blogIndexQuerySize)
+    );
+  }
+
+  private getNextBatchOfBlogIndexItems(): AngularFirestoreCollection<BlogIndexPostRef> {
+    if (!this.lastItemInBlogIndexQuery) {
+      console.log('Error, no last item found');
+      throw new Error('No last item in blog index query');
+    }
+    return this.afs.collection<BlogIndexPostRef>(
+      PublicCollectionPaths.BLOG_INDEX,
+      ref => ref
+        .orderBy(this.blogIndexQueryField, 'desc')
+        .startAfter(this.lastItemInBlogIndexQuery.publishedDate)
+        .limit(this.blogIndexQuerySize)
+    );
   }
 }

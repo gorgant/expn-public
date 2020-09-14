@@ -49,7 +49,7 @@ export class PostStoreEffects {
             return new postFeatureActions.FeaturedPostsLoaded({ posts });
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadFailed({ error }));
+            return of(new postFeatureActions.FeaturedPostsLoadFailed({ error }));
           })
         )
     )
@@ -70,7 +70,28 @@ export class PostStoreEffects {
             return new postFeatureActions.BlogIndexLoaded({ blogIndex });
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadFailed({ error }));
+            return of(new postFeatureActions.BlogIndexLoadFailed({ error }));
+          })
+        )
+    )
+  );
+
+  @Effect()
+  nextBlogIndexBatchEffect$: Observable<Action> = this.actions$.pipe(
+    ofType<postFeatureActions.NextBlogIndexBatchRequested>(
+      postFeatureActions.ActionTypes.NEXT_BLOG_INDEX_BATCH_REQUESTED
+    ),
+    switchMap(action =>
+      this.postService.fetchNextBlogIndexBatch()
+        .pipe(
+          map(nextBlogIndexBatch => {
+            if (!nextBlogIndexBatch || nextBlogIndexBatch.length < 1) {
+              throw new Error('No additional blog index items available');
+            }
+            return new postFeatureActions.NextBlogIndexBatchLoaded({ nextBlogIndexBatch });
+          }),
+          catchError(error => {
+            return of(new postFeatureActions.NextBlogIndexBatchLoadFailed({ error }));
           })
         )
     )

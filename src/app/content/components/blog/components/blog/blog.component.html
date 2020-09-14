@@ -5,6 +5,10 @@
   <div class="collection-container">
     <app-post-collection [posts]="posts$ | async"></app-post-collection>
   </div>
+  <div class="load-more" fxLayoutAlign="center center">
+    <mat-progress-spinner *ngIf="(isLoadingNextBatch$ | async)" color="accent" mode="indeterminate"></mat-progress-spinner>
+    <a *ngIf="!(isLoadingNextBatch$ | async)" class="load-more-button" [disabled]="nextBatchError$ | async" mat-raised-button color="accent" type="button" (click)="onGetNextBatchOfPosts()">Load More Posts</a>
+  </div>
   <div class="load-error" *ngIf="!(posts$ | async) && error$ | async">
     Error loading posts. Please refresh page.
   </div>

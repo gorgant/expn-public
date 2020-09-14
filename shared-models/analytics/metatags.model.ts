@@ -89,14 +89,14 @@ export const metaTagsContentPages = {
     waitListBoxDescription: `Sign up for early bird prices on this webcourse along with our latest communication techniques.`
   },
   maryDaphnePublic: {
-    aboutMetaTitle: `About Me - ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}`,
+    aboutMetaTitle: `About Us - ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}`,
     // tslint:disable-next-line: max-line-length
     aboutMetaDescription: `Our mission at ${metaTagDefaults.maryDaphnePublic.metaTagSiteName} is to expand your sense of opportunity and possibility.`,
     aboutBodyVideoUrl: `https://youtu.be/X949bB9fqMA`,
     blogMetaTitle: `Blog - ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}`,
     // tslint:disable-next-line: max-line-length
     blogMetaDescription: `On ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}'s blog you have access to our complete library of insights and personal development content.`,
-    blogPageTitle: `My Blog`,
+    blogPageTitle: `Our Blog`,
     blogPagHeroSubtitle: `Access our complete library of insights and personal development content`,
     blogActionMessage: `View Collection`,
     contactMetaTitle: `Contact Us - ${metaTagDefaults.maryDaphnePublic.metaTagSiteName}`,

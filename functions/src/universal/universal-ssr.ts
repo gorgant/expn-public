@@ -54,6 +54,14 @@ const podcastFullyLoaded = (podcastIndex: PodcastEpisode[]): boolean => {
   return false;
 }
 
+const isAutoCache = (req: express.Request): boolean => {
+  if (req.query[`${WebpageRequestType.AUTO_CACHE}`]) {
+    functions.logger.log('Auto cache detected');
+    return true;
+  }
+  return false;
+}
+
 const renderAndCachePageWithUniversal = async (res: express.Response, req: express.Request, userAgent: string) => {
 
   const requestPath = req.path;
@@ -126,17 +134,20 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
 
     reloadAttempts = 0; // Reset reload attempts for future functions
 
+    // WE COULD COMPLETELY SIMPLFY ALL THE FOLLOWING CODE BY ONLY CACHING MANUAL/SCHEDULED AUTO REQUESTS
     // Designate routes that shouldn't be cached
     const nonCachableAppRoutes: PublicAppRoutes[] = [
+      PublicAppRoutes.BLOG, // Excluded by default, only run these on admin auto-cache requests
+      PublicAppRoutes.PRODUCTS, // Excluded by default, only run these on admin auto-cache requests
       PublicAppRoutes.CHECKOUT,
       PublicAppRoutes.SUB_CONFIRMATION,
-      PublicAppRoutes.HOME, // We will put home in manually since it is too broad
+      PublicAppRoutes.HOME, // We will put home in manually since "/" directory is too broad
       PublicAppRoutes.PURCHASE_CONFIRMATION,
       PublicAppRoutes.PRIVACY_POLICY,
       PublicAppRoutes.TERMS_AND_CONDITIONS
     ];
 
-    // Create an array of cachable app routes
+    // Create an array of cachable app routes from the complete set of publicAppRoutes
     const cachableAppRoutes = Object.values(PublicAppRoutes).reduce((result, appRoute) => {
       // Only push results that aren't included in the nonCachable array
       if (!nonCachableAppRoutes.includes(appRoute)) {
@@ -147,10 +158,15 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
 
     functions.logger.log('Generated this list of cachable app routes', cachableAppRoutes);
 
-    // Only cache request path if it matches a cachable route as defined above or matches the home route
+    // Only cache request path if it matches a cachable route as defined above or matches the home route or is an auto cache request
     for (const validRoute of cachableAppRoutes) {
       // Match a valid route exactly or a valid route plus an 8-character ID plus a slash followed by a wild card (https://regex101.com/ for info on the regex string)
-      if (requestPath === validRoute || requestPath === '/' || requestPath.match(new RegExp(validRoute + '\/[a-zA-Z0-9]{8,8}\/.*'))) {
+      if (
+        requestPath === validRoute || 
+        requestPath === '/' || 
+        // requestPath.match(new RegExp(validRoute + '\/[a-zA-Z0-9]{8,8}\/.*')) || // match any product or blog routes
+        isAutoCache(req) // for Blog and Product routes, only respond to admin auto cache requests (prevents bot bloat in cache of fake urls)
+        ) {
         functions.logger.log(`Cachable route detected, submitted for caching`);
         // Cache HTML in database for easy future retrieval
         await storeWebPageCache(requestPath, userAgent, html)
@@ -209,7 +225,7 @@ const customExpressApp = () => {
       const userAgent: string = (req.headers['user-agent'] as string) ? (req.headers['user-agent'] as string) : '';
       const isBot = detectUaBot(userAgent);
       const isGoogleBot: boolean = userAgent.toLowerCase().includes('googlebot') ? true : false;
-      const requestType = req.query[`${WebpageRequestType.AUTO_CACHE}`] ? WebpageRequestType.AUTO_CACHE : (
+      const requestType = isAutoCache(req) ? WebpageRequestType.AUTO_CACHE : (
           isGoogleBot ? WebpageRequestType.GOOGLE_BOT : (
             isBot ? WebpageRequestType.OTHER_BOT : WebpageRequestType.NO_BOT
           )
@@ -218,7 +234,6 @@ const customExpressApp = () => {
 
       // If auto-cache request, bypass cache check and perform render request
       if (requestType === WebpageRequestType.AUTO_CACHE) {
-        functions.logger.log('Auto cache detected');
         await renderAndCachePageWithUniversal(res, req, userAgent);
         return;
       }
