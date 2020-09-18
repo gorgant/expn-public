@@ -5,6 +5,7 @@ import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/m
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { PodcastEmbedUrls, PodcastPageUrls } from 'shared-models/podcast/podcast-paths.model';
 
 @Component({
   selector: 'app-podcast',
@@ -14,7 +15,8 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 export class PodcastComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
-  podcastUrl = metaTagsContentPages.explearningPublic.podcastSoundCloudUrl;
+  podcastPlayerUrl = PodcastEmbedUrls.EXPLEARNING;
+  podcastPageUrl = PodcastPageUrls.EXPLEARNING;
 
   constructor(
     private analyticsService: AnalyticsService

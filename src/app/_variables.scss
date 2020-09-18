@@ -84,6 +84,10 @@ $font-weight-bold: 700;
 $font-weight-black: 900;
 
 $logo-font-family: HarlowSolid;
+$logo-font-default-size: 40px;
+$logo-font-mobile-size: 35px;
+// Color from here: https://blog.union.io/code/2017/08/10/img-svg-fill/ && https://codepen.io/sosuke/pen/Pjoqqp
+$svg-color-filter: brightness(0) saturate(100%) invert(43%) sepia(97%) saturate(1340%) hue-rotate(184deg) brightness(98%) contrast(95%);
 
 $max-screen-width: 2500px;
 $min-screen-width: 320px;

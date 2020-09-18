@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
-import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
+import { PodcastRssFeedPaths } from 'shared-models/podcast/podcast-paths.model';
 import { UiService } from 'src/app/core/services/ui.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
@@ -36,7 +36,7 @@ export class PodcastBodyComponent implements OnInit {
         // Check if items are loaded, if not fetch from server
         if (!episodesLoaded && !this.loadPodcastTriggered) {
           console.log('No episodes loaded, loading those now');
-          const podcastId: string = this.uiService.getPodcastId(PodcastPaths.EXPLEARNING_RSS_FEED);
+          const podcastId: string = this.uiService.getPodcastId(PodcastRssFeedPaths.EXPLEARNING_RSS_FEED);
           this.loadPodcastTriggered = true; // Prevents loading from firing more than needed
           this.store$.dispatch(new PodcastStoreActions.AllEpisodesRequested({podcastId}));
         }

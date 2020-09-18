@@ -1,5 +1,5 @@
 import * as https from 'https';
-import { PodcastPaths } from '../../../shared-models/podcast/podcast-paths.model';
+import { PodcastRssFeedPaths } from '../../../shared-models/podcast/podcast-paths.model';
 import * as xml2js from 'xml2js'; // Also requires stream and timers packages
 import * as functions from 'firebase-functions';
 import { publicFirestore, adminFirestore } from '../config/db-config';
@@ -34,7 +34,7 @@ const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
 // Fetch podcast feed data from Soundcloud
 const fetchPodcastFeed = async () => {
 
-  const requestUrl = PodcastPaths.EXPLEARNING_RSS_FEED;
+  const requestUrl = PodcastRssFeedPaths.EXPLEARNING_RSS_FEED;
 
   const requestPromise = new Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}>(async (resolve, reject) => {
 

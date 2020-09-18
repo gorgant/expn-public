@@ -13,7 +13,7 @@
 
 .cap-title {
   font-family: $logo-font-family;
-  font-size: 48px;
+  font-size: $logo-font-default-size;
   color: $primary;
   
 }
@@ -24,4 +24,5 @@
 
 .cap-icon img {
   max-height: 150px;
+  filter: $svg-color-filter;
 }

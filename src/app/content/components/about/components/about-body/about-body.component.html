@@ -1,11 +1,11 @@
 <div class="content-container puppeteer-loaded" fxLayout="column" fxLayoutAlign="center center">
   <p class="header">
-    A richer life begins with better communication. My job at Explearning is to empower you to be the best communicator you can be.
+    A richer life begins with better communication. My job at {{ shorthandName }} is to empower you to be the best communicator you can be.
   </p>
   
   <div class="body-container" fxLayout="column" fxLayoutAlign="start center">
     <div class="body-intro" fxLayout="row" fxLayoutAlign="center center">
-      <app-avatar-portrait [imagePath]="imagePaths.MD_AVATAR"></app-avatar-portrait>
+      <app-avatar-portrait [imagePath]="imagePaths.FOUNDER_AVATAR"></app-avatar-portrait>
       <p class="intro-text">
           Chafing under layers of makeup, I tried not to squint into the hot, bright lights. As the teleprompter began to roll, I took a deep breath, musing at the course of events that led me to this anchor’s seat.
       </p>
@@ -34,18 +34,18 @@
       <p>No one knows how amazing you are until you communicate it to them.</p>
       <p>Communication isn't just about what you say. It's about how you present yourself. Your body language. Your facial expressions. Your cultural awareness.</p>
       <p>There is so much to effective communication. And I want to share everything I've learned in the news room, during my graduate research at Columbia University, and in my decade of teaching communications -- I want to share all of this with you.</p>
-      <p>That's why I founded Explearning. I want the opportunity - the privilege - to help you become the best version of yourself.</p>
+      <p>That's why I founded {{ shorthandName }}. I want the opportunity - the privilege - to help you become the best version of yourself.</p>
       <p>And it all starts with effective communication.</p>
-      <p>At this point I hope you are as fired up as I am! If so, I invite you to dive in and check out everything Explearning has to offer.</p>
+      <p>At this point I hope you are as fired up as I am! If so, I invite you to dive in and check out everything {{ shorthandName }} has to offer.</p>
       <p>A great place to start would be <a [routerLink]="[appRoutes.BLOG]">our blog</a>, which features hundreds of research-backed strategies to address some of the most common communications challenges my clients face.</p>
       <p>We also offer personalized feedback on your next speech, interview, or presentation through our <a [routerLink]="[remoteCoachUrl]">Remote Coach</a> service.</p>
       <p>Thank you for taking the time to learn more about what we do.</p>
-      <p>Happy Explearning!</p>
+      <p>Happy {{ shorthandName }}!</p>
     </div>
     <div class="signature-container" fxFlexAlign="start">
-      <img class="signature-image" [src]="imagePaths.MD_CHECKOUT_SIGNATURE" alt="Mary Daphne Explearning Signature">
+      <img class="signature-image" [src]="imagePaths.FOUNDER_SIGNATURE" alt="Signature">
       <div class="signature-text">
-        Mary Daphne Root
+        Mary Daphne
       </div>
     </div>
   </div>

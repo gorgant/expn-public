@@ -13,7 +13,7 @@ import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
 import { DOCUMENT } from '@angular/common';
 import { UiService } from 'src/app/core/services/ui.service';
-import { PodcastPaths } from 'shared-models/podcast/podcast-paths.model';
+import { PodcastRssFeedPaths } from 'shared-models/podcast/podcast-paths.model';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { environment } from 'src/environments/environment';
 
@@ -247,7 +247,7 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   private getPodcastEpisode(podcastEpisodeUrl: string): Observable<PodcastEpisode> {
-    const podcastId = PodcastPaths.EXPLEARNING_RSS_FEED.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
+    const podcastId = PodcastRssFeedPaths.EXPLEARNING_RSS_FEED.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
     const episodeId = this.uiService.createOrReverseFirebaseSafeUrl(podcastEpisodeUrl);
 
     const podcastEpisode$ = this.store$.select(PodcastStoreSelectors.selectEpisodeById(episodeId))

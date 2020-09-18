@@ -4,6 +4,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
+import { ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
 
 @Component({
   selector: 'app-about-body',
@@ -15,6 +16,7 @@ export class AboutBodyComponent implements OnInit {
   appRoutes = PublicAppRoutes;
   imagePaths = PublicImagePaths;
   videoUrl = metaTagsContentPages.explearningPublic.aboutBodyVideoUrl;
+  shorthandName = ShorthandBusinessNames.EXPLEARNING;
 
   videoHtml: SafeHtml;
 

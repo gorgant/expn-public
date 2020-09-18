@@ -7,7 +7,7 @@
 
 .title {
   font-family: $logo-font-family;
-  font-size: 48px;
+  font-size: $logo-font-default-size;
   color: $primary;
   text-align: center;
   margin-top: 32px;
@@ -39,6 +39,10 @@
 
 @media screen and (max-width: $mobile-cutoff-width) {
   
+  .title {
+    font-size: $logo-font-mobile-size;
+  }
+
   .see-more-button {
     width: $mobile-button-width;
     opacity: $active-item-opacity;

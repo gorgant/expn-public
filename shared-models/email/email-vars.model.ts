@@ -20,6 +20,9 @@ export enum EmailTemplateIds {
   MARY_DAPHNE_WELCOME_EMAIL = 'd-1d5174c867e445be9fc4f4eaed7bc241',
   MARY_DAPHNE_OPT_IN_CONFIRMATION = 'd-ff70ac624ec243e789efa74b0411f971',
   MARY_DAPHNE_CONTACT_FORM_CONFIRMATION = 'd-68ffed5939564e2181e07f17b1380869',
+  SYW_WELCOME_EMAIL = 'd-99c64a8b00364a6cb1af1fb9e0b16eac',
+  SYW_OPT_IN_CONFIRMATION = 'd-776824ed40bf44efa371843d0073ec25',
+  SYW_CONTACT_FORM_CONFIRMATION = 'd-e058fdbaa080487285a8391258a6ef08',
 }
 
 export enum EmailContactListIds {
@@ -29,6 +32,7 @@ export enum EmailContactListIds {
   MARY_DAPHNE_COMMUNICATIONS_STRATEGIES = 'e0b66287-629c-4365-b1ed-fbec6f71db67',
   MARY_DAPHNE_EXECUTIVE_PRESENCE_WAIT_LIST = 'cbb8f762-6fb9-4b3d-8427-00f1b9d26a80',
   MARY_DAPHNE_REMOTE_WORK_WAIT_LIST = 'a0426571-77ea-45a4-ac96-a0668904282d',
+  SYW_WEALTH_BUILDING_STRATEGIES = '422a87c7-66ce-469e-b614-81bab3b2c05c',
 }
 
 export enum EmailUnsubscribeGroupIds {
@@ -37,36 +41,26 @@ export enum EmailUnsubscribeGroupIds {
   EXPLEARNING_REMOTE_WORK_WAIT_LIST = 15126,
   MARY_DAPHNE_COMMUNICATIONS_STRATEGIES = 10012,
   MARY_DAPHNE_EXECUTIVE_PRESENCE_WAIT_LIST = 13699,
-  MARY_DAPHNE_REMOTE_WORK_WAIT_LIST = 13700
+  MARY_DAPHNE_REMOTE_WORK_WAIT_LIST = 13700,
+  SYW_WEALTH_BUILDING_STRATEGIES = 22515,
 }
 
 // Set the key to the Product ID Searchable by product ID
-// For now the MD products will use the Explearning email template
+// For now the MD and SYW products will use the Explearning email template
 export const ProductEmailTemplates: ProductEmailTemplateList = {
   [ProductIdList.EXPLEARNING_REMOTE_COACH]: {
     templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
     productId: ProductIdList.EXPLEARNING_REMOTE_COACH
   },
-  // [ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH]: {
-  //   templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
-  //   productId: ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH
-  // },
-  // [ProductIdList.EXPLEARNING_SANDBOX_ANOTHER_COOL_PRODUCT]: {
-  //   templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
-  //   productId: ProductIdList.EXPLEARNING_SANDBOX_REMOTE_COACH
-  // },
   [ProductIdList.MARY_DAPHNE_REMOTE_COACH]: {
     templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
     productId: ProductIdList.MARY_DAPHNE_REMOTE_COACH
   },
-  // [ProductIdList.MARY_DAPHNE_SANDBOX_REMOTE_COACH]: {
-  //   templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
-  //   productId: ProductIdList.MARY_DAPHNE_SANDBOX_REMOTE_COACH
-  // },
-  // [ProductIdList.MARY_DAPHNE_SANDBOX_ANOTHER_COOL_PRODUCT]: {
-  //   templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
-  //   productId: ProductIdList.MARY_DAPHNE_SANDBOX_REMOTE_COACH
-  // }
+  [ProductIdList.SYW_REMOTE_COACH]: {
+    templateId: EmailTemplateIds.EXPLEARNING_REMOTE_COACH_PURCHASE_CONFIRMATION,
+    productId: ProductIdList.SYW_REMOTE_COACH
+  },
+
 };
 
 export enum EmailSenderAddresses {
@@ -79,7 +73,12 @@ export enum EmailSenderAddresses {
   MARY_DAPHNE_NEWSLETTER = 'newsletter@marydaphne.com',
   MARY_DAPHNE_ORDERS = 'orders@marydaphne.com',
   MARY_DAPHNE_ADMIN = 'admin@marydaphne.com',
-  MARY_DAPHNE_SUPPORT = 'support@marydaphne.com'
+  MARY_DAPHNE_SUPPORT = 'support@marydaphne.com',
+  SYW_DEFAULT = 'hello@stakeyourwealth.com',
+  SYW_NEWSLETTER = 'newsletter@stakeyourwealth.com',
+  SYW_ORDERS = 'orders@stakeyourwealth.com',
+  SYW_ADMIN = 'admin@stakeyourwealth.com',
+  SYW_SUPPORT = 'support@stakeyourwealth.com'
 }
 
 export enum EmailSenderNames {
@@ -88,14 +87,20 @@ export enum EmailSenderNames {
   EXPLEARNING_ADMIN = 'Explearning ADMIN',
   MARY_DAPHNE_DEFAULT = 'Mary Daphne',
   MARY_DAPHNE_NEWSLETTER = 'Mary Daphne',
-  MARY_DAPHNE_ADMIN = 'Mary Daphne ADMIN'
+  MARY_DAPHNE_ADMIN = 'Mary Daphne ADMIN',
+  SYW_DEFAULT = 'Stake Your Wealth',
+  SYW_NEWSLETTER = 'Stake Your Wealth',
+  SYW_ADMIN = 'Stake Your Wealth ADMIN'
 }
 
 export const AdminEmailAddresses = {
   EXPLEARNING_GREG_ONLY: 'greg@explearning.co',
   EXPLEARNING_GREG_AND_MD: ['greg@explearning.co, md@explearning.co'],
-  EXPLEARNING_DEFAULT: 'default@explearning.co',
+  EXPLEARNING_DEFAULT: 'hello@explearning.co',
   MARY_DAPHNE_GREG_ONLY: 'greg@marydaphne.com',
   MARY_DAPHNE_GREG_AND_MD: ['greg@marydaphne.com, md@marydaphne.com'],
-  MARY_DAPHNE_DEFAULT: 'default@marydaphne.com'
+  MARY_DAPHNE_DEFAULT: 'hello@marydaphne.com',
+  SYW_GREG_ONLY: 'greg@stakeyourwealth.com',
+  SYW_GREG_AND_MD: ['greg@stakeyourwealth.com, md@stakeyourwealth.com'],
+  SYW_DEFAULT: 'hello@stakeyourwealth.com'
 };
