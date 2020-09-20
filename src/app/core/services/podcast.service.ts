@@ -9,8 +9,7 @@ import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collect
 import { makeStateKey, TransferState } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
-import { ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
-import { environment } from 'src/environments/environment';
+import { PodcastVars } from 'shared-models/podcast/podcast-vars.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class PodcastService {
 
   private podcastEpisodeQueryField = PodcastEpisodeKeys.PUB_DATE;
-  private podcastEpisodeQuerySize: number;
+  private podcastEpisodeQueryLimit = PodcastVars.PODCAST_QUERY_LIMIT;
 
   constructor(
     private afs: AngularFirestore,
@@ -27,14 +26,6 @@ export class PodcastService {
     private transferState: TransferState,
     @Inject(PLATFORM_ID) private platformId,
   ) { }
-
-  setPodcastQuerySizeBasedOnEnvironment() {
-    if (environment.production) {
-      this.podcastEpisodeQuerySize = ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN + 1;
-    } else {
-      this.podcastEpisodeQuerySize = SandboxSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN + 1;
-    }
-  }
 
   fetchPodcastContainer(podcastId) {
     const podcastDoc = this.getPodcastContainerDoc(podcastId);
@@ -131,7 +122,7 @@ export class PodcastService {
     return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(
       SharedCollectionPaths.PODCAST_FEED_EPISODES, ref => ref
         .orderBy(this.podcastEpisodeQueryField, 'desc') // Ensures most recent podcasts come first
-        .limit(this.podcastEpisodeQuerySize) // Limit results to most recent for faster page load
+        .limit(this.podcastEpisodeQueryLimit) // Limit results to most recent for faster page load
     );
   }
 

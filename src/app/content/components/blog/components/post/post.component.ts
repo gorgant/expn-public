@@ -13,9 +13,10 @@ import { metaTagDefaults } from 'shared-models/analytics/metatags.model';
 import { PRODUCTION_APPS, SANDBOX_APPS } from 'shared-models/environments/env-vars.model';
 import { DOCUMENT } from '@angular/common';
 import { UiService } from 'src/app/core/services/ui.service';
-import { PodcastRssFeedPaths } from 'shared-models/podcast/podcast-paths.model';
 import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { environment } from 'src/environments/environment';
+import { YouTubeChannelIds } from 'shared-models/routes-and-paths/social-urls.model';
+import { PODCAST_PATHS } from 'shared-models/podcast/podcast-vars.model';
 
 @Component({
   selector: 'app-post',
@@ -44,6 +45,7 @@ export class PostComponent implements OnInit, OnDestroy {
   private productionEnvironment: boolean = environment.production;
   private origin: string;
   sanitizedSubscribeButtonContent: SafeHtml;
+  youTubeChannelId = YouTubeChannelIds.EXPLEARNING;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -154,9 +156,10 @@ export class PostComponent implements OnInit, OnDestroy {
 
     // See video parameters here: https://developers.google.com/youtube/player_parameters
     const videoParameters = {
-      rel: 0,
-      origin: `${this.setYouTubeIframeOriginBasedOnEnvironment()}`,
       fs: 1,
+      origin: `${this.setYouTubeIframeOriginBasedOnEnvironment()}`,
+      rel: 0,
+      enablejsapi: 1
     };
 
     // Courtesy of https://stackoverflow.com/a/12040639/6572208
@@ -247,7 +250,7 @@ export class PostComponent implements OnInit, OnDestroy {
   }
 
   private getPodcastEpisode(podcastEpisodeUrl: string): Observable<PodcastEpisode> {
-    const podcastId = PodcastRssFeedPaths.EXPLEARNING_RSS_FEED.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
+    const podcastId = PODCAST_PATHS.explearning.rssFeedPath.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
     const episodeId = this.uiService.createOrReverseFirebaseSafeUrl(podcastEpisodeUrl);
 
     const podcastEpisode$ = this.store$.select(PodcastStoreSelectors.selectEpisodeById(episodeId))

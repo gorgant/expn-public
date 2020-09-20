@@ -1,5 +1,4 @@
 import * as https from 'https';
-import { PodcastRssFeedPaths } from '../../../shared-models/podcast/podcast-paths.model';
 import * as xml2js from 'xml2js'; // Also requires stream and timers packages
 import * as functions from 'firebase-functions';
 import { publicFirestore, adminFirestore } from '../config/db-config';
@@ -9,6 +8,7 @@ import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.m
 import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
+import { PODCAST_PATHS } from '../../../shared-models/podcast/podcast-vars.model';
 
 const publicDb = publicFirestore;
 const adminDb = adminFirestore;
@@ -34,7 +34,7 @@ const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
 // Fetch podcast feed data from Soundcloud
 const fetchPodcastFeed = async () => {
 
-  const requestUrl = PodcastRssFeedPaths.EXPLEARNING_RSS_FEED;
+  const requestUrl = PODCAST_PATHS.explearning.rssFeedPath;
 
   const requestPromise = new Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}>(async (resolve, reject) => {
 

@@ -9,8 +9,7 @@ import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { isPlatformServer } from '@angular/common';
 import { Post, BlogIndexPostRef, PostKeys } from 'shared-models/posts/post.model';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
-import { ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from 'shared-models/environments/env-vars.model';
-import { environment } from 'src/environments/environment';
+import { PostVars } from 'shared-models/posts/post-vars.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class PostService {
 
   private blogIndexQueryField = PostKeys.PUBLISHED_DATE;
-  private blogIndexQuerySize: number;
+  private blogIndexQueryLimit = PostVars.POST_QUERY_LIMIT;
   private lastItemInBlogIndexQuery: BlogIndexPostRef;
 
   constructor(
@@ -27,17 +26,7 @@ export class PostService {
     private uiService: UiService,
     @Inject(PLATFORM_ID) private platformId,
     private transferState: TransferState
-  ) {
-    this.setBlogIndexQuerySizeBasedOnEnvironment();
-  }
-
-  setBlogIndexQuerySizeBasedOnEnvironment() {
-    if (environment.production) {
-      this.blogIndexQuerySize = ProductionSsrDataLoadChecks.EXPLEARNING_BLOG_MIN + 1;
-    } else {
-      this.blogIndexQuerySize = SandboxSsrDataLoadChecks.EXPLEARNING_BLOG_MIN + 1;
-    }
-  }
+  ) { }
 
   // Load a partial version of the post collection that omits the post content
   fetchBlogIndex(): Observable<BlogIndexPostRef[]> {
@@ -201,7 +190,7 @@ export class PostService {
       PublicCollectionPaths.BLOG_INDEX,
       ref => ref
         .orderBy(this.blogIndexQueryField, 'desc')
-        .limit(this.blogIndexQuerySize)
+        .limit(this.blogIndexQueryLimit)
     );
   }
 
@@ -215,7 +204,7 @@ export class PostService {
       ref => ref
         .orderBy(this.blogIndexQueryField, 'desc')
         .startAfter(this.lastItemInBlogIndexQuery.publishedDate)
-        .limit(this.blogIndexQuerySize)
+        .limit(this.blogIndexQueryLimit)
     );
   }
 }

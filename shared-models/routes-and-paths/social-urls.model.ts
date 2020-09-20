@@ -15,3 +15,9 @@ export enum SocialUrls {
   SYW_FACEBOOK = 'https://www.facebook.com/StakeYourWealth',
   SYW_LINKEDIN = 'https://www.linkedin.com/company/stake-your-wealth',
 }
+
+export enum YouTubeChannelIds {
+  EXPLEARNING = 'UCMnAKOzuvMSuBSoPUL3dXlw',
+  MARY_DAPHNE = 'UCzXSvUpoRpBz3X2Cmh7JTxA',
+  SYW = 'UCXFp9ycwsUTh7BTzrUNDcow'
+}

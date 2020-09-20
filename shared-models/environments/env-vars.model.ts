@@ -139,7 +139,7 @@ export enum ProductionSsrDataLoadChecks {
   MARY_DAPHNE_BLOG_MIN = 14,
   MARY_DAPHNE_PODCAST_MIN = 0,
   SYW_BLOG_MIN = 4,
-  SYW_PODCAST_MIN = 0
+  SYW_PODCAST_MIN = 4
 }
 
 export enum SandboxSsrDataLoadChecks {
@@ -148,5 +148,5 @@ export enum SandboxSsrDataLoadChecks {
   MARY_DAPHNE_BLOG_MIN = 1,
   MARY_DAPHNE_PODCAST_MIN = 0,
   SYW_BLOG_MIN = 1,
-  SYW_PODCAST_MIN = 0
+  SYW_PODCAST_MIN = 1
 }

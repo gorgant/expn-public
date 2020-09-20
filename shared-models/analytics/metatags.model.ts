@@ -1,4 +1,3 @@
-import { SocialUrls } from '../../shared-models/routes-and-paths/social-urls.model';
 import { LegalBusinessNames, ShorthandBusinessNames } from '../../shared-models/forms-and-components/legal-vars.model';
 import { PublicIconPaths } from '../../shared-models/routes-and-paths/icon-paths.model';
 import { PublicImagePaths } from '../../shared-models/routes-and-paths/image-paths.model';
@@ -155,7 +154,7 @@ export const metaTagsContentPages = {
     aboutMetaTitle: `About Us - ${metaTagDefaults.sywPublic.metaTagSiteName}`,
     // tslint:disable-next-line: max-line-length
     aboutMetaDescription: `There’s a lot of wealth out there. But no one’s going to hand it to you. If you want your piece of the pie, you need to go out and get it. Stake Your Wealth is here to help you do that. We dig into topics ranging from personal finance, to financial independence, to investing in, and building, profitable businesses.`,
-    aboutBodyVideoUrl: SocialUrls.SYW_YOUTUBE,
+    aboutBodyVideoUrl: `https://youtu.be/YQz4bULPVHM`,
     blogMetaTitle: `Blog - ${metaTagDefaults.sywPublic.metaTagSiteName}`,
     // tslint:disable-next-line: max-line-length
     blogMetaDescription: `On ${metaTagDefaults.sywPublic.metaTagSiteName}'s blog you have access to our complete library of free lessons on building wealth. We dig into topics ranging from personal finance, to financial independence, to investing in, and building, profitable businesses.`,

@@ -5,7 +5,8 @@ import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/m
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
-import { PodcastEmbedUrls, PodcastPageUrls } from 'shared-models/podcast/podcast-paths.model';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { PODCAST_PATHS } from 'shared-models/podcast/podcast-vars.model';
 
 @Component({
   selector: 'app-podcast',
@@ -15,16 +16,23 @@ import { PodcastEmbedUrls, PodcastPageUrls } from 'shared-models/podcast/podcast
 export class PodcastComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
-  podcastPlayerUrl = PodcastEmbedUrls.EXPLEARNING;
-  podcastPageUrl = PodcastPageUrls.EXPLEARNING;
+  podcastEmbdedPlayerUrl = PODCAST_PATHS.explearning.embeddedPlayerUrl;
+  sanitizedEmbededPlayerUrl: SafeHtml;
+  podcastPageUrl = PODCAST_PATHS.explearning.landingPageUrl;
 
   constructor(
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    private sanitizer: DomSanitizer,
   ) { }
 
   ngOnInit() {
     this.initializeHeroData();
     this.configSeoAndAnalytics();
+    this.sanitizeUrl(this.podcastEmbdedPlayerUrl);
+  }
+
+  private sanitizeUrl(unsanitizedContent: string) {
+    this.sanitizedEmbededPlayerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(unsanitizedContent);
   }
 
   // Add async data as needed and fire once loaded
