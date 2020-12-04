@@ -72,11 +72,11 @@ export class AnalyticsService {
    */
   logPageViewWithCustomDimensions(overridePath: string, customDimensions?: PartialCustomDimensionsSet): void {
 
-    // Exit function if bot
-    if (this.isBot) {
-      console.log('Bot detected, not logging page view');
-      return;
-    }
+    // // Exit function if bot
+    // if (this.isBot) {
+    //   console.log('Bot detected, not logging page view');
+    //   return;
+    // }
 
     // Exit function if Angular Universal
     if (this.isAngularUniversal) {
