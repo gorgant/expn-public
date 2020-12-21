@@ -7,7 +7,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "dist/explearning",
+    "public": "dist/explearning-public",
     "ignore": [
       "firebase.json",
       "**/.*",

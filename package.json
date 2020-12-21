@@ -1,5 +1,5 @@
 {
-  "name": "explearning",
+  "name": "explearning-public",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -10,13 +10,13 @@
     "e2e": "ng e2e",
     "build:client-app:sandbox": "ng build -c=sandbox",
     "build:client-app:prod": "ng build --prod",
-    "build:server-app:sandbox": "ng run explearning:server:sandbox",
-    "build:server-app:prod": "ng run explearning:server:production",
+    "build:server-app:sandbox": "ng run explearning-public:server:sandbox",
+    "build:server-app:prod": "ng run explearning-public:server:production",
     "build-all:sandbox": "npm-run-all build:client-app:sandbox build:server-app:sandbox",
     "build-all:prod": "npm-run-all build:client-app:prod build:server-app:prod",
     "prerender": "ts-node -P ./server.tsconfig.json ./prerender.ts",
     "start:express-server": "ts-node -P ./server.tsconfig.json ./server.ts",
-    "move-index": "mv ./dist/explearning/index.html ./functions/lib/app-bundle/index-server.html",
+    "move-index": "mv ./dist/explearning-public/index.html ./functions/lib/app-bundle/index-server.html",
     "deploy": "firebase deploy",
     "build-and-deploy:sandbox": "npm-run-all build-all:sandbox move-index deploy",
     "build-and-deploy:prod": "npm-run-all build-all:prod move-index deploy"
