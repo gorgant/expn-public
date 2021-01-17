@@ -18,7 +18,7 @@ const updateHtml = (html: string, docTarget: string, textToAdd: string): string 
 // Applied before storing in database
 const tagCacheInHtml = (html: string): string => {
   const docTarget = '<head>';
-  const cacheTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagCachedHtml}" content="true">`;
+  const cacheTag = `<meta name="${metaTagDefaults.expnPublic.metaTagCachedHtml}" content="true">`;
   const updatedHtml = updateHtml(html, docTarget, cacheTag);
   functions.logger.log('Marking cache in HTML');
   return updatedHtml;
@@ -27,7 +27,7 @@ const tagCacheInHtml = (html: string): string => {
 // Applied after retrieving from database
 const tagBotInHtml = (html: string): string => {
   const docTarget = '<head>';
-  const botTag = `<meta name="${metaTagDefaults.explearningPublic.metaTagIsBot}" content="true">`;
+  const botTag = `<meta name="${metaTagDefaults.expnPublic.metaTagIsBot}" content="true">`;
   const updatedHtml = updateHtml(html, docTarget, botTag);
   functions.logger.log('Marking bot in HTML');
   return updatedHtml;

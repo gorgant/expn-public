@@ -36,7 +36,7 @@ export class PodcastBodyComponent implements OnInit {
         // Check if items are loaded, if not fetch from server
         if (!episodesLoaded && !this.loadPodcastTriggered) {
           console.log('No episodes loaded, loading those now');
-          const podcastId: string = this.uiService.getPodcastId(PODCAST_PATHS.explearning.rssFeedPath);
+          const podcastId: string = this.uiService.getPodcastId(PODCAST_PATHS.expn.rssFeedPath);
           this.loadPodcastTriggered = true; // Prevents loading from firing more than needed
           this.store$.dispatch(new PodcastStoreActions.AllEpisodesRequested({podcastId}));
         }

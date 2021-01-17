@@ -8,17 +8,17 @@ import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 })
 export class FeatureIconsComponent implements OnInit {
 
-  capTitleOne = metaTagsContentPages.explearningPublic.homeCapTitleOne;
-  capBodyOne = metaTagsContentPages.explearningPublic.homeCapBodyOne;
-  capIconOnePath = metaTagsContentPages.explearningPublic.homeCapIconOnePath;
+  capTitleOne = metaTagsContentPages.expnPublic.homeCapTitleOne;
+  capBodyOne = metaTagsContentPages.expnPublic.homeCapBodyOne;
+  capIconOnePath = metaTagsContentPages.expnPublic.homeCapIconOnePath;
 
-  capTitleTwo = metaTagsContentPages.explearningPublic.homeCapTitleTwo;
-  capBodyTwo = metaTagsContentPages.explearningPublic.homeCapBodyTwo;
-  capIconTwoPath = metaTagsContentPages.explearningPublic.homeCapIconTwoPath;
+  capTitleTwo = metaTagsContentPages.expnPublic.homeCapTitleTwo;
+  capBodyTwo = metaTagsContentPages.expnPublic.homeCapBodyTwo;
+  capIconTwoPath = metaTagsContentPages.expnPublic.homeCapIconTwoPath;
 
-  capTitleThree = metaTagsContentPages.explearningPublic.homeCapTitleThree;
-  capBodyThree = metaTagsContentPages.explearningPublic.homeCapBodyThree;
-  capIconThreePath = metaTagsContentPages.explearningPublic.homeCapIconThreePath;
+  capTitleThree = metaTagsContentPages.expnPublic.homeCapTitleThree;
+  capBodyThree = metaTagsContentPages.expnPublic.homeCapBodyThree;
+  capIconThreePath = metaTagsContentPages.expnPublic.homeCapIconThreePath;
 
   constructor() { }
 

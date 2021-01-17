@@ -5,12 +5,12 @@
 
     <!-- DYNAMICALLY POPULATE PRODUCT TEMPLATE BASED ON ID -->
     <div class="content-body-container" fxLayout="column" fxLayoutAlign="center center">
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_COACH ? remoteCoach : null"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_EXECUTIVE_PRESENCE ? executivePresence : null; context: {product: product}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_REMOTE_WORK ? remoteWork : null; context: {product: product}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_ONLINE_INTERVIEWS ? onlineInterivews : null; context: {product: product}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_GROUP_INTERVIEWS ? groupInterivews : null; context: {product: product}"></ng-container>
-      <ng-container *ngTemplateOutlet="productId === productIdList.EXPLEARNING_ONLINE_TEAMWORK ? onlineTeamwork : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_REMOTE_COACH ? remoteCoach : null"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_EXECUTIVE_PRESENCE ? executivePresence : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_REMOTE_WORK ? remoteWork : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_ONLINE_INTERVIEWS ? onlineInterivews : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_GROUP_INTERVIEWS ? groupInterivews : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_ONLINE_TEAMWORK ? onlineTeamwork : null; context: {product: product}"></ng-container>
     </div>
 
     <div *appShellNoRender class="buy-now-container">

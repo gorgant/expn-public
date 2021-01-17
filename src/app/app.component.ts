@@ -30,7 +30,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
+  title = metaTagDefaults.expnPublic.metaTagDefaultTitle;
   appVersion = '2.0.3';
 
   private userAuthenticationRequested: boolean;
@@ -156,7 +156,7 @@ export class AppComponent implements OnInit {
   }
 
   private checkForBot() {
-    const botMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.explearningPublic.metaTagIsBot}`);
+    const botMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.expnPublic.metaTagIsBot}`);
     if (botMetaTag) {
       this.store$.dispatch(new UiStoreActions.BotDetected());
       console.log('Bot detected', botMetaTag);
@@ -184,7 +184,7 @@ export class AppComponent implements OnInit {
   }
 
   private checkIfCachedHtml() {
-    const cachedMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.explearningPublic.metaTagCachedHtml}`);
+    const cachedMetaTag = this.metaTagService.getTag(`name=${metaTagDefaults.expnPublic.metaTagCachedHtml}`);
     if (cachedMetaTag) {
       this.store$.dispatch(new UiStoreActions.HTMLCacheActivated());
       console.log('Cached content detected', cachedMetaTag);

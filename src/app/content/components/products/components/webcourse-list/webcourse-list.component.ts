@@ -32,10 +32,10 @@ export class WebcourseListComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagsContentPages.explearningPublic.webcourseListMetaTitle;
+    const title = metaTagsContentPages.expnPublic.webcourseListMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagsContentPages.explearningPublic.webcourseListMetaDescription;
-    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const description = metaTagsContentPages.expnPublic.webcourseListMetaDescription;
+    const localImagePath = metaTagDefaults.expnPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.WEBCOURSES;
 
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);

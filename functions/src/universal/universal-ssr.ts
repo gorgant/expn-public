@@ -29,13 +29,13 @@ const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('../../../app-bund
 
 
 // These are a few globals to help with longpage loads
-let minBlogPostCount: number = ProductionSsrDataLoadChecks.EXPLEARNING_BLOG_MIN;
+let minBlogPostCount: number = ProductionSsrDataLoadChecks.EXPN_BLOG_MIN;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minBlogPostCount = SandboxSsrDataLoadChecks.EXPLEARNING_BLOG_MIN;
+  minBlogPostCount = SandboxSsrDataLoadChecks.EXPN_BLOG_MIN;
 }
-let minPodcastEpisodeCount: number = ProductionSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN;
+let minPodcastEpisodeCount: number = ProductionSsrDataLoadChecks.EXPN_PODCAST_MIN;
 if (currentEnvironmentType === EnvironmentTypes.SANDBOX) {
-  minPodcastEpisodeCount = SandboxSsrDataLoadChecks.EXPLEARNING_PODCAST_MIN;
+  minPodcastEpisodeCount = SandboxSsrDataLoadChecks.EXPN_PODCAST_MIN;
 }
 let reloadAttempts = 0; // Track reload attempts
 const reloadLimit = 2; // Set a max number of reload attempts
@@ -124,7 +124,7 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
     if (reloadAttempts >= reloadLimit) {
       functions.logger.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
       const webpageLoadFailureData: WebpageLoadFailureData = {
-        domain: currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.explearningPublicApp.websiteDomain : PRODUCTION_APPS.explearningPublicApp.websiteDomain,
+        domain: currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.expnPublicApp.websiteDomain : PRODUCTION_APPS.expnPublicApp.websiteDomain,
         urlPath: requestPath,
         errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
       }

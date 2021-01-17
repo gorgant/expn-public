@@ -23,7 +23,7 @@ export class BuyNowBoxComponent implements OnInit {
   subtitle: string;
   buttonText: string;
 
-  ordersEmail = EmailSenderAddresses.EXPLEARNING_ORDERS;
+  ordersEmail = EmailSenderAddresses.EXPN_ORDERS;
 
   constructor(
     private store$: Store<RootStoreState.State>,

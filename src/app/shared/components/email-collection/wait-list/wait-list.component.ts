@@ -34,9 +34,9 @@ export class WaitListComponent implements OnInit, OnDestroy {
   subscribeUserSubscription: Subscription;
   existingSubscriber: boolean;
 
-  senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
+  senderEmail: string = EmailSenderAddresses.EXPN_NEWSLETTER;
 
-  boxDescription = metaTagsContentPages.explearningPublic.waitListBoxDescription;
+  boxDescription = metaTagsContentPages.expnPublic.waitListBoxDescription;
 
   constructor(
     private fb: FormBuilder,

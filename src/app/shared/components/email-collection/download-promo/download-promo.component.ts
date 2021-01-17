@@ -30,11 +30,11 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
   subscribeUserSubscription: Subscription;
   existingSubscriber: boolean;
 
-  senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
+  senderEmail: string = EmailSenderAddresses.EXPN_NEWSLETTER;
 
-  promoTitle = metaTagsContentPages.explearningPublic.downloadPromoTitle;
-  promoDescription = metaTagsContentPages.explearningPublic.downloadPromoDescription;
-  promoDecline = metaTagsContentPages.explearningPublic.downloadPromoDeclineButton;
+  promoTitle = metaTagsContentPages.expnPublic.downloadPromoTitle;
+  promoDescription = metaTagsContentPages.expnPublic.downloadPromoDescription;
+  promoDecline = metaTagsContentPages.expnPublic.downloadPromoDeclineButton;
 
   constructor(
     private dialogRef: MatDialogRef<DownloadPromoComponent>,

@@ -20,7 +20,7 @@ export class SubConfirmationComponent implements OnInit, OnDestroy {
   confirmSubOptInSubscription: Subscription;
   subMarkedConfirmed: boolean;
 
-  supportEmail = EmailSenderAddresses.EXPLEARNING_SUPPORT;
+  supportEmail = EmailSenderAddresses.EXPN_SUPPORT;
 
   constructor(
     private store$: Store<RootStoreState.State>,

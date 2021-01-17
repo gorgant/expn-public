@@ -13,7 +13,7 @@ import { LegalBusinessNames } from 'shared-models/forms-and-components/legal-var
 export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   appRoutes = PublicAppRoutes;
-  legalBusinessName = LegalBusinessNames.EXPLEARNING;
+  legalBusinessName = LegalBusinessNames.EXPN;
 
   constructor(
     private titleService: Title,
@@ -27,7 +27,7 @@ export class TermsAndConditionsComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagsContentPages.explearningPublic.termsAndConditionsMetaTitle;
+    const title = metaTagsContentPages.expnPublic.termsAndConditionsMetaTitle;
     const canonicalUrlPath = PublicAppRoutes.TERMS_AND_CONDITIONS;
 
     this.titleService.setTitle(title);

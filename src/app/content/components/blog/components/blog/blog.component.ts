@@ -41,10 +41,10 @@ export class BlogComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagsContentPages.explearningPublic.blogMetaTitle;
+    const title = metaTagsContentPages.expnPublic.blogMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagsContentPages.explearningPublic.blogMetaDescription;
-    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const description = metaTagsContentPages.expnPublic.blogMetaDescription;
+    const localImagePath = metaTagDefaults.expnPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.BLOG;
 
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
@@ -61,10 +61,10 @@ export class BlogComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: metaTagsContentPages.explearningPublic.blogPageTitle,
-      pageHeroSubtitle: metaTagsContentPages.explearningPublic.blogPagHeroSubtitle,
+      pageTitle: metaTagsContentPages.expnPublic.blogPageTitle,
+      pageHeroSubtitle: metaTagsContentPages.expnPublic.blogPagHeroSubtitle,
       imageProps: blogImageProps,
-      actionMessage: metaTagsContentPages.explearningPublic.blogActionMessage
+      actionMessage: metaTagsContentPages.expnPublic.blogActionMessage
     };
   }
 

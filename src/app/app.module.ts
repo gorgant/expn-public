@@ -30,7 +30,7 @@ import { SubProgressTrackerComponent } from './shared/components/email-collectio
   imports: [
     BrowserModule.withServerTransition(
         {
-          appId: environment.production ? PRODUCTION_APPS.explearningPublicApp.projectId : SANDBOX_APPS.explearningPublicApp.projectId
+          appId: environment.production ? PRODUCTION_APPS.expnPublicApp.projectId : SANDBOX_APPS.expnPublicApp.projectId
         }
       ),
     TransferHttpCacheModule,

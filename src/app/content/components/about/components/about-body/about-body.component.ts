@@ -15,8 +15,8 @@ export class AboutBodyComponent implements OnInit {
 
   appRoutes = PublicAppRoutes;
   imagePaths = PublicImagePaths;
-  videoUrl = metaTagsContentPages.explearningPublic.aboutBodyVideoUrl;
-  shorthandName = ShorthandBusinessNames.EXPLEARNING;
+  videoUrl = metaTagsContentPages.expnPublic.aboutBodyVideoUrl;
+  shorthandName = ShorthandBusinessNames.EXPN;
 
   videoHtml: SafeHtml;
 
@@ -32,7 +32,7 @@ export class AboutBodyComponent implements OnInit {
   }
 
   private setProductPath() {
-    this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPLEARNING_REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
+    this.remoteCoachUrl = `${this.appRoutes.PRODUCTS}/${ProductIdList.EXPN_REMOTE_COACH}/${ProductUrlSlugList.REMOTE_COACH}`;
   }
 
   private configureVideoUrl(videoUrl: string) {

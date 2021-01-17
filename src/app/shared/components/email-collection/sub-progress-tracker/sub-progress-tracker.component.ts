@@ -15,7 +15,7 @@ export class SubProgressTrackerComponent implements OnInit, OnDestroy {
   userSubscription: Subscription;
   userOptedIn: boolean;
 
-  senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
+  senderEmail: string = EmailSenderAddresses.EXPN_NEWSLETTER;
 
   constructor(
     private store$: Store<RootStoreState.State>

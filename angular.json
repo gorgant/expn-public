@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "explearning-public": {
+    "expn-public": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/explearning-public",
+            "outputPath": "dist/expn-public",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -92,18 +92,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "explearning-public:build"
+            "browserTarget": "expn-public:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "explearning-public:build:production"
+              "browserTarget": "expn-public:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "explearning-public:build"
+            "browserTarget": "expn-public:build"
           }
         },
         "test": {
@@ -178,7 +178,7 @@
         }
       }
     },
-    "explearning-public-e2e": {
+    "expn-public-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -187,11 +187,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "explearning-public:serve"
+            "devServerTarget": "expn-public:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "explearning-public:serve:production"
+              "devServerTarget": "expn-public:serve:production"
             }
           }
         },
@@ -207,5 +207,5 @@
       }
     }
   },
-  "defaultProject": "explearning-public"
+  "defaultProject": "expn-public"
 }

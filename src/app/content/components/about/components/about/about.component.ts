@@ -26,10 +26,10 @@ export class AboutComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
-    const title = metaTagsContentPages.explearningPublic.aboutMetaTitle;
+    const title = metaTagsContentPages.expnPublic.aboutMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagsContentPages.explearningPublic.aboutMetaDescription;
-    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const description = metaTagsContentPages.expnPublic.aboutMetaDescription;
+    const localImagePath = metaTagDefaults.expnPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.ABOUT_ME;
 
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);

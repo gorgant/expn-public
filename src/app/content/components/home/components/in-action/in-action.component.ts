@@ -20,7 +20,7 @@ export class InActionComponent implements OnInit {
   requestedPosts: boolean;
 
   appRoutes = PublicAppRoutes;
-  siteName = ShorthandBusinessNames.EXPLEARNING;
+  siteName = ShorthandBusinessNames.EXPN;
 
   constructor(
     private store$: Store<RootStoreState.State>

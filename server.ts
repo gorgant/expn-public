@@ -17,10 +17,10 @@ enableProdMode();
 
 const app = express();
 
-// const indexHtml = readFileSync(__dirname + '/dist/explearning-public/index.html', 'utf-8').toString();
+// const indexHtml = readFileSync(__dirname + '/dist/expn-public/index.html', 'utf-8').toString();
 
 // // OLD MANUAL SERVER
-// app.get('*.*', express.static(__dirname + '/dist/explearning-public', {
+// app.get('*.*', express.static(__dirname + '/dist/expn-public', {
 //     maxAge: '1y'
 // }));
 
@@ -43,7 +43,7 @@ const app = express();
 
 // });
 
-const distFolder = __dirname + '/dist/explearning-public';
+const distFolder = __dirname + '/dist/expn-public';
 
 app.use(compression());
 

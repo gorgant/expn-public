@@ -12,8 +12,8 @@ import { LegalBusinessNames, ShorthandBusinessNames } from 'shared-models/forms-
 })
 export class PrivacyPolicyComponent implements OnInit, OnDestroy {
 
-  legalBusinessName = LegalBusinessNames.EXPLEARNING;
-  shorthandBusinessName = ShorthandBusinessNames.EXPLEARNING;
+  legalBusinessName = LegalBusinessNames.EXPN;
+  shorthandBusinessName = ShorthandBusinessNames.EXPN;
 
   constructor(
     private titleService: Title,

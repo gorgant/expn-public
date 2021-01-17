@@ -16,9 +16,9 @@ import { PODCAST_PATHS } from 'shared-models/podcast/podcast-vars.model';
 export class PodcastComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
-  podcastEmbdedPlayerUrl = PODCAST_PATHS.explearning.embeddedPlayerUrl;
+  podcastEmbdedPlayerUrl = PODCAST_PATHS.expn.embeddedPlayerUrl;
   sanitizedEmbededPlayerUrl: SafeHtml;
-  podcastPageUrl = PODCAST_PATHS.explearning.landingPageUrl;
+  podcastPageUrl = PODCAST_PATHS.expn.landingPageUrl;
 
   constructor(
     private analyticsService: AnalyticsService,
@@ -38,10 +38,10 @@ export class PodcastComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagsContentPages.explearningPublic.podcastMetaTitle;
+    const title = metaTagsContentPages.expnPublic.podcastMetaTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagsContentPages.explearningPublic.podcastMetaDescription;
-    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const description = metaTagsContentPages.expnPublic.podcastMetaDescription;
+    const localImagePath = metaTagDefaults.expnPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.PODCAST;
 
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
@@ -58,10 +58,10 @@ export class PodcastComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: metaTagsContentPages.explearningPublic.podcastPageTitle,
-      pageHeroSubtitle: metaTagsContentPages.explearningPublic.podcastPageHeroSubtitle,
+      pageTitle: metaTagsContentPages.expnPublic.podcastPageTitle,
+      pageHeroSubtitle: metaTagsContentPages.expnPublic.podcastPageHeroSubtitle,
       imageProps: imgProps,
-      actionMessage: metaTagsContentPages.explearningPublic.podcastActionMessage
+      actionMessage: metaTagsContentPages.expnPublic.podcastActionMessage
     };
   }
 

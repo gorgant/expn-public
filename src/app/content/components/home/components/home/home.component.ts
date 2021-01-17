@@ -33,10 +33,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagDefaults.explearningPublic.metaTagDefaultTitle;
+    const title = metaTagDefaults.expnPublic.metaTagDefaultTitle;
     // tslint:disable-next-line:max-line-length
-    const description = metaTagDefaults.explearningPublic.metaTagDefaultDescription;
-    const localImagePath = metaTagDefaults.explearningPublic.metaTagDefaultImage;
+    const description = metaTagDefaults.expnPublic.metaTagDefaultDescription;
+    const localImagePath = metaTagDefaults.expnPublic.metaTagDefaultImage;
     const canonicalUrlPath = PublicAppRoutes.HOME;
 
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private setProductPaths() {
-    this.remoteCoachProductId = ProductIdList.EXPLEARNING_REMOTE_COACH;
+    this.remoteCoachProductId = ProductIdList.EXPN_REMOTE_COACH;
     this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
   }
 
@@ -58,10 +58,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     };
 
     this.heroData = {
-      pageTitle: metaTagsContentPages.explearningPublic.homePageTitle,
+      pageTitle: metaTagsContentPages.expnPublic.homePageTitle,
       pageHeroSubtitle: null,
       imageProps,
-      actionMessage: metaTagsContentPages.explearningPublic.homeActionMessage
+      actionMessage: metaTagsContentPages.expnPublic.homeActionMessage
     };
   }
 

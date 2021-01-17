@@ -30,10 +30,10 @@ export class SubscribeComponent implements OnInit, OnDestroy {
   subscribeUserSubscription: Subscription;
   existingSubscriber: boolean;
 
-  senderEmail: string = EmailSenderAddresses.EXPLEARNING_NEWSLETTER;
+  senderEmail: string = EmailSenderAddresses.EXPN_NEWSLETTER;
 
-  boxTitle = metaTagsContentPages.explearningPublic.subscribeBoxTitle;
-  boxDescription = metaTagsContentPages.explearningPublic.subscribeBoxDescription;
+  boxTitle = metaTagsContentPages.expnPublic.subscribeBoxTitle;
+  boxDescription = metaTagsContentPages.expnPublic.subscribeBoxDescription;
 
   constructor(
     private fb: FormBuilder,
