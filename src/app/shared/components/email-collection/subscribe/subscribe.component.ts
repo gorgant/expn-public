@@ -10,7 +10,7 @@ import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 import { BillingKeys } from 'shared-models/billing/billing-details.model';
-import { MatDialogConfig, MatDialog } from '@angular/material';
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 

@@ -4,6 +4,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { LegalBusinessNames, ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
+import { BlogDomains } from 'shared-models/posts/blog-domains.model';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -14,6 +15,7 @@ export class PrivacyPolicyComponent implements OnInit, OnDestroy {
 
   legalBusinessName = LegalBusinessNames.EXPN;
   shorthandBusinessName = ShorthandBusinessNames.EXPN;
+  businessDomain = BlogDomains.EXPN;
 
   constructor(
     private titleService: Title,
@@ -27,7 +29,7 @@ export class PrivacyPolicyComponent implements OnInit, OnDestroy {
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
 
-    const title = metaTagsContentPages.explearningPublic.privacyPolicyMetaTitle;
+    const title = metaTagsContentPages.expnPublic.privacyPolicyMetaTitle;
     const canonicalUrlPath = PublicAppRoutes.PRIVACY_POLICY;
 
     this.titleService.setTitle(title);

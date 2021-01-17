@@ -11,7 +11,7 @@ import { PublicUser } from 'shared-models/user/public-user.model';
 import { EmailSubData } from 'shared-models/subscribers/email-sub-data.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { SubSourceProductIdReferences } from 'shared-models/products/product-id-list.model';
-import { MatDialog, MatDialogConfig } from '@angular/material';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 

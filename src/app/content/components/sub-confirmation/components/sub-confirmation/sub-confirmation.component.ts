@@ -1,11 +1,10 @@
-import { Component, OnInit, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
+import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { EmailSenderAddresses } from 'shared-models/email/email-vars.model';
 import { SubOptInConfirmationData } from 'shared-models/subscribers/sub-opt-in-confirmation-data.model';
-import { isPlatformServer } from '@angular/common';
 import { withLatestFrom } from 'rxjs/operators';
 
 @Component({
@@ -18,22 +17,28 @@ export class SubConfirmationComponent implements OnInit, OnDestroy {
   confirmSubscriberProcessing$: Observable<boolean>;
   confirmSubcriberError$: Observable<any>;
   confirmSubOptInSubscription: Subscription;
+  
   subMarkedConfirmed: boolean;
 
   supportEmail = EmailSenderAddresses.EXPN_SUPPORT;
 
+  isAngularUniversalSubscription: Subscription;
+
   constructor(
     private store$: Store<RootStoreState.State>,
     private route: ActivatedRoute,
-    @Inject(PLATFORM_ID) private platformId,
   ) { }
 
   ngOnInit() {
     // Only run on client
-    if (!isPlatformServer(this.platformId)) {
-      this.initializeSubConfirmationStatus();
-      this.markSubscriberConfirmed();
-    }
+    this.isAngularUniversalSubscription = this.store$.select(UiStoreSelectors.selectAngularUniversalDetected)
+      .subscribe(isAngularUniversal => {
+        if (!isAngularUniversal) {
+          this.initializeSubConfirmationStatus();
+          this.markSubscriberConfirmed();
+        }
+      })
+    
   }
 
   private initializeSubConfirmationStatus() {
@@ -85,6 +90,9 @@ export class SubConfirmationComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.confirmSubOptInSubscription) {
       this.confirmSubOptInSubscription.unsubscribe();
+    }
+    if (this.isAngularUniversalSubscription) {
+      this.isAngularUniversalSubscription.unsubscribe();
     }
   }
 

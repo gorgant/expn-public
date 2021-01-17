@@ -1,83 +1,71 @@
+import 'zone.js/dist/zone-node';
 
 import { ngExpressEngine } from '@nguniversal/express-engine';
-import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
-
-import 'zone.js/dist/zone-node';
-import 'reflect-metadata';
-import {renderModuleFactory} from '@angular/platform-server';
 import * as express from 'express';
-import { readFileSync } from 'fs';
-import { enableProdMode } from '@angular/core';
+import { join } from 'path';
 
-import * as compression from 'compression';
+import { AppServerModule } from './src/main.server';
+import { APP_BASE_HREF } from '@angular/common';
+import { existsSync } from 'fs';
 
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist-server/main');
+/**
+ * This is a slightly modified version of the boilerplate server.ts that comes with Angular Universal schematics
+ * Courtesy of https://www.thkp.co/blog/2020/6/22/how-to-serve-angular-universal-with-an-existing-express-server
+ * This essentially "double renders", first on the cloud function, then in the local server app, weird but works
+ * Seems to be the only way to get SSR to work in Ivy because there's no way to otherwise get AppServerModule in the cloud ngExpressEngine to work without missing metadata issues (see ssr-v3 for that error)
+ * Only other alternative is ssr-v2, running the entire logic in the local app through server.ts, in which case you are accessing cloud functions from the client, which is limiting and requires weaker security
+ * @param server The custom express server imported from the cloud function containing the custom route handling and caching logic
+ * @param distFolder The distFolder containing the index.html file and app bundle (currently custom npm script moves the index file from dist to the functions/lib/app-bundle folder and renames it index-server.html)
+ */
 
-enableProdMode();
+// The Express app is exported so that it can be used by serverless Functions.
+export function app(server: express.Express, distFolder: string) {
 
-const app = express();
+  const indexHtml = existsSync(join(distFolder, 'index-server.html')) ? 'index-server.html' : 'index';
 
-// const indexHtml = readFileSync(__dirname + '/dist/expn-public/index.html', 'utf-8').toString();
+  // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
+  server.engine('html', ngExpressEngine({
+    bootstrap: AppServerModule,
+  }));
 
-// // OLD MANUAL SERVER
-// app.get('*.*', express.static(__dirname + '/dist/expn-public', {
-//     maxAge: '1y'
-// }));
+  server.set('view engine', 'html');
+  server.set('views', distFolder);
 
-// app.route('*').get((req, res) => {
+  // Example Express Rest API endpoints
+  // app.get('/api/**', (req, res) => { });
+  // Serve static files from /browser
+  server.get('*.*', express.static(distFolder, {
+    maxAge: '1y'
+  }));
 
-//     console.log('Received route request');
+  // All regular routes use the Universal engine
+  server.get('*', (req, res) => {
+    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+  });
 
-//     renderModuleFactory(AppServerModuleNgFactory, {
-//         document: indexHtml,
-//         url: req.url
-//     })
-//         .then(html => {
-//             console.log('Sending route response');
-//             res.status(200).send(html);
-//         })
-//         .catch(err => {
-//             console.log(err);
-//             res.sendStatus(500);
-//         });
+  return server;
+}
 
-// });
+function run() {
+  const port = process.env.PORT || 4000;
 
-const distFolder = __dirname + '/dist/expn-public';
+  const distFolder = join(process.cwd(), '/../../../app-bundle');
+  const baseServer = express();
+  // Start up the Node server
+  const server = app(baseServer, distFolder);
+  server.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
+  });
+}
 
-app.use(compression());
+// Webpack will replace 'require' with '__webpack_require__'
+// '__non_webpack_require__' is a proxy to Node 'require'
+// The below code is to ensure that the server is run only when not requiring the bundle.
+declare const __non_webpack_require__: NodeRequire;
+const mainModule = __non_webpack_require__.main;
+const moduleFilename = mainModule && mainModule.filename || '';
+if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
+  run();
+}
 
-// Define a custom express engine using the Universal Adapter
-// This engine will be reading the index HTML from the file system directly, so no need to pass it in manually
-app.engine('html', ngExpressEngine({
-    bootstrap: AppServerModuleNgFactory,
-    // Configure Angular specific injectable services only available on server
-    providers: [
-      provideModuleMap(LAZY_MODULE_MAP), // Enable lazy loading functionality
-    ]
-}));
-
-app.set('view engine', 'html'); // Set the view engine to our custom adapter above
-app.set('views', distFolder); // Tell express where to find the view files, only one with an SPA
-
-// First statically serve any bundle files from the dist folder directly
-app.get('*.*', express.static(distFolder, {
-    maxAge: '1y' // Cache for one year, will be replaced if new bundle
-}));
-
-app.get('*', (req, res) => {
-    // Render the index view (name of file w/ out extension)
-    // The engine will use the reqest data to determine the correct route to render
-    // It will then serve that view to the client
-    console.log('Receiving route request');
-    res.render('index', { req });
-});
-
-app.listen(9000, () => {
-    console.log(`Angular Universal Node Express server listening on http://localhost:9000`);
-});
-
-
-
-
-
+export * from './src/main.server';

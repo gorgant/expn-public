@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 
 import { FlexLayoutServerModule } from '@angular/flex-layout/server';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader';
 
 @NgModule({
   imports: [
@@ -14,7 +13,6 @@ import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader'
     ServerModule,
     ServerTransferStateModule,
     NoopAnimationsModule,
-    ModuleMapLoaderModule,
     FlexLayoutServerModule, // Required for SSR FlexLayout functionality
   ],
   bootstrap: [AppComponent],

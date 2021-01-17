@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ExecutivePresenceComponent } from './executive-presence.component';
 
@@ -6,7 +6,7 @@ describe('ExecutivePresenceComponent', () => {
   let component: ExecutivePresenceComponent;
   let fixture: ComponentFixture<ExecutivePresenceComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ExecutivePresenceComponent ]
     })

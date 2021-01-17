@@ -33,7 +33,7 @@ export class AuthService {
   }
 
   authenticatePublicUser(): Observable<PublicUser> {
-    const authResponse = this.afAuth.auth.signInAnonymously()
+    const authResponse = this.afAuth.signInAnonymously()
       .then(creds => {
         const userData: PublicUser = {
           id: creds.user.uid,
@@ -58,7 +58,7 @@ export class AuthService {
 
   logout(): void {
     this.preLogoutActions();
-    this.afAuth.auth.signOut();
+    this.afAuth.signOut();
     // Post logout actions carried out by auth listener once logout detected
   }
 
@@ -66,7 +66,7 @@ export class AuthService {
     return this.ngUnsubscribe$;
   }
 
-  private authSuccessActions(user: firebase.User): void {
+  private authSuccessActions(user: firebase.default.User): void {
     this.authStatus$.next(user.uid);
   }
 

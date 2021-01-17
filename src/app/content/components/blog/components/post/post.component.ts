@@ -1,7 +1,7 @@
 import { Component, OnInit, SecurityContext, OnDestroy, Renderer2, Inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { RootStoreState, PostStoreSelectors, PostStoreActions, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
+import { RootStoreState, PostStoreSelectors, PostStoreActions, PodcastStoreSelectors, PodcastStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { withLatestFrom, map } from 'rxjs/operators';
@@ -28,11 +28,11 @@ export class PostComponent implements OnInit, OnDestroy {
   postId: string;
   post$: Observable<Post>;
   error$: Observable<string>;
-  errorSubscription: Subscription;
+  private errorSubscription: Subscription;
   isLoading$: Observable<boolean>;
   requestedPosts: boolean;
   titleSet: boolean;
-  postSubscription: Subscription;
+  private postSubscription: Subscription;
 
   episodeRequested: boolean;
 
@@ -94,7 +94,7 @@ export class PostComponent implements OnInit, OnDestroy {
   private getPost() {
 
     this.error$ = this.store$.select(PostStoreSelectors.selectLoadError);
-
+    
     this.post$ = this.store$.select(PostStoreSelectors.selectPostById(this.postId))
     .pipe(
       withLatestFrom(this.store$.select(PostStoreSelectors.selectPostsLoaded)),
@@ -117,17 +117,22 @@ export class PostComponent implements OnInit, OnDestroy {
 
   // If post data available, patch values into form
   private initializeHeroAndPostContent() {
+
     this.postSubscription = this.post$
-      .subscribe(post => {
+      .pipe(
+        withLatestFrom(this.store$.select(UiStoreSelectors.selectAngularUniversalDetected))
+      )
+      .subscribe(([post, isAngularUniversal]) => {
         console.log('post subscription firing');
         if (post) {
+          // console.log('Post retreived, doing nothing for debugging purposes');
           this.initializeHeroData(post);
           this.sanitizedPostBody = this.sanitizer.sanitize(SecurityContext.HTML, post.content);
-          if (post.videoUrl) {
+          if (post.videoUrl && !isAngularUniversal) {
             this.configureVideoUrl(post.videoUrl);
             this.initSubscribeButton();
           }
-          if (post.podcastEpisodeUrl) {
+          if (post.podcastEpisodeUrl && !isAngularUniversal) {
             console.log('Podcast url', post.podcastEpisodeUrl);
             this.configureSoundCloudPlayer(post.podcastEpisodeUrl);
           }

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RemoteWorkComponent } from './remote-work.component';
 
@@ -6,7 +6,7 @@ describe('RemoteWorkComponent', () => {
   let component: RemoteWorkComponent;
   let fixture: ComponentFixture<RemoteWorkComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RemoteWorkComponent ]
     })

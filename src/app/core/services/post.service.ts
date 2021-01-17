@@ -10,6 +10,7 @@ import { isPlatformServer } from '@angular/common';
 import { Post, BlogIndexPostRef, PostKeys } from 'shared-models/posts/post.model';
 import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
 import { PostVars } from 'shared-models/posts/post-vars.model';
+import { BlogDomains } from 'shared-models/posts/blog-domains.model';
 
 @Injectable({
   providedIn: 'root'
@@ -137,6 +138,29 @@ export class PostService {
 
   fetchSinglePost(postId: string): Observable<Post> {
 
+    // const fakePost: Post = {
+    //   author: 'greg@stakeyourwealth.com',
+    //   authorId: 'SYMJt74CETRbixzKCpX9JhzVWn63',
+    //   blogDomain: BlogDomains.EXPN,
+    //   content: `<p>In this Livestream, we discuss practical ways of implementing the concepts discussed in our lesson on <a href="https://stakeyourwealth.com/blog/z2v15d8e/smart-spending-tips:-calculate-your-true-cost">calculating your true cost</a>. Some of the topics we cover include:</p><ul><li>The founding principles of Stake Your Wealth</li><li>There's so much about wealth building and financial independence that they don't teach us in school</li><li>The concept of Your True Cost, weighing the price against the benefit</li><li>Why True Cost matters</li><li>Frugality vs spending money to make money</li><li>Celebrating wins and rewarding success</li><li>Soliciting outside advice on the best use of your money</li><li>Getting more value through strategic planning (rather than going cheap)</li><li>Accumulated value and what it matters</li></ul><p>Happy Wealth Staking!</p><p>&nbsp;</p>`,
+    //   description: 'In our debut Stake Your Wealth live session, MD and I discuss practical examples of using Your True Cost to determine when to buy something. If you are wondering how to decide to buy something, calculating your true cost is a great place to start. Use this strategy to make smart purchases.',
+    //   featured: true,
+    //   id: "aabu9mx2",
+    //   imageFilePathList: [],
+    //   imageProps: {width: "1500", srcset: "https://firebasestorage.googleapis.com/v0/b/expn-sandbox-admin-blog/o/posts%2Faabu9mx2%2F0002_thumbnail%2Fresized%2F0002_thumbnail_thumb%40300.jpg?alt=media&token=562c7db5-e563-4648-8275-cb6d5fd60a2a 300w, https://firebasestorage.googleapis.com/v0/b/expn-sandbox-admin-blog/o/posts%2Faabu9mx2%2F0002_thumbnail%2Fresized%2F0002_thumbnail_thumb%401500.jpg?alt=media&token=562c7db5-e563-4648-8275-cb6d5fd60a2a 1500w", sizes: "100vw", src: "https://firebasestorage.googleapis.com/v0/b/expn-sandbox-admin-blog/o/posts%2Faabu9mx2%2F0002_thumbnail%2Fresized%2F0002_thumbnail_thumb%401500.jpg?alt=media&token=562c7db5-e563-4648-8275-cb6d5fd60a2a"},
+    //   imageSizes: null,
+    //   imagesUpdated: null,
+    //   keywords: "test keywords",
+    //   modifiedDate: 1600522301627,
+    //   podcastEpisodeUrl: "https://soundcloud.com/user-854309119/how-to-decide-to-buy-something",
+    //   published: true,
+    //   publishedDate: 1600467607290,
+    //   readyToPublish: true,
+    //   scheduledPublishTime: null,
+    //   title: "How to Decide to Buy Something",
+    //   videoUrl: "https://youtu.be/29Mr9aHWs48"
+    // }
+
     const SINGLE_POST_KEY = makeStateKey<Post>(`${postId}-${TransferStateKeys.SINGLE_POST_KEY}`); // A key to identify data in USSR
 
     // If data exists in state transfer, use that
@@ -147,18 +171,41 @@ export class PostService {
       return of(cacheData);
     }
 
+    // return of(fakePost)
+    //   .pipe(
+    //     take(1),
+    //     map(post => {
+    //       console.log('DELETE FROM PRODUCTION: fake server response', fakePost); 
+    //       return fakePost;
+    //     }),
+    //     tap(post => {
+    //       if (isPlatformServer(this.platformId)) {
+    //         this.transferState.set(SINGLE_POST_KEY, post); // Stash item in transfer state
+    //         console.log('Post stored in transfer state');
+    //       }
+    //     }),
+    //     catchError(error => {
+    //       this.uiService.showSnackBar(error, 5000);
+    //       return throwError(error);
+    //     })
+
+    //   );
+
     // Otherwise, fetch from database
     const postDoc = this.getPostDoc(postId);
     return postDoc.valueChanges()
       .pipe(
-        take(1),
-        map(posts => {
-          console.log('Fetched single post');
-          return posts;
+        takeUntil(this.authService.unsubTrigger$), // Swapping out take(1) for this prevents the SSR Universal timeout
+        map(post => {
+          // console.log('DELETE FROM PRODUCTION: fake server response', fakePost);
+          // return fakePost;
+          console.log('Fetched single post', post);
+          return post;
         }),
-        tap(posts => {
+        tap(post => {
           if (isPlatformServer(this.platformId)) {
-            this.transferState.set(SINGLE_POST_KEY, posts); // Stash item in transfer state
+            this.transferState.set(SINGLE_POST_KEY, post); // Stash item in transfer state
+            console.log('Post stored in transfer state');
           }
         }),
         catchError(error => {

@@ -5,6 +5,7 @@ import { adminFirestore, publicFirestore } from '../config/db-config';
 import { AdminCollectionPaths, PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { assertUID } from '../config/global-helpers';
 import { PublicUser } from '../../../shared-models/user/public-user.model';
+import { now } from 'moment';
 
 const markSubscriberOptedIn = async (subConfData: SubOptInConfirmationData): Promise<boolean> => {
 
@@ -32,7 +33,8 @@ const markSubscriberOptedIn = async (subConfData: SubOptInConfirmationData): Pro
   }
 
   const updateSubscriberOptInConfirmed: Partial<EmailSubscriber> = {
-    optInConfirmed: true
+    optInConfirmed: true,
+    optInTimestamp: now()
   };
 
   // Mark sub opted in on admin database

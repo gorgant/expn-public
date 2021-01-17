@@ -74,7 +74,9 @@ a {
 }
 
 @media screen and (max-width: $mobile-cutoff-width) {
+  
   .logo {
     font-size: $logo-font-mobile-size;
   }
+
 }

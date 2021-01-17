@@ -18,9 +18,10 @@ const routes: Routes = [
     RouterModule.forRoot(
       routes,
       {
-        scrollPositionRestoration: 'top',
-        initialNavigation: 'enabled'
-       }
+    scrollPositionRestoration: 'top',
+    initialNavigation: 'enabled',
+    relativeLinkResolution: 'legacy'
+}
     )
   ],
   exports: [RouterModule]

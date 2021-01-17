@@ -2,5 +2,21 @@
   "projects": {
     "default": "explearning-76d93",
     "sandbox-public": "explearning-sandbox-public"
+  },
+  "targets": {
+    "explearning-sandbox-public": {
+      "hosting": {
+        "expn-public": [
+          "explearning-sandbox-public"
+        ]
+      }
+    },
+    "explearning-76d93": {
+      "hosting": {
+        "expn-public": [
+          "explearning-76d93"
+        ]
+      }
+    }
   }
 }

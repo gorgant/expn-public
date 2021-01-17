@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SubProgressTrackerComponent } from './sub-progress-tracker.component';
 
@@ -6,7 +6,7 @@ describe('SubProgressTrackerComponent', () => {
   let component: SubProgressTrackerComponent;
   let fixture: ComponentFixture<SubProgressTrackerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SubProgressTrackerComponent ]
     })

@@ -27,6 +27,8 @@ export class BlogComponent implements OnInit, OnDestroy {
 
   heroData: PageHeroData;
 
+  pageHeader = metaTagsContentPages.expnPublic.blogMetaDescription;
+
   constructor(
     private store$: Store<RootStoreState.State>,
     private analyticsService: AnalyticsService,

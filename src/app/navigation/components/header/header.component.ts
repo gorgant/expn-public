@@ -13,7 +13,7 @@ import { ShorthandBusinessNames } from 'shared-models/forms-and-components/legal
 })
 export class HeaderComponent implements OnInit {
 
-  @ViewChild('matButton', { static: false }) matButton;
+  @ViewChild('matButton') matButton;
   activeUrl$: Observable<string>;
   appRoutes = PublicAppRoutes;
   shorthandBusinessName = ShorthandBusinessNames.EXPN;

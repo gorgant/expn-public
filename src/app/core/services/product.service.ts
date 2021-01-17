@@ -73,7 +73,7 @@ export class ProductService {
     const productDoc = this.getProductDoc(productId);
     return productDoc.valueChanges()
       .pipe(
-        take(1),
+        takeUntil(this.authService.unsubTrigger$),
         map(product => {
           console.log('Fetched single product');
           return product;

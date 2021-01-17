@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { UiService } from './core/services/ui.service';
-import { MatSidenav, MatDialogConfig, MatDialog } from '@angular/material';
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from './core/services/auth.service';
 import { Store } from '@ngrx/store';
 import {
@@ -12,7 +13,7 @@ import {
   UiStoreActions,
   UiStoreSelectors
 } from './root-store';
-import { withLatestFrom, map, takeWhile, filter, tap, take } from 'rxjs/operators';
+import { withLatestFrom, map, takeWhile, filter, tap } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductStrings } from 'shared-models/products/product-strings.model';
 import { Product } from 'shared-models/products/product.model';

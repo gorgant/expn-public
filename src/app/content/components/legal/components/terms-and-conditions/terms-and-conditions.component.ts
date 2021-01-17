@@ -4,6 +4,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { LegalBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
+import { BlogDomains } from 'shared-models/posts/blog-domains.model';
 
 @Component({
   selector: 'app-terms-and-conditions',
@@ -14,6 +15,7 @@ export class TermsAndConditionsComponent implements OnInit, OnDestroy {
 
   appRoutes = PublicAppRoutes;
   legalBusinessName = LegalBusinessNames.EXPN;
+  businessDomain = BlogDomains.EXPN;
 
   constructor(
     private titleService: Title,

@@ -12,6 +12,6 @@ const stripeSecret: string = functions.config().stripe.secret;
 
 //Export Stripe
 const stripeConfig: Stripe.StripeConfig = {
-  apiVersion: '2019-12-03'
+  apiVersion: '2020-08-27'
 }
 export const stripe = new Stripe.Stripe(stripeSecret, stripeConfig);

@@ -15,7 +15,7 @@ export const attachSource = async(uid: string, source: StripeDefs.Source) => {
   const sourceOwner = source.owner as StripeDefs.Source.Owner;
 
   // Check if source already exists on customer
-  const existingSource = customer.sources.data.filter(s => s.id === source.id).pop();
+  const existingSource = customer.sources?.data.filter(s => s.id === source.id).pop();
 
   if (existingSource) {
     // If existing source, do not create new source or update customer

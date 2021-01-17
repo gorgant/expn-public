@@ -5,6 +5,7 @@ import { EmailPubMessage } from '../../../shared-models/email/email-pub-message.
 import { EmailCategories } from '../../../shared-models/email/email-vars.model';
 import { WebpageLoadFailureData } from '../../../shared-models/ssr/webpage-load-failure-data.model';
 import * as functions from 'firebase-functions';
+import { assert, assertUID } from '../config/global-helpers';
 const pubSub = new PubSub();
 
 export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureData: WebpageLoadFailureData ) => {
@@ -25,3 +26,16 @@ export const transmitWebpageLoadFailureDataToAdmin = async (webpageLoadFailureDa
   
   return topicPublishRes;
 }
+
+
+/////// DEPLOYABLE FUNCTIONS ///////
+
+export const triggerWebpageLoadFailureEmail = functions.https.onCall( async (data: WebpageLoadFailureData, context ) => {
+  functions.logger.log('Transmit sub request received with this data', data);
+  assertUID(context);
+  assert(data, 'domain'); // Confirm the data has a key unique to this object type to loosly ensure the data is valid
+
+  const webpageLoadFailureData: WebpageLoadFailureData = data;
+
+  return transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData);
+})
