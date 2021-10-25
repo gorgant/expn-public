@@ -5,7 +5,7 @@ import { publicFirestore, adminFirestore } from '../config/db-config';
 import { SharedCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
 import { PodcastContainer } from '../../../shared-models/podcast/podcast-container.model';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
-import { convertHoursMinSecToMill, convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
+import { convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
 import { now } from 'moment';
 import { Post } from '../../../shared-models/posts/post.model';
 import { PODCAST_PATHS } from '../../../shared-models/podcast/podcast-vars.model';
@@ -38,6 +38,8 @@ const fetchPodcastFeed = async () => {
 
   const requestPromise = new Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}>(async (resolve, reject) => {
 
+    functions.logger.log(`Requesting data from this RSS feed`, requestUrl);
+
     const req = https.request(requestUrl, (res) => {
       let fullData = '';
       
@@ -63,7 +65,7 @@ const fetchPodcastFeed = async () => {
         // Parse Podcast Container
         const podcastObject = rawJson.rss.channel[0];
         const podcastRssUrl = podcastObject['atom:link'][0].$.href as string;
-        const podcastId = podcastRssUrl.split('users:')[1].split('/')[0]; // May change if RSS feed link changes
+        const podcastId = podcastRssUrl.split('anchor.fm/s/')[1].split('/')[0]; // May change if RSS feed link changes
         const podcastTitle = podcastObject.title[0];
         const podcastDescription = podcastObject.description[0];
         const podcastImageUrl = podcastObject.image[0].url[0];
@@ -85,7 +87,7 @@ const fetchPodcastFeed = async () => {
           title: any[],
           pubDate: any[],
           'itunes:duration': any[],
-          'itunes:author': any[],
+          'dc:creator': any[],
           description: any[],
           'itunes:image': any[]
         }
@@ -97,11 +99,11 @@ const fetchPodcastFeed = async () => {
           
           const episodeUrl = rawEpisode.link[0];
           const episodeId = createOrReverseFirebaseSafeUrl(episodeUrl);
-          const episodeGuid = (rawEpisode.guid[0]._ as string).split('tracks/')[1];
+          const episodeGuid = rawEpisode.guid[0];
           const episodeTitle = rawEpisode.title[0];
           const episodePubDate = Date.parse(rawEpisode.pubDate[0]);
-          const episodeDuration = convertHoursMinSecToMill(rawEpisode['itunes:duration'][0]);
-          const episodeAuthor = rawEpisode['itunes:author'][0];
+          const episodeDuration = rawEpisode['itunes:duration'][0] * 1000; // convert seconds to ms
+          const episodeAuthor = rawEpisode['dc:creator'][0];
           const episodeDescription = rawEpisode.description[0];
           const episodeImageUrl = rawEpisode['itunes:image'][0].$.href;
           let episodeBlogPostId = '';

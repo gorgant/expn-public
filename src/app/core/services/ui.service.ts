@@ -6,6 +6,7 @@ import { take, map, catchError } from 'rxjs/operators';
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { GeographicData } from 'shared-models/forms-and-components/geography/geographic-data.model';
 import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
+import { PodcastVars } from 'shared-models/podcast/podcast-vars.model';
 
 @Injectable({
   providedIn: 'root'
@@ -93,7 +94,7 @@ export class UiService {
   }
 
   getPodcastId = (podcastRssUrl: string): string => {
-    return podcastRssUrl.split('users:')[1].split('/')[0];
+    return podcastRssUrl.split(PodcastVars.PODCAST_ID_SPLIT_CODE)[1].split('/')[0];
   }
 
   /**
