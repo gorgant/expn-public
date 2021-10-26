@@ -63,7 +63,7 @@ const markSubscriberOptedIn = async (subConfData: SubOptInConfirmationData): Pro
 export const markSubOptedIn = functions.https.onCall( async (subData: SubOptInConfirmationData, context ): Promise<boolean> => {
 
   functions.logger.log('Confirm sub opt in on admin request received with this data', subData);
-  // assertUID(context);
+  // assertUID(context); // Can cause errors on initial page load (not enough time to auth user before command fires)
   
   return markSubscriberOptedIn(subData);
 });

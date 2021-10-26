@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-import-side-effect
-import 'zone.js/dist/zone-node';
+import 'zone.js/node';
 // tslint:disable-next-line:no-import-side-effect
 import 'reflect-metadata';
 import { enableProdMode } from '@angular/core';
