@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError, from } from 'rxjs';
 import { catchError, take, tap } from 'rxjs/operators';
-import { AngularFireFunctions } from '@angular/fire/functions';
+import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { Stripe as StripeDefs } from 'stripe';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { now } from 'moment';
 import { StripeChargeData } from 'shared-models/billing/stripe-charge-data.model';
 import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-names';

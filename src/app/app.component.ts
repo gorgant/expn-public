@@ -14,7 +14,7 @@ import {
   UiStoreSelectors
 } from './root-store';
 import { withLatestFrom, map, takeWhile, filter, tap } from 'rxjs/operators';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ProductStrings } from 'shared-models/products/product-strings.model';
 import { Product } from 'shared-models/products/product.model';
 import { metaTagDefaults } from 'shared-models/analytics/metatags.model';

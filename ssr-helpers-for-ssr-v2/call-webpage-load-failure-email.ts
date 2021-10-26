@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 import { PublicFunctionNames } from 'shared-models/routes-and-paths/fb-function-names';
 import { WebpageLoadFailureData } from 'shared-models/ssr/webpage-load-failure-data.model';
 

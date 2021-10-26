@@ -1,6 +1,6 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Observable, throwError, of } from 'rxjs';
-import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestoreCollection, AngularFirestoreDocument, AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from './auth.service';
 import { takeUntil, map, catchError, take, tap } from 'rxjs/operators';
 import { UiService } from './ui.service';

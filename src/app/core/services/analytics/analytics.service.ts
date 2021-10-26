@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { DataLayerService, } from './data-layer.service';
 import { Title, Meta } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { now } from 'moment';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions, UiStoreSelectors } from 'src/app/root-store';

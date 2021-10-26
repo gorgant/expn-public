@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { RootStoreState, UserStoreSelectors, UserStoreActions } from 'src/app/root-store';
 import { withLatestFrom, take } from 'rxjs/operators';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { now } from 'moment';
 import { CONTACT_VALIDATION_MESSAGES } from 'shared-models/forms-and-components/public-validation-messages.model';
 import { PublicUser } from 'shared-models/user/public-user.model';

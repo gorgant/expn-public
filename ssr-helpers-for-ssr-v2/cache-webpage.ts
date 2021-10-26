@@ -4,7 +4,7 @@ import { now } from "moment";
 import { PublicCollectionPaths } from "../shared-models/routes-and-paths/fb-collection-paths";
 import { createOrReverseFirebaseSafeUrl } from "./createOrReverseFirebaseSafeUrl";
 
-import * as firebase from 'firebase/app';
+import * as firebase from 'firebase/compat/app';
 import { environment } from "src/environments/environment";
 import { environment as sandboxEnv } from "src/environments/environment.sandbox";
 

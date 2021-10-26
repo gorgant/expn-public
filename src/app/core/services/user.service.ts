@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Observable, from, throwError } from 'rxjs';
 import { map, takeUntil, catchError, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { AngularFireFunctions } from '@angular/fire/functions';
+import { AngularFireFunctions } from '@angular/fire/compat/functions';
 import { now } from 'moment';
 import { PublicUser } from 'shared-models/user/public-user.model';
 import { NavigationStamp } from 'shared-models/analytics/navigation-stamp.model';

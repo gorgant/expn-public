@@ -82,7 +82,7 @@ export const parseTransferState = (htmlString: string, routeType: PublicAppRoute
 
   } catch (e) {
     functions.logger.log(`Error parsing HTML for script content:`, e);
-    return e;
+    return e as any;
   }
   
 
