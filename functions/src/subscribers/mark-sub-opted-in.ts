@@ -3,7 +3,6 @@ import { EmailSubscriber } from '../../../shared-models/subscribers/email-subscr
 import { SubOptInConfirmationData } from '../../../shared-models/subscribers/sub-opt-in-confirmation-data.model';
 import { adminFirestore, publicFirestore } from '../config/db-config';
 import { AdminCollectionPaths, PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths';
-import { assertUID } from '../config/global-helpers';
 import { PublicUser } from '../../../shared-models/user/public-user.model';
 import { now } from 'moment';
 
@@ -64,7 +63,7 @@ const markSubscriberOptedIn = async (subConfData: SubOptInConfirmationData): Pro
 export const markSubOptedIn = functions.https.onCall( async (subData: SubOptInConfirmationData, context ): Promise<boolean> => {
 
   functions.logger.log('Confirm sub opt in on admin request received with this data', subData);
-  assertUID(context);
+  // assertUID(context);
   
   return markSubscriberOptedIn(subData);
 });
