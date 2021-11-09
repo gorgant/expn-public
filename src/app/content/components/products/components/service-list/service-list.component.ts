@@ -7,7 +7,7 @@ import { AnalyticsService } from 'src/app/core/services/analytics/analytics.serv
 import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
-import { withLatestFrom, map, filter } from 'rxjs/operators';
+import { withLatestFrom, map, filter, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-service-list',
@@ -17,6 +17,9 @@ import { withLatestFrom, map, filter } from 'rxjs/operators';
 export class ServiceListComponent implements OnInit, OnDestroy {
 
   products$: Observable<Product[]>;
+
+  intervalId: NodeJS.Timer;
+  intervalCount = 0;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -44,6 +47,16 @@ export class ServiceListComponent implements OnInit, OnDestroy {
   }
 
   private initializeProducts() {
+
+    this.intervalId = setInterval(() => {
+      console.log('Interval running')
+      this.intervalCount++;
+      if (this.intervalCount > 20) {
+        console.log('Clearing interval, exceeded cap');
+        clearInterval(this.intervalId);
+      }
+    }, 100); // A janky SSR work-around to ensure post loads before Universal renders the post, consider removing
+
     this.products$ = this.store$.select(ProductStoreSelectors.selectAllProducts)
       .pipe(
         withLatestFrom(
@@ -57,12 +70,14 @@ export class ServiceListComponent implements OnInit, OnDestroy {
           }
           return products;
         }),
-        filter(products => products.length > 0) // Catches the first emission which is an empty array
+        filter(products => products.length > 0), // Catches the first emission which is an empty array
+        tap(products => clearInterval(this.intervalId))
       );
   }
 
   ngOnDestroy() {
     this.analyticsService.closeNavStamp();
+    clearInterval(this.intervalId);
   }
 
 }

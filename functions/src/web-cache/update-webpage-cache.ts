@@ -49,7 +49,7 @@ const sendHttpRequest = async (wepageUrl: string) => {
 
 /////// DEPLOYABLE FUNCTIONS ///////
 
-const opts = {memory: '256MB', timeoutSeconds: 20};
+const opts = {memory: '512MB', timeoutSeconds: 15};
 
 // Listen for pubsub message
 export const updateWebpageCache = functions.runWith((opts as functions.RuntimeOptions)).pubsub.topic(PublicTopicNames.SAVE_WEBPAGE_TO_CACHE_TOPIC).onPublish( async (message, context) => {

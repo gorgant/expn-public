@@ -24,8 +24,11 @@ export function app(server: express.Express, distFolder: string) {
   const indexHtml = existsSync(join(distFolder, 'index-server.html')) ? 'index-server.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
+
+  // GCR: disable inlinecritical css to fix missing stylesheets: https://github.com/angular/universal/issues/2144#issuecomment-939321937
   server.engine('html', ngExpressEngine({
     bootstrap: AppServerModule,
+    inlineCriticalCss: false
   }));
 
   server.set('view engine', 'html');

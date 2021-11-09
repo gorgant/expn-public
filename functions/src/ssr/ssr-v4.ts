@@ -16,7 +16,7 @@ const customServer = customExpressApp()
 const distFolder = __dirname + '/../../../app-bundle';
 
 // Feed the custom cloud functions express app into the local server app
-const opts = {memory: '512MB', timeoutSeconds: 20};
+const opts = {memory: '512MB', timeoutSeconds: 15};
 export const ssrV4 = functions
   .region('us-central1')
   .runWith(opts as functions.RuntimeOptions)

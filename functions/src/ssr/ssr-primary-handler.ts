@@ -10,12 +10,14 @@ import { WebpageRequestType } from '../../../shared-models/ssr/webpage-request-t
 import { storeWebPageCache, retrieveWebPageCache } from '../web-cache/cache-webpage';
 import { PublicAppRoutes } from '../../../shared-models/routes-and-paths/app-routes.model';
 import { currentEnvironmentType } from '../config/environments-config';
-import { EnvironmentTypes, PRODUCTION_APPS, SANDBOX_APPS, ProductionSsrDataLoadChecks, SandboxSsrDataLoadChecks } from '../../../shared-models/environments/env-vars.model';
+import { EnvironmentTypes, ProductionSsrDataLoadChecks, PRODUCTION_APPS, SandboxSsrDataLoadChecks, SANDBOX_APPS } from '../../../shared-models/environments/env-vars.model';
 import { parseTransferState } from './parse-transfer-state';
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
 import { WebpageLoadFailureData } from '../../../shared-models/ssr/webpage-load-failure-data.model';
 import { transmitWebpageLoadFailureDataToAdmin } from '../web-cache/transmit-webpage-load-failure-data-to-admin';
 import { BlogIndexPostRef } from '../../../shared-models/posts/post.model';
+
+const domain = currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.expnPublicApp.websiteDomain : PRODUCTION_APPS.expnPublicApp.websiteDomain;
 
 // These are a few globals to help with longpage loads
 let minBlogPostCount: number = ProductionSsrDataLoadChecks.EXPN_BLOG_MIN;
@@ -61,15 +63,19 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
   }
 
   // Encode reserved characters found in URL (ngExpressEngine cannot process these and will produce a route error)
-  const ngExpressSafeUrl = requestPath.replace(/[!'()*]/g, (c) => {
+  const ngExpressSafePath = requestPath.replace(/[!'()*]/g, (c) => {
     return '%' + c.charCodeAt(0).toString(16);
   });
-  functions.logger.log('ngExpressSafeUrl', ngExpressSafeUrl);
+  functions.logger.log('ngExpressSafePath', ngExpressSafePath);
+
+  const absoluteUrl= `https://${domain}${ngExpressSafePath}`;
+  functions.logger.log('Piping this absolute url to express engine', absoluteUrl);
 
   // See more render options here: https://github.com/angular/universal/tree/master/modules/express-engine
   res.render('index-server', { 
       req,
-      url: ngExpressSafeUrl
+      url: absoluteUrl,
+      cache: false,
     }, async (error, html) => {
 
       functions.logger.log('Rendering with Universal ngExpressEngine')
@@ -84,6 +90,12 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
       if ((requestPath === PublicAppRoutes.BLOG || requestPath === PublicAppRoutes.PODCAST) && reloadAttempts < reloadLimit) {
         
         const transferStateData = parseTransferState(html, requestPath);
+
+        if (!transferStateData) {
+          reloadAttempts ++;
+          functions.logger.log(`transferStateData failed to load fully on attempt number ${reloadAttempts}, trying again`);
+          return renderAndCachePageWithUniversal(res, req, userAgent);
+        }
 
         // Check if data fully loaded, if not, make another attempt
         switch (requestPath) {
@@ -110,64 +122,63 @@ const renderAndCachePageWithUniversal = async (res: express.Response, req: expre
         }
       }
     
-    if (reloadAttempts >= reloadLimit) {
-      functions.logger.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
-      const webpageLoadFailureData: WebpageLoadFailureData = {
-        domain: currentEnvironmentType === EnvironmentTypes.SANDBOX ? SANDBOX_APPS.expnPublicApp.websiteDomain : PRODUCTION_APPS.expnPublicApp.websiteDomain,
-        urlPath: requestPath,
-        errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
+      if (reloadAttempts >= reloadLimit) {
+        functions.logger.log(`Exceeded reload limit after ${reloadAttempts} attempts, using data from most recent load`);
+        const webpageLoadFailureData: WebpageLoadFailureData = {
+          domain,
+          urlPath: requestPath,
+          errorMessage: `Not all the required items loaded after ${reloadAttempts} attempts`
+        }
+        await transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData)
+          .catch(err => {console.error('Error transmiting webpage load failture data to admin:', err);}); // Don't throw error, just log it to console
       }
-      await transmitWebpageLoadFailureDataToAdmin(webpageLoadFailureData)
-        .catch(err => {console.error('Error transmiting webpage load failture data to admin:', err);}); // Don't throw error, just log it to console
-    }
 
-    reloadAttempts = 0; // Reset reload attempts for future functions
+      reloadAttempts = 0; // Reset reload attempts for future functions
 
-    // WE COULD COMPLETELY SIMPLFY ALL THE FOLLOWING CODE BY ONLY CACHING MANUAL/SCHEDULED AUTO REQUESTS
-    // Designate routes that shouldn't be cached
-    const nonCachableAppRoutes: PublicAppRoutes[] = [
-      PublicAppRoutes.BLOG, // Excluded by default, only run these on admin auto-cache requests
-      PublicAppRoutes.PRODUCTS, // Excluded by default, only run these on admin auto-cache requests
-      PublicAppRoutes.CHECKOUT,
-      PublicAppRoutes.SUB_CONFIRMATION,
-      PublicAppRoutes.HOME, // We will put home in manually since "/" directory is too broad
-      PublicAppRoutes.PURCHASE_CONFIRMATION,
-      PublicAppRoutes.PRIVACY_POLICY,
-      PublicAppRoutes.TERMS_AND_CONDITIONS
-    ];
+      // WE COULD COMPLETELY SIMPLFY ALL THE FOLLOWING CODE BY ONLY CACHING MANUAL/SCHEDULED AUTO REQUESTS
+      // Designate routes that shouldn't be cached
+      const nonCachableAppRoutes: PublicAppRoutes[] = [
+        PublicAppRoutes.BLOG, // Excluded by default, only run these on admin auto-cache requests
+        PublicAppRoutes.PRODUCTS, // Excluded by default, only run these on admin auto-cache requests
+        PublicAppRoutes.CHECKOUT,
+        PublicAppRoutes.SUB_CONFIRMATION,
+        PublicAppRoutes.HOME, // We will put home in manually since "/" directory is too broad
+        PublicAppRoutes.PURCHASE_CONFIRMATION,
+        PublicAppRoutes.PRIVACY_POLICY,
+        PublicAppRoutes.TERMS_AND_CONDITIONS
+      ];
 
-    // Create an array of cachable app routes from the complete set of publicAppRoutes
-    const cachableAppRoutes = Object.values(PublicAppRoutes).reduce((result, appRoute) => {
-      // Only push results that aren't included in the nonCachable array
-      if (!nonCachableAppRoutes.includes(appRoute)) {
-        result.push(appRoute);
+      // Create an array of cachable app routes from the complete set of publicAppRoutes
+      const cachableAppRoutes = Object.values(PublicAppRoutes).reduce((result, appRoute) => {
+        // Only push results that aren't included in the nonCachable array
+        if (!nonCachableAppRoutes.includes(appRoute)) {
+          result.push(appRoute);
+        }
+        return result;
+      }, [] as PublicAppRoutes[]);
+
+      functions.logger.log('Generated this list of cachable app routes', cachableAppRoutes);
+
+      // Only cache request path if it matches a cachable route as defined above or matches the home route or is an auto cache request
+      for (const validRoute of cachableAppRoutes) {
+        // Match a valid route exactly or a valid route plus an 8-character ID plus a slash followed by a wild card (https://regex101.com/ for info on the regex string)
+        if (
+          requestPath === validRoute || 
+          requestPath === '/' || 
+          isAutoCache(req) // for Blog and Product routes, only respond to admin auto cache requests (prevents bot bloat in cache of fake urls)
+          ) {
+          functions.logger.log(`Cachable route detected, submitted for caching`);
+          // Cache HTML in database for easy future retrieval
+          await storeWebPageCache(requestPath, userAgent, html)
+            .catch(err => {console.error(`Error storing webpagecache:`, err);}); // Don't throw error, just log it to console
+          break; // Break loop if match is found to prevent multiple caches per request
+        }
       }
-      return result;
-    }, [] as PublicAppRoutes[]);
 
-    functions.logger.log('Generated this list of cachable app routes', cachableAppRoutes);
-
-    // Only cache request path if it matches a cachable route as defined above or matches the home route or is an auto cache request
-    for (const validRoute of cachableAppRoutes) {
-      // Match a valid route exactly or a valid route plus an 8-character ID plus a slash followed by a wild card (https://regex101.com/ for info on the regex string)
-      if (
-        requestPath === validRoute || 
-        requestPath === '/' || 
-        // requestPath.match(new RegExp(validRoute + '\/[a-zA-Z0-9]{8,8}\/.*')) || // match any product or blog routes
-        isAutoCache(req) // for Blog and Product routes, only respond to admin auto cache requests (prevents bot bloat in cache of fake urls)
-        ) {
-        functions.logger.log(`Cachable route detected, submitted for caching`);
-        // Cache HTML in database for easy future retrieval
-        await storeWebPageCache(requestPath, userAgent, html)
-          .catch(err => {console.error(`Error storing webpagecache:`, err);}); // Don't throw error, just log it to console
-        break; // Break loop if match is found to prevent multiple caches per request
-      }
-    }
-
-    functions.logger.log('Html rendered, first 100 chars are', html.substr(0, 100));
-    res.status(200).send(html);
-    return;
-  });
+      functions.logger.log('Html rendered, first 100 chars are', html.substr(0, 100));
+      res.status(200).send(html);
+      return;
+    });
 }
 
 export const handleServerRequest = async (res: express.Response, req: express.Request, indexHtml: "index.original.html" | "index" | "index-server") => {
@@ -175,7 +186,6 @@ export const handleServerRequest = async (res: express.Response, req: express.Re
   // The engine will use the reqest data to determine the correct route to render
   // It will then serve that view to the client
   functions.logger.log('Routing through Cloud Functions server', req);
-  functions.logger.log('Received route request', req);
   functions.logger.log('Req referrer:', req.headers.referer);
   functions.logger.log('Found these headers', req.headers);
   functions.logger.log('Found these parameters', req.query)

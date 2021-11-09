@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState, PostStoreSelectors, PostStoreActions, PodcastStoreSelectors, PodcastStoreActions, UiStoreSelectors } from 'src/app/root-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { withLatestFrom, map } from 'rxjs/operators';
+import { withLatestFrom, map, filter, tap } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { Post } from 'shared-models/posts/post.model';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
@@ -46,6 +46,9 @@ export class PostComponent implements OnInit, OnDestroy {
   private origin: string;
   sanitizedSubscribeButtonContent: SafeHtml;
   youTubeChannelId = YouTubeChannelIds.EXPN;
+
+  intervalId: NodeJS.Timer;
+  intervalCount = 0;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -93,6 +96,15 @@ export class PostComponent implements OnInit, OnDestroy {
   // Triggered after params are fetched
   private getPost() {
 
+    this.intervalId = setInterval(() => {
+      console.log('Interval running')
+      this.intervalCount++;
+      if (this.intervalCount > 20) {
+        console.log('Clearing interval, exceeded cap');
+        clearInterval(this.intervalId);
+      }
+    }, 100); // A janky SSR work-around to ensure post loads before Universal renders the post, consider removing
+
     this.error$ = this.store$.select(PostStoreSelectors.selectLoadError);
     
     this.post$ = this.store$.select(PostStoreSelectors.selectPostById(this.postId))
@@ -107,7 +119,9 @@ export class PostComponent implements OnInit, OnDestroy {
         }
         this.requestedPosts = true; // Prevents loading from firing more than needed
         return post as Post;
-      })
+      }),
+      filter(post => !!post), // Catches the first emission which is empty
+      tap(post => clearInterval(this.intervalId))
     );
 
     this.isLoading$ = this.store$.select(
@@ -125,7 +139,7 @@ export class PostComponent implements OnInit, OnDestroy {
       .subscribe(([post, isAngularUniversal]) => {
         console.log('post subscription firing');
         if (post) {
-          // console.log('Post retreived, doing nothing for debugging purposes');
+          console.log('Post piped to post component with this id', post.id);
           this.initializeHeroData(post);
           this.sanitizedPostBody = this.sanitizer.sanitize(SecurityContext.HTML, post.content);
           if (post.videoUrl && !isAngularUniversal) {
@@ -292,6 +306,7 @@ export class PostComponent implements OnInit, OnDestroy {
     }
 
     this.analyticsService.closeNavStamp();
+    clearInterval(this.intervalId);
   }
 
 }

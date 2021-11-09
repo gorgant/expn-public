@@ -4,7 +4,7 @@ import { PodcastEpisode } from 'shared-models/podcast/podcast-episode.model';
 import { UiService } from 'src/app/core/services/ui.service';
 import { Store } from '@ngrx/store';
 import { RootStoreState, PodcastStoreSelectors, PodcastStoreActions } from 'src/app/root-store';
-import { withLatestFrom, map, filter } from 'rxjs/operators';
+import { withLatestFrom, map, filter, tap } from 'rxjs/operators';
 import { PODCAST_PATHS } from 'shared-models/podcast/podcast-vars.model';
 
 @Component({
@@ -17,6 +17,9 @@ export class PodcastBodyComponent implements OnInit {
   podcastList$: Observable<PodcastEpisode[]>;
   loadPodcastTriggered: boolean;
 
+  intervalId: NodeJS.Timer;
+  intervalCount = 0;
+
   constructor(
     private store$: Store<RootStoreState.State>,
     private uiService: UiService
@@ -27,6 +30,16 @@ export class PodcastBodyComponent implements OnInit {
   }
 
   private initializePodcast() {
+
+    this.intervalId = setInterval(() => {
+      console.log('Interval running')
+      this.intervalCount++;
+      if (this.intervalCount > 20) {
+        console.log('Clearing interval, exceeded cap');
+        clearInterval(this.intervalId);
+      }
+    }, 100); // A janky SSR work-around to ensure post loads before Universal renders the post, consider removing
+
     this.podcastList$ = this.store$.select(PodcastStoreSelectors.selectAllEpisodes)
     .pipe(
       withLatestFrom(
@@ -43,8 +56,13 @@ export class PodcastBodyComponent implements OnInit {
         this.loadPodcastTriggered = true; // Prevents loading from firing more than needed
         return episodes;
       }),
-      filter(episodes => episodes.length > 0) // Catches the first emission which is an empty array
+      filter(episodes => episodes.length > 0), // Catches the first emission which is an empty array
+      tap(posts => clearInterval(this.intervalId))
     );
 
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.intervalId);
   }
 }

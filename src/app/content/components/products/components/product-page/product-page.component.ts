@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
-import { withLatestFrom, map } from 'rxjs/operators';
+import { withLatestFrom, map, filter, tap } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { Product } from 'shared-models/products/product.model';
 import { ProductIdList } from 'shared-models/products/product-id-list.model';
@@ -40,6 +40,9 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   imagePaths = PublicImagePaths;
 
   showBuyNowBox: boolean;
+
+  intervalId: NodeJS.Timer;
+  intervalCount = 0;
 
   constructor(
     private store$: Store<RootStoreState.State>,
@@ -83,6 +86,15 @@ export class ProductPageComponent implements OnInit, OnDestroy {
   // Triggered after params are fetched
   private getProduct() {
 
+    this.intervalId = setInterval(() => {
+      console.log('Interval running')
+      this.intervalCount++;
+      if (this.intervalCount > 20) {
+        console.log('Clearing interval, exceeded cap');
+        clearInterval(this.intervalId);
+      }
+    }, 100); // A janky SSR work-around to ensure post loads before Universal renders the post, consider removing
+
     this.product$ = this.store$.select(ProductStoreSelectors.selectProductById(this.productId))
       .pipe(
         withLatestFrom(
@@ -98,6 +110,8 @@ export class ProductPageComponent implements OnInit, OnDestroy {
           this.loadProductTriggered = true; // Prevents loading from firing more than needed
           return product;
         }),
+        filter(product => !!product), // Catches the first emission which is empty
+        tap(product => clearInterval(this.intervalId))
       );
 
     this.error$ = this.store$.select(
@@ -154,6 +168,7 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     }
 
     this.analyticsService.closeNavStamp();
+    clearInterval(this.intervalId);
   }
 
 }

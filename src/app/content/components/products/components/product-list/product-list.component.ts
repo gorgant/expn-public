@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { RootStoreState } from 'src/app/root-store';
 import { ProductStoreSelectors, ProductStoreActions } from 'src/app/root-store/product-store';
-import { withLatestFrom, map, filter } from 'rxjs/operators';
+import { withLatestFrom, map, filter, tap } from 'rxjs/operators';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { Product } from 'shared-models/products/product.model';
 import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
@@ -18,6 +18,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   products$: Observable<Product[]>;
 
+  intervalId: NodeJS.Timer;
+  intervalCount = 0;
+  
   constructor(
     private store$: Store<RootStoreState.State>,
 
@@ -31,6 +34,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   // Add async data as needed and fire once loaded
   private configSeoAndAnalytics() {
+
+    this.intervalId = setInterval(() => {
+      console.log('Interval running')
+      this.intervalCount++;
+      if (this.intervalCount > 20) {
+        console.log('Clearing interval, exceeded cap');
+        clearInterval(this.intervalId);
+      }
+    }, 100); // A janky SSR work-around to ensure post loads before Universal renders the post, consider removing
 
     const title = metaTagsContentPages.expnPublic.productListMetaTitle;
     // tslint:disable-next-line:max-line-length
@@ -57,12 +69,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
           }
           return products;
         }),
-        filter(products => products.length > 0) // Catches the first emission which is an empty array
+        filter(products => products.length > 0), // Catches the first emission which is an empty array
+        tap(products => clearInterval(this.intervalId))
       );
   }
 
   ngOnDestroy() {
     this.analyticsService.closeNavStamp();
+    clearInterval(this.intervalId);
   }
 
 }
