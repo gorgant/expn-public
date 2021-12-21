@@ -10,6 +10,7 @@ export interface State {
   isConfirmingSubOptIn: boolean;
   loadError: any;
   saveError: any;
+  subscribeUserComplete: boolean;
   subscribeUserError: any;
   transmitContactFormError: any;
   storeNavStampError: any;
@@ -28,6 +29,7 @@ export const initialState: State = {
   isConfirmingSubOptIn: false,
   loadError: false,
   saveError: false,
+  subscribeUserComplete: false,
   subscribeUserError: false,
   transmitContactFormError: false,
   storeNavStampError: false,

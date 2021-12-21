@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, from, throwError, of } from 'rxjs';
 import { map, takeUntil, catchError, take, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
@@ -14,6 +14,7 @@ import { ContactForm } from 'shared-models/user/contact-form.model';
 import { SubscriptionSource } from 'shared-models/subscribers/subscription-source.model';
 import { PublicCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
 import { SubOptInConfirmationData } from 'shared-models/subscribers/sub-opt-in-confirmation-data.model';
+import { BillingKeys } from 'shared-models/billing/billing-details.model';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +82,15 @@ export class UserService {
   // Add user subscription to admin database
   publishEmailSubToAdminTopic(emailSubData: EmailSubData): Observable<any> {
     console.log('Transmitting subscriber to admin');
+
+    const nameHasInvalidPunctuation = /[.,\/#!$%\^&\*;:{}=\-_`~()]+/.test(emailSubData.user.billingDetails[BillingKeys.FIRST_NAME]); // + matches one or more instances of the preceding character(s)
+
+    const invalidEmail = /qq.com/.test(emailSubData.user.billingDetails.email);
+
+    if (nameHasInvalidPunctuation || invalidEmail) {
+      console.log('Invalid subscriber submission');
+      return of('Invalid subscriber submission');
+    }
 
     const emailSub = this.convertSubDataToSubscriber(emailSubData);
 

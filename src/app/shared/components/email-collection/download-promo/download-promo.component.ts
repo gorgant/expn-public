@@ -13,6 +13,7 @@ import { SubscriptionSource } from 'shared-models/subscribers/subscription-sourc
 import { BillingKeys } from 'shared-models/billing/billing-details.model';
 import { SubProgressTrackerComponent } from '../sub-progress-tracker/sub-progress-tracker.component';
 import { metaTagsContentPages } from 'shared-models/analytics/metatags.model';
+import { forbiddenEmailValidator, forbiddenNameValidator } from 'src/app/shared/validators/forbidden-sub-vars.validator';
 
 @Component({
   selector: 'app-download-promo',
@@ -46,8 +47,8 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscribeForm = this.fb.group({
-      [BillingKeys.FIRST_NAME]: ['', [Validators.required]],
-      [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email]]
+      [BillingKeys.FIRST_NAME]: ['', [Validators.required, forbiddenNameValidator()]],
+      [BillingKeys.EMAIL]: ['', [Validators.required, Validators.email, forbiddenEmailValidator()]]
     });
 
     this.initializeSubscribeObservers(); // Used to disable subscribe buttons
@@ -63,14 +64,21 @@ export class DownloadPromoComponent implements OnInit, OnDestroy {
 
     this.store$.select(UserStoreSelectors.selectUser) // User initialized in app component
       .pipe(
-        take(1)
+        take(1),
+        withLatestFrom(this.store$.select(UserStoreSelectors.selectSubscribeUserComplete))
       )
-      .subscribe(user => {
+      .subscribe(([user, userSubscribedThisSession]) => {
         console.log('Checking for user to subscribe', user);
 
         // If no user, do nothing
         if (!user) {
           console.log('Error processing subscription, no user available');
+          return;
+        }
+
+        // If user already submitted a subscribe this session, prevent additional subs
+        if (userSubscribedThisSession) {
+          console.log('Error processing subscription, user already successfully submitted a subscribe request.');
           return;
         }
 

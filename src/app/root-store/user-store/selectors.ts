@@ -19,7 +19,7 @@ const getTransmitContactFormError = (state: State): boolean => state.transmitCon
 const getStoreNavStampError = (state: State): boolean => state.storeNavStampError;
 const getConfirmSubOptInError = (state: State): boolean => state.confirmSubOptInError;
 
-
+const getSubscribeUserComplete = (state: State): boolean => state.subscribeUserComplete;
 const getUser = (state: State): PublicUser => state.user;
 const getCartData = (state: State): Product => state.cartItem;
 const getUserSessionId = (state: State): string => state.userSessionId;
@@ -42,6 +42,7 @@ export const selectTransmitContactFormError: MemoizedSelector<object, any> = cre
 export const selectStoreNavStampError: MemoizedSelector<object, any> = createSelector(selectUserState, getStoreNavStampError);
 export const selectConfirmSubOptInError: MemoizedSelector<object, any> = createSelector(selectUserState, getConfirmSubOptInError);
 
+export const selectSubscribeUserComplete: MemoizedSelector<object, boolean> = createSelector(selectUserState, getSubscribeUserComplete);
 export const selectUser: MemoizedSelector<object, PublicUser> = createSelector(selectUserState, getUser);
 export const selectCartData: MemoizedSelector<object, Product> = createSelector(selectUserState, getCartData);
 export const selectUserSessionid: MemoizedSelector<object, string> = createSelector(selectUserState, getUserSessionId);

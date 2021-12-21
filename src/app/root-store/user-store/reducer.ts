@@ -49,6 +49,7 @@ export function featureReducer(state = initialState, action: Actions): State {
         ...state,
         isSubscribingUser: false,
         subscribeUserError: null,
+        subscribeUserComplete: true
       };
     case ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED:
       return {
