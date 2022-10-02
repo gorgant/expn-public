@@ -21,6 +21,7 @@ import { RemoteWorkComponent } from '../components/webcourses/remote-work/remote
 import { OnlineInterviewsComponent } from '../components/webcourses/online-interviews/online-interviews.component';
 import { GroupInterviewsComponent } from '../components/webcourses/group-interviews/group-interviews.component';
 import { OnlineTeamworkComponent } from '../components/webcourses/online-teamwork/online-teamwork.component';
+import { DellHymesComponent } from '../components/webcourses/dell-hymes/dell-hymes.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { OnlineTeamworkComponent } from '../components/webcourses/online-teamwor
     OnlineInterviewsComponent,
     GroupInterviewsComponent,
     OnlineTeamworkComponent,
+    DellHymesComponent,
   ],
   imports: [
     SharedModule,

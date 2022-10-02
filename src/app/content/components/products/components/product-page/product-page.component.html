@@ -11,6 +11,7 @@
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_ONLINE_INTERVIEWS ? onlineInterivews : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_GROUP_INTERVIEWS ? groupInterivews : null; context: {product: product}"></ng-container>
       <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_ONLINE_TEAMWORK ? onlineTeamwork : null; context: {product: product}"></ng-container>
+      <ng-container *ngTemplateOutlet="productId === productIdList.EXPN_DELL_HYMES ? dellHymes : null; context: {product: product}"></ng-container>
     </div>
 
     <div *appShellNoRender class="buy-now-container">
@@ -46,8 +47,13 @@
 <ng-template #groupInterivews let-product="product">
   <app-group-interviews [product]="product"></app-group-interviews>
 </ng-template>
+
 <ng-template #onlineTeamwork let-product="product">
   <app-online-teamwork [product]="product"></app-online-teamwork>
+</ng-template>
+
+<ng-template #dellHymes let-product="product">
+  <app-dell-hymes [product]="product"></app-dell-hymes>
 </ng-template>
 
 <ng-template #blank>

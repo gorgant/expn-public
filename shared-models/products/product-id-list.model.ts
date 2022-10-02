@@ -7,24 +7,28 @@ export enum ProductIdList {
   EXPN_ONLINE_INTERVIEWS = 'oemqpck1',
   EXPN_GROUP_INTERVIEWS = 'bug3hcqp',
   EXPN_ONLINE_TEAMWORK = 'kzu1v20b',
+  EXPN_DELL_HYMES = 'qnohy2hw',
   MDLS_REMOTE_COACH = '5fff82ic',
   MDLS_EXECUTIVE_PRESENCE = 'oos6fw69',
   MDLS_REMOTE_WORK = 'qo17xor5',
   MDLS_ONLINE_INTERVIEWS = 'fapjp8i0',
   MDLS_GROUP_INTERVIEWS = 'gfjrmdhq',
   MDLS_ONLINE_TEAMWORK = '60j6rl1n',
+  MDLS_DELL_HYMES = 'y90tzj8f',
   SYW_REMOTE_COACH = 'hohk65sp',
   SYW_EXECUTIVE_PRESENCE = 'tbj97azw',
   SYW_REMOTE_WORK = 'dgp28sgc',
   SYW_ONLINE_INTERVIEWS = 'cwdazfbw',
   SYW_GROUP_INTERVIEWS = 'm0w4qx1n',
   SYW_ONLINE_TEAMWORK = 'jjfmkxlk',
+  SYW_DELL_HYMES = 'i578utei',
   ADVE_REMOTE_COACH = '7us06f84',
   ADVE_EXECUTIVE_PRESENCE = 'o4u9lkpk',
   ADVE_REMOTE_WORK = 'brhfsfff',
   ADVE_ONLINE_INTERVIEWS = '68sieci0',
   ADVE_GROUP_INTERVIEWS = 'ebgyik3s',
   ADVE_ONLINE_TEAMWORK = 'hh7m8i1q',
+  ADVE_DELL_HYMES = 'javseqty',
 }
 
 export enum ProductUrlSlugList {
@@ -33,7 +37,8 @@ export enum ProductUrlSlugList {
   REMOTE_WORK = 'remote-work-for-professionals-and-managers:-work-from-home-or-anywhere',
   ONLINE_INTERVIEWS = 'acing-online-interviews-on-zoom,-skype,-and-video-calls',
   GROUP_INTERVIEWS = 'group-interviews:-how-to-stand-out-in-a-crowd-and-influence-people',
-  ONLINE_TEAMWORK = 'online-teamwork:-manage-remote-teams-&-master-remote-collaboration'
+  ONLINE_TEAMWORK = 'online-teamwork:-manage-remote-teams-&-master-remote-collaboration',
+  DELL_HYMES = 'dell-hymes-speaking-model-framework-masterclass'
 }
 
 // The Product/Template pair
@@ -58,27 +63,32 @@ export const ProductReferenceList: ProductReferenceList = {
   [ProductIdList.EXPN_EXECUTIVE_PRESENCE]: {
     productId: ProductIdList.EXPN_EXECUTIVE_PRESENCE,
     productUrlSlug: ProductUrlSlugList.EXECUTIVE_PRESENCE,
-    masterProductRef: ProductIdList.EXPN_REMOTE_COACH
+    masterProductRef: ProductIdList.EXPN_EXECUTIVE_PRESENCE
   },
   [ProductIdList.EXPN_REMOTE_WORK]: {
     productId: ProductIdList.EXPN_REMOTE_WORK,
     productUrlSlug: ProductUrlSlugList.REMOTE_WORK,
-    masterProductRef: ProductIdList.EXPN_REMOTE_COACH
+    masterProductRef: ProductIdList.EXPN_REMOTE_WORK
   },
   [ProductIdList.EXPN_ONLINE_INTERVIEWS]: {
     productId: ProductIdList.EXPN_ONLINE_INTERVIEWS,
     productUrlSlug: ProductUrlSlugList.ONLINE_INTERVIEWS,
-    masterProductRef: ProductIdList.EXPN_REMOTE_COACH
+    masterProductRef: ProductIdList.EXPN_ONLINE_INTERVIEWS
   },
   [ProductIdList.EXPN_GROUP_INTERVIEWS]: {
     productId: ProductIdList.EXPN_GROUP_INTERVIEWS,
     productUrlSlug: ProductUrlSlugList.GROUP_INTERVIEWS,
-    masterProductRef: ProductIdList.EXPN_REMOTE_COACH
+    masterProductRef: ProductIdList.EXPN_GROUP_INTERVIEWS
   },
   [ProductIdList.EXPN_ONLINE_TEAMWORK]: {
     productId: ProductIdList.EXPN_ONLINE_TEAMWORK,
     productUrlSlug: ProductUrlSlugList.ONLINE_TEAMWORK,
-    masterProductRef: ProductIdList.EXPN_REMOTE_COACH
+    masterProductRef: ProductIdList.EXPN_ONLINE_TEAMWORK
+  },
+  [ProductIdList.EXPN_DELL_HYMES]: {
+    productId: ProductIdList.EXPN_DELL_HYMES,
+    productUrlSlug: ProductUrlSlugList.DELL_HYMES,
+    masterProductRef: ProductIdList.EXPN_DELL_HYMES
   },
   [ProductIdList.MDLS_REMOTE_COACH]: {
     productId: ProductIdList.MDLS_REMOTE_COACH,
@@ -110,6 +120,11 @@ export const ProductReferenceList: ProductReferenceList = {
     productUrlSlug: ProductUrlSlugList.ONLINE_TEAMWORK,
     masterProductRef: ProductIdList.EXPN_ONLINE_TEAMWORK
   },
+  [ProductIdList.MDLS_DELL_HYMES]: {
+    productId: ProductIdList.MDLS_DELL_HYMES,
+    productUrlSlug: ProductUrlSlugList.DELL_HYMES,
+    masterProductRef: ProductIdList.EXPN_DELL_HYMES
+  },
   [ProductIdList.SYW_REMOTE_COACH]: {
     productId: ProductIdList.SYW_REMOTE_COACH,
     productUrlSlug: ProductUrlSlugList.REMOTE_COACH,
@@ -140,6 +155,11 @@ export const ProductReferenceList: ProductReferenceList = {
     productUrlSlug: ProductUrlSlugList.ONLINE_TEAMWORK,
     masterProductRef: ProductIdList.EXPN_ONLINE_TEAMWORK
   },
+  [ProductIdList.SYW_DELL_HYMES]: {
+    productId: ProductIdList.SYW_DELL_HYMES,
+    productUrlSlug: ProductUrlSlugList.DELL_HYMES,
+    masterProductRef: ProductIdList.EXPN_DELL_HYMES
+  },
   [ProductIdList.ADVE_REMOTE_COACH]: {
     productId: ProductIdList.ADVE_REMOTE_COACH,
     productUrlSlug: ProductUrlSlugList.REMOTE_COACH,
@@ -169,6 +189,11 @@ export const ProductReferenceList: ProductReferenceList = {
     productId: ProductIdList.ADVE_ONLINE_TEAMWORK,
     productUrlSlug: ProductUrlSlugList.ONLINE_TEAMWORK,
     masterProductRef: ProductIdList.EXPN_ONLINE_TEAMWORK
+  },
+  [ProductIdList.ADVE_DELL_HYMES]: {
+    productId: ProductIdList.ADVE_DELL_HYMES,
+    productUrlSlug: ProductUrlSlugList.DELL_HYMES,
+    masterProductRef: ProductIdList.EXPN_DELL_HYMES
   },
 };
 
