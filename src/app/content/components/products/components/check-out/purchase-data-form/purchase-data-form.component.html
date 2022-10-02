@@ -64,8 +64,8 @@
       </mat-error>
     </mat-form-field>
     <mat-form-field *ngIf="countryCode.value === 'US'" class="state">
-      <mat-label>Select State</mat-label>
       <mat-select formControlName="usStateCode" (selectionChange)="setUsState($event.value)">
+      <mat-label>Select State</mat-label>
         <mat-option *ngFor="let state of (geographicData$ | async)?.usStateList" [value]="state.abbr">{{ state.name }}</mat-option>
       </mat-select>
       <mat-error *ngFor="let validation of billingValidationMessages.usStateCode">
