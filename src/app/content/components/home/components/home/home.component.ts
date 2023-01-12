@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AnalyticsService } from 'src/app/core/services/analytics/analytics.service';
 import { PageHeroData } from 'shared-models/forms-and-components/page-hero-data.model';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
-import { ProductIdList, ProductUrlSlugList } from 'shared-models/products/product-id-list.model';
 import { ImageProps } from 'shared-models/images/image-props.model';
 import { PublicImagePaths } from 'shared-models/routes-and-paths/image-paths.model';
 import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/metatags.model';
+import { AcademyUrls } from 'shared-models/routes-and-paths/academy-urls.model';
 
 @Component({
   selector: 'app-home',
@@ -14,8 +14,7 @@ import { metaTagDefaults, metaTagsContentPages } from 'shared-models/analytics/m
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  remoteCoachProductId: string;
-  remoteCoachUrlSlug: string;
+  academyUrl = AcademyUrls.ACADEMY_SIGNUP;
 
   heroData: PageHeroData;
   appRoutes = PublicAppRoutes;
@@ -27,7 +26,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeHeroData();
     this.configSeoAndAnalytics();
-    this.setProductPaths();
   }
 
   // Add async data as needed and fire once loaded
@@ -42,11 +40,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.analyticsService.setSeoTags(title, description, localImagePath, canonicalUrlPath);
     this.analyticsService.logPageViewWithCustomDimensions(canonicalUrlPath);
     this.analyticsService.createNavStamp(canonicalUrlPath);
-  }
-
-  private setProductPaths() {
-    this.remoteCoachProductId = ProductIdList.EXPN_REMOTE_COACH;
-    this.remoteCoachUrlSlug = ProductUrlSlugList.REMOTE_COACH;
   }
 
   private initializeHeroData() {

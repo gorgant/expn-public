@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UiService } from 'src/app/core/services/ui.service';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { AcademyUrls } from 'shared-models/routes-and-paths/academy-urls.model';
 
 @Component({
   selector: 'app-sidenav',
@@ -10,6 +11,7 @@ import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model
 export class SidenavComponent implements OnInit {
 
   appRoutes = PublicAppRoutes;
+  academyUrl = AcademyUrls.ACADEMY_SIGNUP;
 
   constructor(
     private uiService: UiService

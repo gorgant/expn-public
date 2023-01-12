@@ -34,10 +34,16 @@
       </li>
       
       <li class="nav-list-item">
-        <a class="nav-item contact" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact</a>
+        <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="appRoutes.CONTACT">Contact</a>
       </li>
     
     </ul>
+
+    
+  </div>
+  
+  <div *ngIf="(activeUrl$ | async) !== appRoutes.CHECKOUT" class="academy-button-container" fxHide fxShow.gt-sm="true">
+    <a [href]="academyUrl" class="academy-button" mat-raised-button color="accent">JOIN COMMUNITY</a>
   </div>
 
   <!-- Menue Icon: Only display if screen is sm or less -->

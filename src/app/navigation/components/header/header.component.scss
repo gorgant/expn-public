@@ -31,6 +31,18 @@ a {
   border: 1px white solid;
 }
 
+.academy-button-container {
+  margin-left: 24px;
+}
+
+.academy-button {
+  background-color: #fcb018;
+}
+
+.academy-button:hover {
+  background-color: $accent;
+}
+
 .nav-item-active {
   opacity: $active-item-opacity;
   font-weight: $font-weight-medium;

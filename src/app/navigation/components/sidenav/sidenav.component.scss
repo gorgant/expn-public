@@ -10,7 +10,11 @@ mat-list-item {
   opacity: $active-item-opacity;
 }
 
-// .active-list-item p {
-//   font-weight: $font-weight-medium;
-// }
+.academy-button-container {
+  margin-top: 8px;
+  text-align: center;
+}
 
+.academy-button {
+  background-color: #fcb018;
+}

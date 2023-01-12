@@ -60,6 +60,14 @@
   background-color: $accent;
 }
 
+:host ::ng-deep .community-button {
+  background-color: #fcb018;
+}
+
+:host ::ng-deep .community-button:hover {
+  background-color: $accent;
+}
+
 .hero-action-container {
   width: 100%;
   font-size: 22px;
@@ -111,6 +119,10 @@
   :host ::ng-deep .hero-button {
     width: auto;
     font-size: 16px;
+  }
+
+  :host ::ng-deep .community-button {
+    background-color: #fcb018;
   }
 
   .hero-actions {

@@ -5,6 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
 import { ShorthandBusinessNames } from 'shared-models/forms-and-components/legal-vars.model';
+import { AcademyUrls } from 'shared-models/routes-and-paths/academy-urls.model';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ export class HeaderComponent implements OnInit {
   activeUrl$: Observable<string>;
   appRoutes = PublicAppRoutes;
   shorthandBusinessName = ShorthandBusinessNames.EXPN;
+  academyUrl = AcademyUrls.ACADEMY_SIGNUP;
 
   constructor(
     private uiService: UiService,
