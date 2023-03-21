@@ -7,7 +7,7 @@ import { PodcastContainer } from '../../../shared-models/podcast/podcast-contain
 import { PodcastEpisode } from '../../../shared-models/podcast/podcast-episode.model';
 import { convertToFriendlyUrlFormat, createOrReverseFirebaseSafeUrl } from '../config/global-helpers';
 import { now } from 'moment';
-import { Post } from '../../../shared-models/posts/post.model';
+import { Post, PostKeys } from '../../../shared-models/posts/post.model';
 import { PODCAST_PATHS } from '../../../shared-models/podcast/podcast-vars.model';
 
 const publicDb = publicFirestore;
@@ -15,16 +15,36 @@ const adminDb = adminFirestore;
 
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
   const postsCollectionRef = publicDb.collection(SharedCollectionPaths.POSTS);
-  const matchingPostQuerySnapshot = await postsCollectionRef.where('podcastEpisodeUrl', '==', episodeUrl).get()
-    .catch(err => {functions.logger.log(`Failed to fetch podcast episode from public database:`, err); throw new functions.https.HttpsError('internal', err);});
-  
-  // Handle situation where no matching post is found
-  if (matchingPostQuerySnapshot.empty) {
-    functions.logger.log('No matching post found for this episodeUrl', episodeUrl);
-    return;
+
+  // Check against the old Anchor URL first since there are more of these, ensures backwards compatibility with the old Anchor url RSS feed format (they may never change this, check from time to time)
+  const oldAnchorUrlMatchingPostQuerySnapshot = await postsCollectionRef.where(`${[PostKeys.PODCAST_ANCHOR_RSS_FEED_URL]}`, '==', episodeUrl).get()
+    .catch(err => {functions.logger.log(`Failed to fetch podcast episode using new spotify url from public database:`, err); throw new functions.https.HttpsError('internal', err);});
+
+  let newSpotifyUrlMatchingPostQuerySnapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>;
+
+  // If a match there doesn't exist, check against the new spotify url, do this second because there are fewer of these
+  if (oldAnchorUrlMatchingPostQuerySnapshot.empty) {
+    newSpotifyUrlMatchingPostQuerySnapshot = await postsCollectionRef.where(`${[PostKeys.PODCAST_EPISODE_URL]}`, '==', episodeUrl).get()
+      .catch(err => {functions.logger.log(`Failed to fetch podcast episode from public database using old anchor url:`, err); throw new functions.https.HttpsError('internal', err);});
+      
+      // Handle situation where no matching post is found with either the new or old url
+      if (newSpotifyUrlMatchingPostQuerySnapshot.empty) {
+        functions.logger.log('No matching post found for this episodeUrl using either the old anchor or new spotify URL', episodeUrl);
+        return;
+      }
   }
 
-  const matchingPost = matchingPostQuerySnapshot.docs[0].data() as Post; // Should only be one matching item
+  const postUsingOldAnchorUrl = !oldAnchorUrlMatchingPostQuerySnapshot.empty ? oldAnchorUrlMatchingPostQuerySnapshot.docs[0].data() as Post : undefined;
+  const postUsingNewSpotifyrUrl = oldAnchorUrlMatchingPostQuerySnapshot.empty ? newSpotifyUrlMatchingPostQuerySnapshot!.docs[0].data() as Post : undefined; // Using the override here bc existence confirmed in if statement above
+
+  const matchingPost = postUsingOldAnchorUrl || postUsingNewSpotifyrUrl;
+  
+  // This check shouldn't really be necessary bc either on or the other will have a value
+  if (!matchingPost) {
+    functions.logger.log('Error retreiving matching post from query snapshot', episodeUrl);
+    return;
+  }
+  
   const postId = matchingPost.id;
   const postHandle = convertToFriendlyUrlFormat(matchingPost.title);
 
@@ -98,7 +118,7 @@ const fetchPodcastFeed = async () => {
         const podcastEpisodeArrayPromise = rawEpisodeArray.map(async rawEpisode => {
           
           const episodeUrl = rawEpisode.link[0];
-          const episodeId = createOrReverseFirebaseSafeUrl(episodeUrl);
+          const episodeId = createOrReverseFirebaseSafeUrl(episodeUrl.split('/').pop().toLowerCase());
           const episodeGuid = rawEpisode.guid[0];
           const episodeTitle = rawEpisode.title[0];
           const episodePubDate = Date.parse(rawEpisode.pubDate[0]);
