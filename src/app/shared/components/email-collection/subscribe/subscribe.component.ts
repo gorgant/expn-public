@@ -83,7 +83,7 @@ export class SubscribeComponent implements OnInit, OnDestroy {
         if (user) {
 
           // If user already subscribed, notify user and don't process
-          if (user.optInConfirmed && user.billingDetails.email === this[BillingKeys.EMAIL].value) {
+          if (user.optInConfirmed && user.billingDetails.email === this[BillingKeys.EMAIL].value.trim().toLocaleLowerCase()) {
             this.existingSubscriber = true;
             this.userSubscribed = true;
             return;
@@ -94,10 +94,10 @@ export class SubscribeComponent implements OnInit, OnDestroy {
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
               [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase(),
             } : {
               [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase(),
             }
           };
 
