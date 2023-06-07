@@ -278,7 +278,7 @@ export class PurchaseDataFormComponent implements OnInit, OnDestroy {
     const trimmedData: Partial<BillingDetails> = {
       [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
       [BillingKeys.LAST_NAME]: (this[BillingKeys.LAST_NAME].value as string).trim(),
-      [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim(),
+      [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase(),
       [BillingKeys.PHONE]: (this[BillingKeys.PHONE].value as string).trim(),
       [BillingKeys.BILLING_ONE]: (this[BillingKeys.BILLING_ONE].value as string).trim(),
       [BillingKeys.BILLING_TWO]: (this[BillingKeys.BILLING_TWO].value as string).trim(),

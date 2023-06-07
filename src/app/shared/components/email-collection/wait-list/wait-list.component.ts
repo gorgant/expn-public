@@ -96,7 +96,7 @@ export class WaitListComponent implements OnInit, OnDestroy {
         if (user) {
 
           // If user already subscribed, modify response
-          if (user.optInConfirmed && user.billingDetails.email === this[BillingKeys.EMAIL].value) {
+          if (user.optInConfirmed && user.billingDetails.email === this[BillingKeys.EMAIL].value.trim().toLocaleLowerCase()) {
             this.existingSubscriber = true;
             // Continue function because this is separate from primary newsletter
           }
@@ -106,10 +106,10 @@ export class WaitListComponent implements OnInit, OnDestroy {
             billingDetails: user.billingDetails ? {
               ...user.billingDetails,
               [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase()
             } : {
               [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase()
             }
           };
 

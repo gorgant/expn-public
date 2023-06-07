@@ -79,10 +79,10 @@ export class ContactBodyComponent implements OnInit {
               ...user.billingDetails,
               // tslint:disable-next-line:max-line-length
               [BillingKeys.FIRST_NAME]: (existingFirstName ? existingFirstName : this[BillingKeys.FIRST_NAME].value as string).trim(), // Use exstng val if order history
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase()
             } : {
               [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim()
+              [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase()
             }
           };
 
@@ -110,7 +110,7 @@ export class ContactBodyComponent implements OnInit {
             id: this.afs.createId(),
             createdDate: now(),
             [BillingKeys.FIRST_NAME]: (this[BillingKeys.FIRST_NAME].value as string).trim(),
-            [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim(),
+            [BillingKeys.EMAIL]: (this[BillingKeys.EMAIL].value as string).trim().toLocaleLowerCase(),
             [ContactFormKeys.MESSAGE]: this[ContactFormKeys.MESSAGE].value,
             publicUser: user,
             [ContactFormKeys.OPT_IN]: this[ContactFormKeys.OPT_IN].value,
