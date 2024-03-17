@@ -1,48 +1,63 @@
-import { State } from './state';
-import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
-import { PublicUser } from 'shared-models/user/public-user.model';
-import { Product } from 'shared-models/products/product.model';
-import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { UserState } from "./state";
+import { PublicStoreFeatureKeys } from "../../../../shared-models/store/feature-keys.model";
+
+const getProcessSubscriptionFormError = (state: UserState) => state.processSubscriptionFormError;
+const getProcessSubscriptionFormProcessing = (state: UserState) => state.processSubscriptionFormProcessing;
+const getProcessContactFormError = (state: UserState) => state.processContactFormError;
+const getProcessContactFormProcessing = (state: UserState) => state.processContactFormProcessing;
+const getUserSubmittedForm = (state: UserState) => state.userSubmittedForm;
+const getVerifyEmailError = (state: UserState) => state.verifyEmailError;
+const getVerifyEmailProcessing = (state: UserState) => state.verifyEmailProcessing;
+const getVerifyEmailSucceeded = (state: UserState) => state.verifyEmailSucceeded;
 
 
-const getIsLoading = (state: State): boolean => state.isLoading;
-const getIsSaving = (state: State): boolean => state.isSaving;
-const getIsSubscribingUser = (state: State): boolean => state.isSubscribingUser;
-const getIsTransmittingContactForm = (state: State): boolean => state.isTransmittingContactForm;
-const getIsStoringNavStamp = (state: State): boolean => state.isStoringNavStamp;
-const getIsConfirmingSubOptIn = (state: State): boolean => state.isConfirmingSubOptIn;
+const getPublicUserData = (state: UserState) => state.publicUserData;
 
-const getLoadError = (state: State): any => state.loadError;
-const getSaveError = (state: State): boolean => state.saveError;
-const getSubscribeUserError = (state: State): boolean => state.subscribeUserError;
-const getTransmitContactFormError = (state: State): boolean => state.transmitContactFormError;
-const getStoreNavStampError = (state: State): boolean => state.storeNavStampError;
-const getConfirmSubOptInError = (state: State): boolean => state.confirmSubOptInError;
-
-const getSubscribeUserComplete = (state: State): boolean => state.subscribeUserComplete;
-const getUser = (state: State): PublicUser => state.user;
-const getCartData = (state: State): Product => state.cartItem;
-const getUserSessionId = (state: State): string => state.userSessionId;
+const selectUserState = createFeatureSelector<UserState>(PublicStoreFeatureKeys.USER);
 
 
-const selectUserState: MemoizedSelector<object, State> = createFeatureSelector<State>(PublicFeatureNames.USER);
+export const selectProcessSubscriptionFormError = createSelector(
+  selectUserState,
+  getProcessSubscriptionFormError
+);
 
-export const selectIsLoading: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsLoading);
-export const selectIsSaving: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsSaving);
-export const selectIsSubscribingUser: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsSubscribingUser);
-// tslint:disable-next-line:max-line-length
-export const selectIsTransmittingContactForm: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsTransmittingContactForm);
-export const selectIsStoringNavStamp: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsStoringNavStamp);
-export const selectIsConfirmingSubOptIn: MemoizedSelector<object, boolean> = createSelector(selectUserState, getIsConfirmingSubOptIn);
+export const selectProcessSubscriptionFormProcessing = createSelector(
+  selectUserState,
+  getProcessSubscriptionFormProcessing
+);
 
-export const selectLoadError: MemoizedSelector<object, any> = createSelector(selectUserState, getLoadError);
-export const selectSaveError: MemoizedSelector<object, any> = createSelector(selectUserState, getSaveError);
-export const selectSubscribeUserError: MemoizedSelector<object, any> = createSelector(selectUserState, getSubscribeUserError);
-export const selectTransmitContactFormError: MemoizedSelector<object, any> = createSelector(selectUserState, getTransmitContactFormError);
-export const selectStoreNavStampError: MemoizedSelector<object, any> = createSelector(selectUserState, getStoreNavStampError);
-export const selectConfirmSubOptInError: MemoizedSelector<object, any> = createSelector(selectUserState, getConfirmSubOptInError);
+export const selectProcessContactFormError = createSelector(
+  selectUserState,
+  getProcessContactFormError
+);
 
-export const selectSubscribeUserComplete: MemoizedSelector<object, boolean> = createSelector(selectUserState, getSubscribeUserComplete);
-export const selectUser: MemoizedSelector<object, PublicUser> = createSelector(selectUserState, getUser);
-export const selectCartData: MemoizedSelector<object, Product> = createSelector(selectUserState, getCartData);
-export const selectUserSessionid: MemoizedSelector<object, string> = createSelector(selectUserState, getUserSessionId);
+export const selectProcessContactFormProcessing = createSelector(
+  selectUserState,
+  getProcessContactFormProcessing
+);
+
+export const selectUserSubmittedForm = createSelector(
+  selectUserState,
+  getUserSubmittedForm
+);
+
+export const selectVerifyEmailError = createSelector(
+  selectUserState,
+  getVerifyEmailError
+);
+
+export const selectVerifyEmailProcessing = createSelector(
+  selectUserState,
+  getVerifyEmailProcessing
+);
+
+export const selectVerifyEmailSucceeded = createSelector(
+  selectUserState,
+  getVerifyEmailSucceeded
+);
+
+export const selectPublicUserData = createSelector(
+  selectUserState,
+  getPublicUserData
+);

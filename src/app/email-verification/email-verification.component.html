@@ -1,0 +1,24 @@
+<div class="content-container">
+  @if (verifyEmailProcessing$ | async) {
+    <app-processing-spinner [$spinnerMessage]="CONFIRMING_EMAIL_BLURB"></app-processing-spinner>
+  } 
+  
+  @if (verifyEmailSucceeded$ | async) {
+    <div class="success-container">
+      <mat-icon class="success-icon">check_circle_outline</mat-icon>
+      <p class="success-message">
+        {{ EMAIL_CONFIRMED_BLURB }}
+      </p>
+      <button mat-raised-button color="primary" (click)="onEnterApp()">Enter App</button>
+    </div>
+  } 
+  
+  @if (verifyEmailError$ | async) {
+    <div class="failure-container">
+      <mat-icon class="failure-icon">cancel</mat-icon>
+      <p class="failure-message">
+        {{ VERIFICATION_FAILED_BLURB }}<span class="support-text">{{ SUPPORT_EMAIL }}</span>.
+      </p>
+    </div>
+  }
+</div>

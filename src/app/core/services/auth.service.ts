@@ -1,85 +1,51 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import * as firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import { from, Observable, Subject, throwError } from 'rxjs';
-import { now } from 'moment';
-import { PublicUser } from 'shared-models/user/public-user.model';
-import { PublicAppRoutes } from 'shared-models/routes-and-paths/app-routes.model';
+import { Injectable, inject } from '@angular/core';
+import { EmailVerificationData } from '../../../../shared-models/email/email-verification-data';
+import { Observable, catchError, delay, map, mergeMap, of, take, throwError, timer } from 'rxjs';
+import { Functions, httpsCallableData } from '@angular/fire/functions';
+import { PublicFunctionNames } from '../../../../shared-models/routes-and-paths/fb-function-names.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  authStatus$ = new Subject<string>();
-  private ngUnsubscribe$: Subject<void> = new Subject();
+  private functions = inject(Functions);
 
-  constructor(
-    private router: Router,
-    private afAuth: AngularFireAuth,
-  ) { }
+  constructor() { }
 
-  // Listen for user, if exists, initiatle auth success actions, otherwise initiate logout actions
-  initAuthListener(): void {
-    this.afAuth.authState.subscribe(user => {
-      if (user) {
-        this.authSuccessActions(user);
-      } else {
-        this.postLogoutActions();
-      }
-    });
+  verifyEmail(emailVerificationData: EmailVerificationData): Observable<boolean> {
+
+    console.log('Submitting email to server for verification');
+
+    // return of(true).pipe(
+    //   delay(5000)
+    // );
+
+    // return timer(5000).pipe(
+    //   mergeMap(() => throwError(() => new Error('Error after 5 seconds')))
+    // );
+
+    const verifyEmailHttpCall: (data: EmailVerificationData) => Observable<boolean> = httpsCallableData(
+      this.functions,
+      PublicFunctionNames.ON_CALL_VERIFY_EMAIL
+    );
+    const res = verifyEmailHttpCall(emailVerificationData)
+      .pipe(
+        take(1),
+        map(emailVerified => {
+          console.log('Email verification outcome:', emailVerified);
+          if (!emailVerified) {
+            throw new Error(`Error confirming subscriber: ${emailVerified}`);
+          }
+          return emailVerified;
+        }),
+        catchError(error => {
+          console.log('Error confirming subscriber', error);
+          return throwError(() => new Error(error));
+        })
+      );
+
+    return res;
   }
 
-  authenticatePublicUser(): Observable<PublicUser> {
-    const authResponse = this.afAuth.signInAnonymously()
-      .then(creds => {
-        const userData: PublicUser = {
-          id: creds.user.uid,
-          modifiedDate: now(),
-          lastAuthenticated: now()
-        };
-
-        // Record creation date if new user
-        if (creds.additionalUserInfo.isNewUser) {
-          userData.createdDate = now();
-        }
-
-        return userData;
-      })
-      .catch(error => {
-        console.log('Error during public auth', error);
-        return throwError(error).toPromise();
-      });
-
-    return from(authResponse);
-  }
-
-  logout(): void {
-    this.preLogoutActions();
-    this.afAuth.signOut();
-    // Post logout actions carried out by auth listener once logout detected
-  }
-
-  get unsubTrigger$() {
-    return this.ngUnsubscribe$;
-  }
-
-  private authSuccessActions(user: firebase.default.User): void {
-    this.authStatus$.next(user.uid);
-  }
-
-  private preLogoutActions(): void {
-    this.ngUnsubscribe$.next(); // Send signal to Firebase subscriptions to unsubscribe
-    this.ngUnsubscribe$.complete(); // Send signal to Firebase subscriptions to unsubscribe
-    console.log('Triggering ng Unsubscribe');
-    // Reinitialize the unsubscribe subject in case page isn't refreshed after logout (which means auth wouldn't reset)
-    this.ngUnsubscribe$ = new Subject<void>();
-    this.router.navigate([PublicAppRoutes.HOME]);
-  }
-
-  private postLogoutActions(): void {
-    this.authStatus$.next(null);
-  }
 }

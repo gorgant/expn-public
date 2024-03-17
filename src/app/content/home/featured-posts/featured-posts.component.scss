@@ -1,0 +1,33 @@
+@import "../../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 42px;
+
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-family: $logo-font-family;
+  font-size: 4em;
+  line-height: 1.2em;
+  color: $primary;
+  text-align: center;
+}
+
+app-post-collection {
+  width: 100%;
+}
+
+.see-more-button {
+ width: 90%; 
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    max-width: $desktop-button-width;
+  }
+
+}

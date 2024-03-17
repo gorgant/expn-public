@@ -1,0 +1,156 @@
+@import '../../variables';
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+
+  width: 100%;
+
+  padding-top: 32px;
+  padding-bottom: 32px;
+
+  background-color: $primary;
+  color: white;
+}
+
+.footer-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+
+  font-size: 1em;
+}
+
+.subscribe-box-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.site-map-and-social-links-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+
+}
+
+@media screen and (min-width: $mobile-cutoff-width) {
+  
+  .site-map-and-social-links-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+  }
+
+}
+
+.site-map-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.site-map-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.site-map-item-title {
+  font-weight: $font-weight-medium;
+}
+
+.nav-item {
+  font-weight: $font-weight-light;
+  opacity: $inactive-item-opacity;
+
+  // Removes the hyperlink effects
+  text-decoration: none;
+  color: white;
+}
+
+.nav-item:hover {
+  opacity: $active-item-opacity;
+}
+
+.social-links-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.social-links-header {
+  font-weight: $font-weight-medium;
+  width: 100%;
+  text-align: center;
+}
+
+.social-links-list {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.social-icons {
+  margin-top: 16px;
+  height: 32px;
+  opacity: $inactive-item-opacity;
+}
+
+.social-icons:hover {
+  opacity: $active-item-opacity;
+}
+
+.footer-base {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 0.9em;
+}
+
+.legal-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.privacy-and-terms-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.legal-link {
+  text-decoration: none;
+  color: white;
+}
+
+
+
+
+
+
+

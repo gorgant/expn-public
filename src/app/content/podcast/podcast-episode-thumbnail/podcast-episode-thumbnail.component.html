@@ -1,0 +1,26 @@
+<div class="component-container">
+
+  <div class="content-container">
+
+    <div class="image-container">
+      <img class="episode-image" [src]="$podcastEpisode().imageUrl">
+    </div>
+  
+    <div class="text-container">
+      <a class="title" [routerLink]="[APP_ROUTES.BLOG, $blogPostId(), $blogPostUrlHandle()]">{{ $podcastEpisode().title }}</a>
+      <div class="date-and-duration-container">
+        <div class="date">{{ $publishedTimestamp() | date: 'MMM d, y' }}</div>
+        <div>&#8226;</div>
+        <div class="duration">{{ $podcastEpisode().duration | date: 'm' }} minutes</div>
+      </div>
+      <div class="description">{{ $podcastEpisode().description }}</div>
+    </div>
+  
+    <div class="icon-container" [routerLink]="[APP_ROUTES.BLOG, $blogPostId(), $blogPostUrlHandle()]">
+      <mat-icon class="play-icon" inline="true">play_circle_outline</mat-icon>
+    </div>
+    
+  </div>
+  
+
+</div>

@@ -1,150 +1,115 @@
-import { initialState, State } from './state';
-import { Actions, ActionTypes } from './actions';
+import {
+  createReducer,
+  on
+} from '@ngrx/store';
+import * as  UserStoreActions from './actions';
+import { initialUserState } from './state';
 
-export function featureReducer(state = initialState, action: Actions): State {
-  switch (action.type) {
-    case ActionTypes.USER_DATA_REQUESTED:
-      return {
-        ...state,
-        isLoading: true,
-        loadError: null,
-      };
-    case ActionTypes.USER_DATA_LOADED:
-      return {
-        ...state,
-        user: action.payload.userData,
-        isLoading: false,
-        loadError: null,
-      };
-    case ActionTypes.STORE_USER_DATA_REQUESTED:
-      return {
-        ...state,
-        isSaving: true,
-        saveError: null,
-      };
-    case ActionTypes.STORE_USER_DATA_COMPLETE:
-      return {
-        ...state,
-        isSaving: false,
-        saveError: null,
-      };
-    case ActionTypes.SET_CART_DATA:
-      return {
-        ...state,
-        cartItem: action.payload.productData
-      };
-    case ActionTypes.PURGE_CART_DATA:
-      return {
-        ...state,
-        cartItem: null
-      };
-    case ActionTypes.SUBSCRIBE_USER_REQUESTED:
-      return {
-        ...state,
-        isSubscribingUser: true,
-        subscribeUserError: null,
-      };
-    case ActionTypes.SUBSCRIBE_USER_COMPLETE:
-      return {
-        ...state,
-        isSubscribingUser: false,
-        subscribeUserError: null,
-        subscribeUserComplete: true
-      };
-    case ActionTypes.TRANSMIT_CONTACT_FORM_REQUESTED:
-      return {
-        ...state,
-        isTransmittingContactForm: true,
-        transmitContactFormError: null,
 
-      };
-    case ActionTypes.TRANSMIT_CONTACT_FORM_COMPLETE:
-      return {
-        ...state,
-        isTransmittingContactForm: false,
-        transmitContactFormError: null,
-      };
-    case ActionTypes.STORE_NAV_STAMP_REQUESTED:
-      return {
-        ...state,
-        isStoringNavStamp: true,
-        storeNavStampError: null,
-      };
-    case ActionTypes.STORE_NAV_STAMP_COMPLETE:
-      return {
-        ...state,
-        isStoringNavStamp: false,
-        storeNavStampError: null
-      };
-    case ActionTypes.SET_USER_SESSION_ID:
-      return {
-        ...state,
-        userSessionId: action.payload.userSessionId
-      };
-    case ActionTypes.CONFIRM_SUB_OPT_IN_REQUESTED:
-      return {
-        ...state,
-        isConfirmingSubOptIn: true,
-        confirmSubOptInError: null
-      };
-    case ActionTypes.CONFIRM_SUB_OPT_IN_COMPLETE:
-      return {
-        ...state,
-        isConfirmingSubOptIn: false,
-        confirmSubOptInError: null
-      };
+export const userStoreReducer = createReducer(
+  initialUserState,
 
-    case ActionTypes.LOAD_FAILED: {
-      return {
-        ...state,
-        user: null,
-        isLoading: false,
-        loadError: action.payload.error
-      };
+  // Purge User State
+
+  on(UserStoreActions.purgeUserState, (state, action) => {
+    return {
+      ...state,
+      processSubscriptionFormError: null,
+      processSubscriptionFormProcessing: false,
+      processContactFormError: null,
+      processContactFormProcessing: false,
+      verifyEmailError: null,
+      verifyEmailProcessing: false,
+      verifyEmailSucceeded: false,
+      publicUserData: null,
     }
+  }),
 
-    case ActionTypes.SAVE_FAILED: {
-      return {
-        ...state,
-        isSaving: false,
-        saveError: action.payload.error
-      };
-    }
+  // Purge User State Errors
 
-    case ActionTypes.SUBSCRIBE_USER_FAILED: {
-      return {
-        ...state,
-        isSubscribingUser: false,
-        subscribeUserError: action.payload.error
-      };
+  on(UserStoreActions.purgeUserStateErrors, (state, action) => {
+    return {
+      ...state,
+      processSubscriptionFormError: null,
+      processContactFormError: null,
+      verifyEmailError: null,
     }
+  }),
 
-    case ActionTypes.TRANSMIT_CONTACT_FORM_FAILED: {
-      return {
-        ...state,
-        isTransmittingContactForm: false,
-        transmitContactFormError: action.payload.error
-      };
-    }
+  // Process Subscription Form
 
-    case ActionTypes.STORE_NAV_STAMP_FAILED: {
-      return {
-        ...state,
-        isStoringNavStamp: false,
-        storeNavStampError: action.payload.error
-      };
+  on(UserStoreActions.processSubscriptionFormRequested, (state, action) => {
+    return {
+      ...state,
+      processSubscriptionFormProcessing: true,
+      processSubscriptionFormError: null
     }
+  }),
+  on(UserStoreActions.processSubscriptionFormCompleted, (state, action) => {
+    return {
+      ...state,
+      processSubscriptionFormProcessing: false,
+      publicUserData: action.newPublicUser,
+      userSubmittedForm: true
+    }
+  }),
+  on(UserStoreActions.processSubscriptionFormFailed, (state, action) => {
+    return {
+      ...state,
+      processSubscriptionFormProcessing: false,
+      processSubscriptionFormError: action.error
+    }
+  }),
 
-    case ActionTypes.CONFIRM_SUB_OPT_IN_FAILED: {
-      return {
-        ...state,
-        isConfirmingSubOptIn: false,
-        confirmSubOptInError: action.payload.error
-      };
-    }
+  // Process Contact Form
 
-    default: {
-      return state;
+  on(UserStoreActions.processContactFormRequested, (state, action) => {
+    return {
+      ...state,
+      processContactFormProcessing: true,
+      processContactFormError: null
     }
-  }
-}
+  }),
+  on(UserStoreActions.processContactFormCompleted, (state, action) => {
+    return {
+      ...state,
+      processContactFormProcessing: false,
+      userSubmittedForm: true
+    }
+  }),
+  on(UserStoreActions.processContactFormFailed, (state, action) => {
+    return {
+      ...state,
+      processContactFormProcessing: false,
+      processContactFormError: action.error
+    }
+  }),
+
+  // Verify Email
+
+  on(UserStoreActions.verifyEmailRequested, (state, action) => {
+    return {
+      ...state,
+      verifyEmailProcessing: true,
+      verifyEmailError: null,
+      verifyEmailSucceeded: false,
+    }
+  }),
+  on(UserStoreActions.verifyEmailCompleted, (state, action) => {
+    return {
+      ...state,
+      verifyEmailProcessing: false,
+      verifyEmailError: null,
+      verifyEmailSucceeded: action.verifyEmailSucceeded,
+    }
+  }),
+  on(UserStoreActions.verifyEmailFailed, (state, action) => {
+    return {
+      ...state,
+      verifyEmailProcessing: false,
+      verifyEmailError: action.error,
+      verifyEmailSucceeded: false,
+    }
+  }),
+  
+);

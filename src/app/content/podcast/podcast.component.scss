@@ -1,0 +1,23 @@
+@import '../../variables';
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 32px;
+}
+
+app-podcast-hero {
+  width: 100%;
+}
+
+.academy-button {
+  width: 100%;
+  margin-top: 32px;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    max-width: $desktop-button-width;    
+  }
+}

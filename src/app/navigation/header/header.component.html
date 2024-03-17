@@ -1,0 +1,34 @@
+<div class="component-container" color="primary">
+    <a class="logo" [routerLink]="APP_ROUTES.HOME" >{{ SHORTHAND_BUSINESS_NAME }}</a>
+
+    <!-- This defer logic prevents flickering of desktop nav items  -->
+    @defer (on immediate) {
+      @if (uiService.$screenIsMobile()) {
+        <!-- Menu Icon: Only display if screen is sm or less -->
+        <div class="menu-button-container" (click)="uiService.toggleSidenav()">
+          <mat-icon>menu</mat-icon>
+        </div>
+      } @else {
+        <div class="nav-items-container">
+            
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="APP_ROUTES.HOME">{{ HOME_LINK_VALUE }}</a>
+      
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.ABOUT_ME">{{ ABOUT_US_LINK_VALUE }}</a>
+        
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.BLOG">{{ BLOG_LINK_VALUE }}</a>
+    
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.PODCAST">{{ PODCAST_LINK_VALUE }}</a>
+        
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.CONTACT">{{ CONTACT_LINK_VALUE }}</a>
+          
+          <a class="academy-button" [href]="ACADEMY_URL" mat-raised-button>{{ JOIN_COMMUNITY_LINK_VALUE }}</a>
+        
+        </div>
+      }
+    } @placeholder {
+      <div class="menu-button-container" (click)="uiService.toggleSidenav()">
+        <mat-icon>menu</mat-icon>
+      </div>
+    }
+    
+</div>

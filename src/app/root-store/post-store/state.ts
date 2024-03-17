@@ -1,44 +1,28 @@
-import { EntityAdapter, createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
+import { EntityAdapter, EntityState, createEntityAdapter } from "@ngrx/entity";
+import { Post, PostHeroImageData } from "../../../../shared-models/posts/post.model";
+import { FirebaseError } from "@angular/fire/app";
+import { PostBoilerplate } from "../../../../shared-models/posts/post-boilerplate.model";
 
-export const featureAdapter: EntityAdapter<Post | BlogIndexPostRef>
-  = createEntityAdapter<Post | BlogIndexPostRef>(
-    {
-      selectId: (post: Post | BlogIndexPostRef) => post.id,
+export const featureAdapter: EntityAdapter<Post> = createEntityAdapter<Post>({
+  selectId: (post: Post) => post.id,
+});
 
-      // Sort by reverse published date
-      sortComparer: (a: Post | BlogIndexPostRef, b: Post | BlogIndexPostRef): number => {
-        const publishedDateA = a.publishedDate;
-        const publishedDateB = b.publishedDate;
-        return publishedDateB.toString().localeCompare(publishedDateA.toString(), undefined, {numeric: true});
-      }
-    }
-  );
+export interface PostState extends EntityState<Post> {
+  fetchPostBoilerplateError: FirebaseError | Error | null,
+  fetchPostBoilerplateProcessing: boolean,
+  fetchSinglePostError: FirebaseError | Error | null,
+  fetchSinglePostProcessing: boolean,
 
-export interface State extends EntityState<Post | BlogIndexPostRef> {
-  isLoading: boolean;
-  isLoadingFeaturedPosts: boolean;
-  isLoadingBlogIndex: boolean;
-  isLoadingNextBlogIndexBatch: boolean;
-  loadError: any;
-  featuredPostLoadError: any;
-  blogIndexLoadError: any;
-  nextBlogIndexBatchLoadError: any;
-  postsLoaded: boolean;
-  blogIndexLoaded: boolean;
+  postBoilerplateData: PostBoilerplate | null,
 }
 
-export const initialState: State = featureAdapter.getInitialState(
+export const initialPostState: PostState = featureAdapter.getInitialState(
   {
-    isLoading: false,
-    isLoadingFeaturedPosts: false,
-    isLoadingBlogIndex: false,
-    isLoadingNextBlogIndexBatch: false,
-    loadError: null,
-    featuredPostLoadError: null,
-    blogIndexLoadError: null,
-    nextBlogIndexBatchLoadError: null,
-    postsLoaded: false,
-    blogIndexLoaded: false,
+    fetchPostBoilerplateError: null,
+    fetchPostBoilerplateProcessing: false,
+    fetchSinglePostError: null,
+    fetchSinglePostProcessing: false,
+
+    postBoilerplateData: null,
   }
 );

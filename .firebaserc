@@ -1,22 +1,24 @@
 {
   "projects": {
-    "default": "explearning-76d93",
-    "sandbox-public": "explearning-sandbox-public"
+    "production": "explearning-76d93",
+    "development": "explearning-sandbox-public",
+    "default": "explearning-76d93"
   },
   "targets": {
-    "explearning-sandbox-public": {
-      "hosting": {
-        "expn-public": [
-          "explearning-sandbox-public"
-        ]
-      }
-    },
     "explearning-76d93": {
       "hosting": {
         "expn-public": [
           "explearning-76d93"
         ]
       }
+    },
+    "explearning-sandbox-public": {
+      "hosting": {
+        "expn-public": [
+          "expn-sandbox-public"
+        ]
+      }
     }
-  }
+  },
+  "etags": {}
 }

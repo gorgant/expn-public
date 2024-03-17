@@ -1,0 +1,23 @@
+@import "../../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.text-content {
+  h1 {
+    margin: 64px 16px 0 0;
+    line-height: 1.3em;
+    font-size: 3em;
+    color: $primary;
+  }
+  width: 100%;
+  max-width: 800px;
+  @include post-content-styles();
+}

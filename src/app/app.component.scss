@@ -1,7 +1,5 @@
-@import "./variables";
-
-.container {
-  min-height: 100%;
+.app-content {
+  width: 100%;
 }
 
 app-header {
@@ -12,11 +10,27 @@ mat-sidenav-container {
   width: 100%;
 }
 
-app-footer {
-  width: 100%;
-}
-
 // Otherwise it is too narrow bc content doesn't spread out much
 mat-sidenav {
   min-width: 200px;
 }
+
+// This config is needed to get the footer to the bottom of the page using flex
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-content: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+// This config is needed to get the footer to the bottom of the page using flex
+.header-and-router-outlet {
+  flex: 1;
+}
+
+app-footer {
+  width: 100%;
+}
+

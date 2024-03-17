@@ -1,0 +1,8 @@
+<div class="component-container">
+  <app-blog-hero></app-blog-hero>
+  @if (allBlogIndexRefs$ | async; as blogIndexRefs) {
+    <app-post-collection [$blogIndexRefs]="blogIndexRefs"></app-post-collection>
+  } @else {
+    <app-processing-spinner [$spinnerMessage]="'Loading posts...'" [$spinnerMargin]="'32px 0'"></app-processing-spinner>
+  }
+</div>

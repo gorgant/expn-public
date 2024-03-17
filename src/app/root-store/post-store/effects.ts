@@ -1,99 +1,60 @@
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Observable, of } from 'rxjs';
-import { Action } from '@ngrx/store';
-import * as postFeatureActions from './actions';
-import { switchMap, map, catchError, mergeMap } from 'rxjs/operators';
-import { PostService } from 'src/app/core/services/post.service';
+import { Injectable, inject } from "@angular/core";
+import { FirebaseError } from "@angular/fire/app";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { of } from "rxjs";
+import { catchError, concatMap, map, switchMap } from "rxjs/operators";
+import * as PostStoreActions from './actions';
+import { PostService } from "../../core/services/post.service";
 
 @Injectable()
 export class PostStoreEffects {
-  constructor(
-    private postService: PostService,
-    private actions$: Actions,
-  ) { }
 
-  @Effect()
-  singlePostRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<postFeatureActions.SinglePostRequested>(
-      postFeatureActions.ActionTypes.SINGLE_POST_REQUESTED
+  private actions$ = inject(Actions);
+  private postService = inject(PostService);
+
+  constructor() { }
+
+  fetchPostBoilerplateEffect$ = createEffect(() => this.actions$
+    .pipe(
+      ofType(PostStoreActions.fetchPostBoilerplateRequested),
+      switchMap(action => 
+        this.postService.fetchPostBoilerplate().pipe(
+          map(postBoilerplateData => {
+            return PostStoreActions.fetchPostBoilerplateCompleted({postBoilerplateData});
+          }),
+          catchError(error => {
+            const fbError: FirebaseError = {
+              code: error.code,
+              message: error.message,
+              name: error.name
+            };
+            return of(PostStoreActions.fetchPostBoilerplateFailed({error: fbError}));
+          })
+        )
+      ),
     ),
-    switchMap(action =>
-      this.postService.fetchSinglePost(action.payload.postId)
-        .pipe(
+  );
+
+  fetchSinglePostEffect$ = createEffect(() => this.actions$
+    .pipe(
+      ofType(PostStoreActions.fetchSinglePostRequested),
+      switchMap(action => 
+        this.postService.fetchSinglePost(action.postId).pipe(
           map(post => {
-            if (!post) {
-              throw new Error('Post not found');
-            }
-            return new postFeatureActions.SinglePostLoaded({ post });
+            return PostStoreActions.fetchSinglePostCompleted({post});
           }),
           catchError(error => {
-            return of(new postFeatureActions.LoadFailed({ error: error.message }));
+            const fbError: FirebaseError = {
+              code: error.code,
+              message: error.message,
+              name: error.name
+            };
+            return of(PostStoreActions.fetchSinglePostFailed({error: fbError}));
           })
         )
-    )
+      ),
+    ),
   );
 
-  @Effect()
-  featuredPostsRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<postFeatureActions.FeaturedPostsRequested>(
-      postFeatureActions.ActionTypes.FEATURED_POSTS_REQUESTED
-    ),
-    switchMap(action =>
-      this.postService.fetchFeaturedPosts()
-        .pipe(
-          map(posts => {
-            if (!posts) {
-              throw new Error('Featured posts not found');
-            }
-            return new postFeatureActions.FeaturedPostsLoaded({ posts });
-          }),
-          catchError(error => {
-            return of(new postFeatureActions.FeaturedPostsLoadFailed({ error }));
-          })
-        )
-    )
-  );
 
-  @Effect()
-  blogIndexRequestedEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<postFeatureActions.BlogIndexRequested>(
-      postFeatureActions.ActionTypes.BLOG_INDEX_REQUESTED
-    ),
-    switchMap(action =>
-      this.postService.fetchBlogIndex()
-        .pipe(
-          map(blogIndex => {
-            if (!blogIndex) {
-              throw new Error('Post index not found');
-            }
-            return new postFeatureActions.BlogIndexLoaded({ blogIndex });
-          }),
-          catchError(error => {
-            return of(new postFeatureActions.BlogIndexLoadFailed({ error }));
-          })
-        )
-    )
-  );
-
-  @Effect()
-  nextBlogIndexBatchEffect$: Observable<Action> = this.actions$.pipe(
-    ofType<postFeatureActions.NextBlogIndexBatchRequested>(
-      postFeatureActions.ActionTypes.NEXT_BLOG_INDEX_BATCH_REQUESTED
-    ),
-    switchMap(action =>
-      this.postService.fetchNextBlogIndexBatch()
-        .pipe(
-          map(nextBlogIndexBatch => {
-            if (!nextBlogIndexBatch || nextBlogIndexBatch.length < 1) {
-              throw new Error('No additional blog index items available');
-            }
-            return new postFeatureActions.NextBlogIndexBatchLoaded({ nextBlogIndexBatch });
-          }),
-          catchError(error => {
-            return of(new postFeatureActions.NextBlogIndexBatchLoadFailed({ error }));
-          })
-        )
-    )
-  );
 }

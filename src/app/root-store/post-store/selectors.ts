@@ -1,64 +1,42 @@
-import { State } from './state';
-import { MemoizedSelector, createFeatureSelector, createSelector } from '@ngrx/store';
-import * as fromPosts from './reducer';
-import { Post, BlogIndexPostRef } from 'shared-models/posts/post.model';
-import { PublicFeatureNames } from 'shared-models/ngrx-store/feature-names';
+import { createFeatureSelector, createSelector, MemoizedSelector } from "@ngrx/store";
+import { PostState } from "./state";
+import { AdminStoreFeatureKeys } from "../../../../shared-models/store/feature-keys.model";
+import { Post } from "../../../../shared-models/posts/post.model";
 
-const getIsLoading = (state: State): boolean => state.isLoading;
-const getFeaturedPostsLoading = (state: State): boolean => state.isLoadingFeaturedPosts;
-const getBlogIndexLoading = (state: State): boolean => state.isLoadingBlogIndex;
-const getNextBlogIndexBatchLoading = (state: State): boolean => state.isLoadingNextBlogIndexBatch;
-const getLoadError = (state: State): any => state.loadError;
-const getFeaturedPostsLoadError = (state: State): any => state.featuredPostLoadError;
-const getBlogIndexLoadError = (state: State): any => state.blogIndexLoadError;
-const getNextBlogIndexBatchLoadError = (state: State): any => state.nextBlogIndexBatchLoadError;
-const getPostsLoaded = (state: State): boolean => state.postsLoaded;
-const getBlogIndexLoaded = (state: State): boolean => state.blogIndexLoaded;
+const selectPostState = createFeatureSelector<PostState>(AdminStoreFeatureKeys.POST);
 
-export const selectPostState: MemoizedSelector<object, State>
-= createFeatureSelector<State>(PublicFeatureNames.POSTS);
+const getFetchPostBoilerplateError = (state: PostState) => state.fetchPostBoilerplateError;
+const getFetchPostBoilerplateProcessing = (state: PostState) => state.fetchPostBoilerplateProcessing;
+const getFetchSinglePostError = (state: PostState) => state.fetchSinglePostError;
+const getFetchSinglePostProcessing = (state: PostState) => state.fetchSinglePostProcessing;
+const getPostBoilerplateData = (state: PostState) => state.postBoilerplateData;
 
-export const selectAllPosts: (state: object) => Post[] | BlogIndexPostRef[] = createSelector(
+export const selectFetchPostBoilerplateError = createSelector(
   selectPostState,
-  fromPosts.selectAll
+  getFetchPostBoilerplateError
 );
 
-export const selectFeaturedPosts = createSelector(
-  selectAllPosts,
-  posts => posts.filter(post => post.featured)
-);
-
-// A cosmetic filter, will return all posts in entity adapter (which on first load will be only the index)
-export const selectblogIndex = createSelector(
-  selectAllPosts,
-  posts => posts.filter(post  => post.published)
-);
-
-export const selectPostById: (postId: string) => MemoizedSelector<object, Post | BlogIndexPostRef>
-= (postId: string) => createSelector(
+export const selectFetchPostBoilerplateProcessing = createSelector(
   selectPostState,
-  postsState => postsState.entities[postId]
+  getFetchPostBoilerplateProcessing
 );
 
-export const selectLoadError: MemoizedSelector<object, any>
-  = createSelector(selectPostState, getLoadError);
-export const selectFeaturedPostsLoadError: MemoizedSelector<object, any>
-  = createSelector(selectPostState, getFeaturedPostsLoadError);
-export const selectBlogIndexLoadError: MemoizedSelector<object, any>
-  = createSelector(selectPostState, getBlogIndexLoadError);
-export const selectNextBlogIndexBatchLoadError: MemoizedSelector<object, any>
-  = createSelector(selectPostState, getNextBlogIndexBatchLoadError);
+export const selectFetchSinglePostError = createSelector(
+  selectPostState,
+  getFetchSinglePostError
+);
 
+export const selectFetchSinglePostProcessing = createSelector(
+  selectPostState,
+  getFetchSinglePostProcessing
+);
 
-export const selectIsLoading: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getIsLoading);
-export const selectFeaturedPostsLoading: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getFeaturedPostsLoading);
-export const selectBlogIndexLoading: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getBlogIndexLoading);
-export const selectNextBlogIndexBatchLoading: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getNextBlogIndexBatchLoading);
-export const selectPostsLoaded: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getPostsLoaded);
-export const selectBlogIndexLoaded: MemoizedSelector<object, boolean>
-  = createSelector(selectPostState, getBlogIndexLoaded);
+export const selectPostBoilerplateData = createSelector(
+  selectPostState,
+  getPostBoilerplateData
+);
+
+export const selectPostById: (postId: string) => MemoizedSelector<object, Post | undefined> = (postId: string) => createSelector(
+  selectPostState,
+  postState => postState.entities[postId]
+);

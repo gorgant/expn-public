@@ -1,0 +1,48 @@
+<mat-nav-list>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="APP_ROUTES.HOME"
+    [routerLinkActiveOptions]="{exact: true}"
+    (click)="uiService.toggleSidenav()">
+    <mat-icon class="list-item-icon" matListItemIcon>home</mat-icon>
+    <div class="list-item-title" matListItemTitle>{{ HOME_LINK_VALUE }}</div>
+  </a>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="APP_ROUTES.ABOUT_ME"
+    (click)="uiService.toggleSidenav()">
+    <mat-icon class="list-item-icon" matListItemIcon>explore</mat-icon>
+    <div class="list-item-title" matListItemTitle>{{ ABOUT_US_LINK_VALUE }}</div>
+  </a>
+  
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="APP_ROUTES.BLOG"
+    (click)="uiService.toggleSidenav()">
+    <mat-icon class="list-item-icon" matListItemIcon>subscriptions</mat-icon>
+    <div class="list-item-title" matListItemTitle>{{ BLOG_LINK_VALUE }}</div>
+  </a>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="APP_ROUTES.PODCAST"
+    (click)="uiService.toggleSidenav()">
+    <mat-icon class="list-item-icon" matListItemIcon>headset</mat-icon>
+    <div class="list-item-title" matListItemTitle>{{ PODCAST_LINK_VALUE }}</div>
+  </a>
+
+  <a mat-list-item 
+    routerLinkActive="active-list-item"
+    [routerLink]="APP_ROUTES.CONTACT"
+    (click)="uiService.toggleSidenav()">
+    <mat-icon class="list-item-icon" matListItemIcon>chat_bubble</mat-icon>
+    <div class="list-item-title" matListItemTitle>{{ CONTACT_LINK_VALUE }}</div>
+  </a>
+
+</mat-nav-list>
+
+<div class="academy-button-container">
+  <a class="academy-button" [href]="ACADEMY_URL" mat-raised-button color="accent"> {{ JOIN_COMMUNITY_LINK_VALUE }} </a>
+</div>

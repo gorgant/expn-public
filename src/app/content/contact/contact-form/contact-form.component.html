@@ -1,0 +1,53 @@
+<div class="component-container">
+  <div class="contact-form-card mat-elevation-z4">
+    <div class="card-title">{{ CONTACT_FORM_TITLE }}</div>
+    <form class="form-container" [formGroup]="contactForm">
+
+      <div class="name-and-email">
+        <mat-form-field color="accent">
+          <input [formControl]="firstName" matInput type="text">
+          <mat-icon class="input-icon" matPrefix>edit</mat-icon>
+          <mat-label class="input-placeholder">{{ FIRST_NAME_FIELD_VALUE }}</mat-label>
+          @if (firstName.invalid && (firstName.dirty || firstName.touched)) {
+            <mat-error>{{ firstNameErrorMessage }} <span style="float: right;">{{ firstName.value.length }} / {{ FIRST_NAME_MAX_LENGTH }}</span></mat-error>
+          }
+        </mat-form-field>
+    
+        <mat-form-field color="accent">
+          <input [formControl]="email" matInput  type="email">
+          <mat-icon class="input-icon" matPrefix>email</mat-icon>
+          <mat-label class="input-placeholder">{{ EMAIL_FIELD_VALUE }}</mat-label>
+          @if (email.invalid && (email.dirty || email.touched)) {
+            <mat-error>{{ emailErrorMessage }} <span style="float: right;">{{ email.value.length }} / {{ EMAIL_MAX_LENGTH }}</span></mat-error>
+          }
+        </mat-form-field>
+      </div>
+  
+  
+      <mat-form-field color="accent">
+        <textarea [formControl]="message" matInput type="text" cdkTextareaAutosize cdkAutosizeMinRows="4"></textarea>
+        <mat-icon class="input-icon" matPrefix>description</mat-icon>
+        <mat-hint align="end">{{ message.value ? message.value.length : 0 }} / {{ MESSAGE_MAX_LENGTH }}</mat-hint>
+        <mat-label class="input-placeholder">{{ MESSAGE_FIELD_VALUE }}</mat-label>
+        @if (message.invalid && (message.dirty || message.touched)) {
+          <mat-error>{{ messageErrorMessage }} <span style="float: right;">{{ message.value.length }} / {{ MESSAGE_MAX_LENGTH }}</span></mat-error>
+        }
+      </mat-form-field>
+  
+      <mat-checkbox [formControl]="optIn">{{ OPT_IN_FIELD_VALUE }}</mat-checkbox>
+  
+      <div class="form-actions-container">
+        @if (!(processContactFormProcessing$ | async)) {
+          <button class="submit-button" mat-raised-button color="primary" (click)="onProcessContactForm()" [disabled]="(contactForm.invalid && (contactForm.dirty || contactForm.touched)) || !$contactFormSubmissionAllowed() || (userSubmittedForm$ | async)">
+            {{ SUBMIT_BUTTON_VALUE }}
+          </button>
+        }
+      </div>
+  
+      @if (processContactFormProcessing$ | async) {
+        <app-processing-spinner [$spinnerMessage]="'Processing submission, please wait...'" [$spinnerMargin]="'16px 0'"></app-processing-spinner>
+      }
+  
+    </form>
+  </div>
+</div>

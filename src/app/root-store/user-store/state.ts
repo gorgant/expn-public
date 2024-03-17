@@ -1,40 +1,27 @@
-import { PublicUser } from 'shared-models/user/public-user.model';
-import { Product } from 'shared-models/products/product.model';
+import { FirebaseError } from "firebase/app";
+import { PublicStoreFeatureKeys } from "../../../../shared-models/store/feature-keys.model";
+import { PublicUser } from "../../../../shared-models/user/public-user.model";
 
-export interface State {
-  isLoading: boolean;
-  isSaving: boolean;
-  isSubscribingUser: boolean;
-  isTransmittingContactForm: boolean;
-  isStoringNavStamp: boolean;
-  isConfirmingSubOptIn: boolean;
-  loadError: any;
-  saveError: any;
-  subscribeUserComplete: boolean;
-  subscribeUserError: any;
-  transmitContactFormError: any;
-  storeNavStampError: any;
-  confirmSubOptInError: any;
-  user: PublicUser | null;
-  cartItem: Product;
-  userSessionId: string;
+export interface UserState {
+  processSubscriptionFormError: FirebaseError | Error | null,
+  processSubscriptionFormProcessing: boolean,
+  processContactFormError: FirebaseError | Error | null,
+  processContactFormProcessing: boolean,
+  verifyEmailError: FirebaseError | Error | null,
+  verifyEmailProcessing: boolean,
+  verifyEmailSucceeded: boolean,
+  publicUserData: PublicUser | null,
+  userSubmittedForm: boolean,
 }
 
-export const initialState: State = {
-  isLoading: false,
-  isSaving: false,
-  isSubscribingUser: false,
-  isTransmittingContactForm: false,
-  isStoringNavStamp: false,
-  isConfirmingSubOptIn: false,
-  loadError: false,
-  saveError: false,
-  subscribeUserComplete: false,
-  subscribeUserError: false,
-  transmitContactFormError: false,
-  storeNavStampError: false,
-  confirmSubOptInError: false,
-  user: null,
-  cartItem: null,
-  userSessionId: null,
-};
+export const initialUserState: UserState = {
+  processSubscriptionFormError: null,
+  processSubscriptionFormProcessing: false,
+  processContactFormError: null,
+  processContactFormProcessing: false,
+  verifyEmailError: null,
+  verifyEmailProcessing: false,
+  verifyEmailSucceeded: false,
+  publicUserData: null,
+  userSubmittedForm: false,
+}

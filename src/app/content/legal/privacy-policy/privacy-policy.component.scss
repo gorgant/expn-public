@@ -1,0 +1,67 @@
+@import "../../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.text-content {
+  h1 {
+    margin: 64px 16px 0 0;
+    line-height: 1.3em;
+    font-size: 3em;
+    color: $primary;
+  }
+  width: 100%;
+  max-width: 800px;
+  @include post-content-styles();
+}
+
+// Table Styling
+
+table {
+  width: 100%; /* Full-width */
+  border-collapse: collapse; /* Collapse borders */
+  font-family: Arial, sans-serif; /* Clean, modern font */
+  font-size: 0.9em; /* Appropriate font size */
+  color: #333; /* Dark gray text for readability */
+  background-color: #f8f8f8; /* Light background */
+  margin-bottom: 20px; /* Space below table */
+}
+
+caption {
+  padding: 10px; /* Space around caption text */
+  font-size: 1.1em; /* Slightly larger font for caption */
+  font-weight: bold; /* Bold caption */
+  text-align: left; /* Align left */
+  margin-bottom: 10px; /* Space below caption */
+}
+
+th, td {
+  padding: 10px; /* Space inside cells */
+  border-bottom: 1px solid #ddd; /* Light gray border for rows */
+  text-align: left; /* Align text to left */
+}
+
+th {
+  background-color: #e9e9e9; /* Slightly darker background for headers */
+  color: #000; /* Black text for headers */
+  font-weight: normal; /* Regular weight for header */
+}
+
+th[scope="row"] {
+  background-color: #f2f2f2; /* Distinguish row headers with a different color */
+}
+
+tr:hover {
+  background-color: #eef; /* Highlight on hover */
+}
+
+tr:nth-child(even) {
+  background-color: #f8f8f8; /* Alternate row background color */
+}

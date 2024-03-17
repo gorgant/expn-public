@@ -1,0 +1,61 @@
+@import "../../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 16px;
+
+  width: 100%;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    max-width: 300px;
+  }
+}
+
+.component-container :hover {
+  cursor: pointer;
+
+  .caption, .thumbnail {
+    opacity: $opacity-full;
+  }
+}
+
+.thumbnail {
+  width: 100%;
+  
+  @media screen and (min-width: $mobile-cutoff-width) {
+    max-width: 300px;
+    opacity: $opacity-high;
+  }
+}
+
+.thumbnail:hover {
+  opacity: $opacity-full;
+}
+
+.post-image {
+  width: 100%;
+}
+
+.caption {
+
+  padding: 0 16px;
+
+  opacity: $opacity-high;
+  text-decoration: none;
+  color: black;
+
+  font-size: 1.6em;
+  line-height: 1.2em;
+  text-align: center;
+
+  position: relative;
+  display: inline-block;
+  @include line-clamp(2);
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    padding: 0;
+  }
+}

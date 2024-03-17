@@ -1,0 +1,14 @@
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+app-about-hero {
+  width: 100%;
+}
+
+app-about-body {
+  width: 100%;
+}

@@ -1,136 +1,118 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { catchError, takeUntil, map, take, tap } from 'rxjs/operators';
-import { throwError, Observable, of } from 'rxjs';
-import { PodcastEpisode, PodcastEpisodeKeys } from 'shared-models/podcast/podcast-episode.model';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { AuthService } from './auth.service';
+import { Injectable, TransferState, inject, makeStateKey } from '@angular/core';
+import { CollectionReference, DocumentReference, Firestore, Query, Timestamp, collection, collectionData, doc, docData, limit, orderBy, query } from '@angular/fire/firestore';
 import { UiService } from './ui.service';
-import { SharedCollectionPaths } from 'shared-models/routes-and-paths/fb-collection-paths';
-import { makeStateKey, TransferState } from '@angular/platform-browser';
-import { isPlatformServer } from '@angular/common';
-import { TransferStateKeys } from 'shared-models/ssr/ssr-vars';
-import { PodcastVars } from 'shared-models/podcast/podcast-vars.model';
+import { PodcastEpisode, PodcastEpisodeKeys } from '../../../../shared-models/podcast/podcast-episode.model';
+import { SharedCollectionPaths } from '../../../../shared-models/routes-and-paths/fb-collection-paths.model';
+import { Observable, catchError, map, of, shareReplay, throwError } from 'rxjs';
+import { PodcastVars } from '../../../../shared-models/podcast/podcast-vars.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PodcastService {
 
-  private podcastEpisodeQueryField = PodcastEpisodeKeys.PUB_DATE;
-  private podcastEpisodeQueryLimit = PodcastVars.PODCAST_QUERY_LIMIT;
+  private firestore = inject(Firestore);
+  private transferState = inject(TransferState);
+  private uiService = inject(UiService);
 
-  constructor(
-    private afs: AngularFirestore,
-    private authService: AuthService,
-    private uiService: UiService,
-    private transferState: TransferState,
-    @Inject(PLATFORM_ID) private platformId,
-  ) { }
+  constructor() { }
 
-  fetchPodcastContainer(podcastId) {
-    const podcastDoc = this.getPodcastContainerDoc(podcastId);
-    return podcastDoc.valueChanges()
-      .pipe(
-        takeUntil(this.authService.unsubTrigger$),
-        map(podcast => {
-          console.log('Fetched podcast container');
-          return podcast;
-        }),
-        catchError(error => {
-          this.uiService.showSnackBar(error, 5000);
-          return throwError(error);
-        })
-      );
-  }
-
-  fetchAllPodcastEpisodes(podcastId: string): Observable<PodcastEpisode[]> {
-
-    const PODCAST_EPISODES_KEY = makeStateKey<PodcastEpisode[]>(TransferStateKeys.ALL_PODCAST_EPISODES_KEY);
-
-    // If data exists in state transfer, use that
-    if (this.transferState.hasKey(PODCAST_EPISODES_KEY)) {
-      console.log('Fetching episodes from transfer state');
-      const cacheData = this.transferState.get<PodcastEpisode[]>(PODCAST_EPISODES_KEY, {} as any);
-      cacheData.sort((a, b) => (b.pubDate > a.pubDate) ? 1 : ((a.pubDate > b.pubDate) ? -1 : 0));
-      this.transferState.remove(PODCAST_EPISODES_KEY); // Clean up the cache
-      return of(cacheData);
+  fetchAllPodcastEpisodes(podcastContainerId: string) {
+    const ALL_PODCAST_EPISODES_KEY = makeStateKey<PodcastEpisode[]>('allPodcastEpisodes -' + podcastContainerId);
+    if (this.transferState.hasKey(ALL_PODCAST_EPISODES_KEY)) {
+      const cachedPodcastEpisodes = this.transferState.get<PodcastEpisode[] | null>(ALL_PODCAST_EPISODES_KEY, null);
+      this.transferState.remove(ALL_PODCAST_EPISODES_KEY); // Clean up cache
+      if (cachedPodcastEpisodes && cachedPodcastEpisodes.length > 20) {
+        console.log(`${cachedPodcastEpisodes.length} podcastEpisodes found in transferState with this key`, ALL_PODCAST_EPISODES_KEY);
+        return of(cachedPodcastEpisodes!);
+      }
     }
 
-    // Otherwise, fetch from database
-    const episodeCollection = this.getEpisodesCollection(podcastId);
-    return episodeCollection.valueChanges()
+    const podcastEpisodeCollectionRef = this.getPodcastEpisodeCollectionByDate(podcastContainerId);
+    const podcastEpisodeCollectionDataRequest = collectionData(podcastEpisodeCollectionRef) as Observable<PodcastEpisode[]>;
+
+    return podcastEpisodeCollectionDataRequest
       .pipe(
-        takeUntil(this.authService.unsubTrigger$),
-        map(episodes => {
-          console.log(`Fetched all ${episodes.length} episodes`, episodes);
-          return episodes;
-        }),
-        tap(episodes => {
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(PODCAST_EPISODES_KEY, episodes); // Stash item in transfer state
+        map(podcastEpisodes => {
+          if (!podcastEpisodes) {
+            throw new Error(`Error fetching podcastEpisodes`);
           }
+          const podcastEpisodesWithUpdatedTimestamps = podcastEpisodes.map(podcastEpisode => {
+            const formattedPodcastEpisodes: PodcastEpisode = {
+              ...podcastEpisode,
+              [PodcastEpisodeKeys.PUBLISHED_TIMESTAMP]: (podcastEpisode[PodcastEpisodeKeys.PUBLISHED_TIMESTAMP] as Timestamp).toMillis(),
+              [PodcastEpisodeKeys.LAST_MODIFIED_TIMESTAMP]: (podcastEpisode[PodcastEpisodeKeys.LAST_MODIFIED_TIMESTAMP] as Timestamp).toMillis(),
+            };
+            return formattedPodcastEpisodes;
+          });
+          console.log(`Fetched all ${podcastEpisodesWithUpdatedTimestamps.length} podcastEpisodes`);
+          if (this.uiService.$isServerPlatform()) {
+            console.log('Setting allPodcastEpisodes in transferState');
+            this.transferState.set(ALL_PODCAST_EPISODES_KEY, podcastEpisodesWithUpdatedTimestamps);
+          }
+          return podcastEpisodesWithUpdatedTimestamps;
         }),
+        shareReplay(),
         catchError(error => {
-          this.uiService.showSnackBar(error, 5000);
-          return throwError(error);
+          this.uiService.showSnackBar(error.message, 10000);
+          console.log('Error fetching podcastEpisodes', error);
+          return throwError(() => new Error(error));
         })
       );
   }
 
-  fetchSinglePodcastEpisode(podcastId: string, episodeId: string): Observable<PodcastEpisode> {
+  fetchSinglePodcastEpisode(podcastContainerId: string, podcastEpisodeId: string): Observable<PodcastEpisode> {
+    const PODCAST_EPISODE_KEY = makeStateKey<PodcastEpisode>('podcastEpisode -' + podcastEpisodeId);
+    if (this.transferState.hasKey(PODCAST_EPISODE_KEY)) {
+      console.log('podcastEpisode found in transferState with this key', PODCAST_EPISODE_KEY);
+      const cachedPodcastEpisode = this.transferState.get<PodcastEpisode | null>(PODCAST_EPISODE_KEY, null);
+      this.transferState.remove(PODCAST_EPISODE_KEY); // Clean up cache
+      return of(cachedPodcastEpisode!);
+    } 
 
-    const SINGLE_EPISODE_KEY = makeStateKey<PodcastEpisode>(`${episodeId}-${TransferStateKeys.SINGLE_PODCAST_EPISODE_KEY}`);
+    const podcastEpisodeRef = this.getPodcastEpisodeDoc(podcastContainerId, podcastEpisodeId);
+    const podcastEpisode = docData(podcastEpisodeRef);
 
-    // If data exists in state transfer, use that
-    if (this.transferState.hasKey(SINGLE_EPISODE_KEY)) {
-      console.log('Fetching single episode from transfer state');
-      const cacheData = this.transferState.get<PodcastEpisode>(SINGLE_EPISODE_KEY, {} as any);
-      this.transferState.remove(SINGLE_EPISODE_KEY); // Clean up the cache
-      return of(cacheData);
-    }
-
-    // Otherwise, fetch from database
-    const episodeDoc = this.getEpisodeDoc(podcastId, episodeId);
-    return episodeDoc.valueChanges()
+    return podcastEpisode
       .pipe(
-        take(1),
-        map(episode => {
-          console.log('Fetched single episode');
-          return episode;
-        }),
-        tap(episode => {
-          if (isPlatformServer(this.platformId)) {
-            this.transferState.set(SINGLE_EPISODE_KEY, episode); // Stash item in transfer state
+        // If logged out, this triggers unsub of this observable
+        map(podcastEpisode => {
+          if (!podcastEpisode) {
+            throw new Error(`Error fetching podcastEpisode with id: ${podcastContainerId}`);
           }
+          const formattedPodcastEpisode: PodcastEpisode = {
+            ...podcastEpisode,
+            [PodcastEpisodeKeys.PUBLISHED_TIMESTAMP]: (podcastEpisode[PodcastEpisodeKeys.PUBLISHED_TIMESTAMP] as Timestamp).toMillis(),
+            [PodcastEpisodeKeys.LAST_MODIFIED_TIMESTAMP]: (podcastEpisode[PodcastEpisodeKeys.LAST_MODIFIED_TIMESTAMP] as Timestamp).toMillis(),
+          };
+          console.log(`Fetched single podcastEpisode`, formattedPodcastEpisode);
+          if (this.uiService.$isServerPlatform()) {
+            console.log('Setting podcastEpisode in transferState');
+            this.transferState.set(PODCAST_EPISODE_KEY, podcastEpisode);
+          }
+          return formattedPodcastEpisode;
         }),
+        shareReplay(),
         catchError(error => {
-          this.uiService.showSnackBar(error, 5000);
-          return throwError(error);
+          this.uiService.showSnackBar(error.message, 10000);
+          console.log(`Error fetching podcastEpisode`, error);
+          return throwError(() => new Error(error));
         })
       );
   }
 
-  private getPodcastContainerCollection(): AngularFirestoreCollection<PodcastEpisode> {
-    return this.afs.collection<PodcastEpisode>(SharedCollectionPaths.PODCAST_FEED_CACHE);
+  private getPodcastEpisodeCollection(podcastContainerId: string): CollectionReference<PodcastEpisode> {
+    return collection(this.firestore, `${SharedCollectionPaths.PODCAST_CONTAINERS}/${podcastContainerId}/${SharedCollectionPaths.PODCAST_EPISODES}`) as CollectionReference<PodcastEpisode>;
   }
 
-  private getPodcastContainerDoc(podcastId: string): AngularFirestoreDocument<PodcastEpisode> {
-    return this.getPodcastContainerCollection().doc<PodcastEpisode>(podcastId);
+  private getPodcastEpisodeCollectionByDate(podcastContainerId: string): Query<PodcastEpisode> {
+    const podcastEpisodeCollectionRef = collection(this.firestore, `${SharedCollectionPaths.PODCAST_CONTAINERS}/${podcastContainerId}/${SharedCollectionPaths.PODCAST_EPISODES}`) as CollectionReference<PodcastEpisode>;
+    const collectionRefOrderedByIndex = query(podcastEpisodeCollectionRef, orderBy(PodcastEpisodeKeys.PUBLISHED_TIMESTAMP, 'desc'), limit(+PodcastVars.PODCAST_QUERY_LIMIT));
+    return collectionRefOrderedByIndex;
   }
 
-  private getEpisodesCollection(podcastId: string): AngularFirestoreCollection<PodcastEpisode> {
-    return this.getPodcastContainerDoc(podcastId).collection<PodcastEpisode>(
-      SharedCollectionPaths.PODCAST_FEED_EPISODES, ref => ref
-        .orderBy(this.podcastEpisodeQueryField, 'desc') // Ensures most recent podcasts come first
-        .limit(+this.podcastEpisodeQueryLimit) // Limit results to most recent for faster page load
-    );
-  }
-
-  private getEpisodeDoc(podcastId: string, episodeId: string): AngularFirestoreDocument<PodcastEpisode> {
-    return this.getEpisodesCollection(podcastId).doc<PodcastEpisode>(episodeId);
+  private getPodcastEpisodeDoc(podcastContainerId: string, podcastEpisodeId: string): DocumentReference<PodcastEpisode> {
+    return doc(this.getPodcastEpisodeCollection(podcastContainerId), podcastEpisodeId);
   }
 
 }
-
-
-

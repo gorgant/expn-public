@@ -1,0 +1,80 @@
+<div class="component-container">
+  <div class="footer-content-container">
+    
+    <div class="subscribe-box-container">
+      <app-subscribe-box></app-subscribe-box>
+    </div>
+    
+    <div class="site-map-and-social-links-container">
+      <div class="site-map-container">
+        <div class="site-map-item">
+          <div class="site-map-item-title">
+            Home
+          </div>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.HOME">Home</a>
+        </div>
+        <div class="site-map-item">
+          <div class="site-map-item-title">
+            About
+          </div>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.ABOUT_ME">About Us</a>
+        </div>
+        <div class="site-map-item">
+          <div class="site-map-item-title">
+            Blog
+          </div>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.BLOG">Blog</a>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.PODCAST">Podcast</a>
+        </div>
+        <div class="site-map-item">
+          <div class="site-map-item-title">
+            Contact
+          </div>
+          <a class="nav-item" routerLinkActive="nav-item-active" [routerLink]="APP_ROUTES.CONTACT">Contact</a>
+        </div>
+      </div>
+      
+      <div class="social-links-container">
+        <div class="social-links-header">
+          Check us out on social media!
+        </div>
+        <div class="social-links-list">
+          <a target="_blank" rel="noopener noreferrer" [href]="SOCIAL_URLS.EXPN_YOUTUBE">
+            <img class="social-icons" src="assets/icons/social-media/youtube_icon.svg" alt="YouTube Channel Icon">
+          </a>
+          <a target="_blank" rel="noopener noreferrer" [href]="SOCIAL_URLS.EXPN_INSTAGRAM">
+            <img class="social-icons" src="assets/icons/social-media/instagram_icon.svg" alt="Instagram Icon">
+          </a>
+          <a target="_blank" rel="noopener noreferrer" [href]="SOCIAL_URLS.EXPN_TWITTER">
+            <img class="social-icons" src="assets/icons/social-media/twitter_icon.svg" alt="Twitter Icon">
+          </a>
+          <a target="_blank" rel="noopener noreferrer" [href]="SOCIAL_URLS.EXPN_FACEBOOK">
+            <img class="social-icons" src="assets/icons/social-media/facebook_icon.svg" alt="Facebook Icon">
+          </a>
+          <a target="_blank" rel="noopener noreferrer" [href]="SOCIAL_URLS.EXPN_LINKEDIN">
+            <img class="social-icons" src="assets/icons/social-media/linkedin_icon.svg" alt="LinkedIn Icon">
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="footer-base">
+    <div class="legal-container">
+      <div class="copyright" (click)="toggleShowAppVersion()">&copy; {{ LEGAL_BUSINESS_NAME }}, All Rights Reserved {{ currentDate | date: 'yyyy' }}</div>
+      <!-- <div class="legal-spacer">|</div> -->
+      <div class="privacy-and-terms-container">
+        <a class="legal-link" [routerLink]="APP_ROUTES.PRIVACY_POLICY">Privacy Policy</a>
+        <div class="legal-spacer">|</div>
+        <a class="legal-link" [routerLink]="APP_ROUTES.TERMS_AND_CONDITIONS">Terms and Conditions</a>
+      </div>
+      
+    </div>
+    @if ($showAppVersion()) {
+      <div>{{ uiService.appVersion }}</div>
+    }
+  </div>
+</div>
+
+

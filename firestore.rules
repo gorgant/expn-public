@@ -1,8 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+  
+  	allow read, write: if false;
 
-    match /blogIndex/{postRef} {
+    match /blogIndexRefs/{blogIndexRef} {
       // Anyone can read posts
       allow read;
     }
@@ -12,37 +14,19 @@ service cloud.firestore {
       allow read;
     }
 
-    match /products/{product} {
-    	// Anyone can read products
+    match /podcastContainers/{podcastId} {
+      // Anyone can read podcastContainers
       allow read;
-    }
-
-    match /publicResources/{publicResource} {
-    	// Anyone can read public resources
-      allow read;
-    }
-
-    match /publicUsers/{userId} {
-      // Users can only see and edit their profile if it belongs to them
-      allow read, write: if isOwner(userId);
-      match /navigationStamps/{navStampId} {
-        allow read, write: if isOwner(userId);
-      }
-    }
-
-    match /podcastFeedCache/{podcastId} {
-      // Anyone can read podcasts
-      allow read;
-      match /podcastFeedEpisodes/{episodeId} {
+      
+      match /podcastEpisodes/{episodeId} {
+        // Anyone can read podcastEpisodes
         allow read;
       }
     }
 
-    /// FUNCTIONS ///
-    
-    // Confirm ID of requester matches ID in database
-    function isOwner(userId) {
-    	return request.auth.uid == userId;
+    match /sharedResources/{sharedResourceId} {
+      // Anyone can read sharedResources
+      allow read;
     }
   }
 }

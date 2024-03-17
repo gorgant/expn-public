@@ -1,0 +1,12 @@
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 32px;
+}
+
+app-contact-hero {
+  width: 100%;
+}

@@ -1,63 +1,13 @@
-export { 
-  stripeAttachSource 
-} from './stripe/sources';
-
-export { 
-  stripeProcessCharge,
-} from './stripe/stripe-process-charge';
-
-export {
-  transmitOrderToAdmin
-} from './orders/transmit-order-to-admin';
-
-export {
-  transmitEmailSubToAdmin
-} from './subscribers/transmit-email-sub-to-admin';
-
-export {
-  transmitContactFormToAdmin
-} from './contact-form/transmit-contact-form-to-admin';
-
-export {
-  transmitWebpageUrlsToSsr
-} from './web-cache/transmit-webpage-urls-to-ssr';
-
-export {
-  updateWebpageCache
-} from './web-cache/update-webpage-cache';
-
-export {
-  purgeInactiveUsers
-} from './users/purge-inactive-users';
-
-export {
-  updatePodcastFeedCache
-} from './podcast/update-podcast-feed-cache';
-
-export {
-  markSubOptedIn
-} from './subscribers/mark-sub-opted-in';
-
-export {
-  validateDiscountCoupon
-} from './stripe/validate-discount-coupon';
-
-export {
-  updateDiscountCoupon
-} from './stripe/update-discount-coupon';
-
-export {
-  triggerWebpageLoadFailureEmail
-} from './web-cache/transmit-webpage-load-failure-data-to-admin';
-
-// export {
-//   ssrV2
-// } from './ssr/ssr-v2';
-
-// export {
-//   ssrV3
-// } from './ssr/ssr-v3';
-
-export {
-  ssrV4
-} from './ssr/ssr-v4';
+export { onCallProcessContactForm } from './web-forms/on-call-process-contact-form';
+export { onCallProcessEmailSubscription } from './web-forms/on-call-process-email-subscription';
+export { onCallRemoveUserFromSgContactList } from './email/on-call-remove-user-from-sg-contact-list';
+export { onCallVerifyEmail } from './auth/on-call-verify-email';
+export { onDeletePurgePublicUserData } from './user/on-delete-purge-public-user-data';
+export { onPubCreateOrUpdateSgContact } from './email/on-pub-create-or-update-sg-contact';
+export { onPubDeleteSgContact } from './email/on-pub-delete-sg-contact';
+export { onPubDispatchEmail } from './email/on-pub-dispatch-email';
+export { onPubRemoveUserFromSgContactList } from './email/on-pub-remove-user-from-sg-contact-list';
+export { onPubResetSgContactOptInStatus } from './email/on-pub-reset-sg-contact-opt-in-status';
+export { onReqSgEmailWebhookEndpoint } from './email/on-req-sg-email-webhook-endpoint';
+export { onReqUpdatePodcastFeedCache } from './podcast/on-req-update-podcast-feed-cache';
+export { onReqVerifyDbSgOptInParity } from './email/on-req-verify-db-sg-opt-in-parity';

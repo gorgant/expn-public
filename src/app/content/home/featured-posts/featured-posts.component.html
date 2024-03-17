@@ -1,0 +1,9 @@
+<div class="component-container">
+  <div class="title">{{ TITLE }} in Action</div>
+  @if (featuredBlogIndexRefs$ | async; as blogIndexRefs) {
+    <app-post-collection [$blogIndexRefs]="blogIndexRefs"></app-post-collection>
+  } @else {
+    <app-processing-spinner [$spinnerMessage]="'Loading posts...'" [$spinnerMargin]="'32px 0'"></app-processing-spinner>
+  }
+  <a class="see-more-button" mat-raised-button color="primary" [routerLink]="APP_ROUTES.BLOG">{{ SEE_MORE_BUTTON_VALUE }}</a>
+</div>

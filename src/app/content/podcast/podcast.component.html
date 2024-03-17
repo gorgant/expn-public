@@ -1,0 +1,9 @@
+<div class="component-container">
+  <app-podcast-hero></app-podcast-hero>
+  @if (allPodcastEpisodes$ | async; as podcastEpisodes) {
+    <app-podcast-collection [$podcastEpisodes]="podcastEpisodes"></app-podcast-collection>
+    <a class="academy-button" mat-raised-button color="primary" [href]="PODCAST_SPOTIFY_URL" target="_blank" rel="noopener noreferrer">{{ VIEW_FULL_PODCAST_BUTTON_VALUE }}</a>
+  } @else {
+    <app-processing-spinner [$spinnerMessage]="'Loading posts...'" [$spinnerMargin]="'32px 0'"></app-processing-spinner>
+  }
+</div>

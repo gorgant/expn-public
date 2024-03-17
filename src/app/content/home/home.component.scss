@@ -1,0 +1,39 @@
+@import "../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  width: 100%;
+}
+
+app-home-hero {
+  width: 100%;
+}
+
+app-feature-icons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 80%;
+}
+
+app-subscribe-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  @include background-opacity($primary, $opacity-medium);
+  padding: 60px 16px;
+  box-sizing: border-box;
+}
+
+app-featured-posts {
+  width: 100%;
+}

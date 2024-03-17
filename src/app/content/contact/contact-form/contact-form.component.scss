@@ -1,0 +1,83 @@
+@import "../../../variables";
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.contact-form-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 32px;
+
+  margin: 32px 16px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.card-title {
+  padding: 24px 16px;
+  width: 100%;
+  box-sizing: border-box;
+
+  background-color: $primary;
+  color: white;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.5em;
+  font-weight: $font-weight-regular;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.name-and-email {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  width: 100%;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    flex-direction: row;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+  line-height: 1.5em;
+}
+
+.form-actions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  width: 100%;
+  margin: 32px 0;
+}
+
+.submit-button {
+  width: 100%;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    width: $desktop-button-width;
+  }
+}

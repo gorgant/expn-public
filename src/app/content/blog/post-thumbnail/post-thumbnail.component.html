@@ -1,0 +1,11 @@
+<div class="component-container">
+  <a class="thumbnail " [routerLink]="[APP_ROUTES.BLOG, $blogIndexRef().id, $postUrlSlug()]">
+    <!-- lazyload images -->
+    @defer (on viewport){
+      <img appMatElevation class="post-image mat-elevation-z4" [src]="$thumbnailSrc()" [alt]="$blogIndexRef().title">
+    } @placeholder {
+      <div>Loading..</div>
+    }
+  </a>
+  <a class="caption" [routerLink]="[APP_ROUTES.BLOG, $blogIndexRef().id, $postUrlSlug()]" [matTooltip]="$blogIndexRef().title" matTooltipPosition="above" matTooltipShowDelay="500">{{ $blogIndexRef().title }}</a>
+</div>

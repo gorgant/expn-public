@@ -1,138 +1,93 @@
-import { initialState, State, featureAdapter } from './state';
-import { Actions, ActionTypes } from './actions';
+import {
+  createReducer,
+  on
+} from '@ngrx/store';
+import * as  PostStoreActions from './actions';
+import { featureAdapter, initialPostState } from './state';
 
-export function featureReducer(state = initialState, action: Actions): State {
-  switch (action.type) {
+export const postStoreReducer = createReducer(
+  initialPostState,
 
-    case ActionTypes.SINGLE_POST_REQUESTED: {
-      return {
+  // Fetch Post Boilerplate
+
+  on(PostStoreActions.fetchPostBoilerplateRequested, (state, action) => {
+    return {
+      ...state,
+      fetchPostBoilerplateProcessing: true,
+      fetchPostBoilerplateError: null,
+      postBoilerplateData: null,
+    }
+  }),
+  on(PostStoreActions.fetchPostBoilerplateCompleted, (state, action) => {
+    return {
+      ...state,
+      fetchPostBoilerplateProcessing: false,
+      fetchPostBoilerplateError: null,
+      postBoilerplateData: action.postBoilerplateData,
+    }
+  }),
+  on(PostStoreActions.fetchPostBoilerplateFailed, (state, action) => {
+    return {
+      ...state,
+      fetchPostBoilerplateProcessing: false,
+      fetchPostBoilerplateError: action.error,
+      postBoilerplateData: null,
+    }
+  }),
+
+  // Fetch Single Post
+
+  on(PostStoreActions.fetchSinglePostRequested, (state, action) => {
+    return {
+      ...state,
+      fetchSinglePostProcessing: true,
+      fetchSinglePostError: null
+    }
+  }),
+  on(PostStoreActions.fetchSinglePostCompleted, (state, action) => {
+    return featureAdapter.upsertOne(
+      action.post, {
         ...state,
-        isLoading: true,
-        loadError: null
-      };
+        fetchSinglePostProcessing: false,  
+      }
+    );
+  }),
+  on(PostStoreActions.fetchSinglePostFailed, (state, action) => {
+    return {
+      ...state,
+      fetchSinglePostProcessing: false,
+      fetchSinglePostError: action.error
     }
+  }),
 
-    case ActionTypes.SINGLE_POST_LOADED: {
-      return featureAdapter.upsertOne(
-        action.payload.post, {
-          ...state,
-          isLoading: false,
-          loadError: null
-        }
-      );
-    }
+  // Purge Post State
 
-    case ActionTypes.ALL_POSTS_REQUESTED: {
-      return {
+  on(PostStoreActions.purgePostState, (state, action) => {
+    return featureAdapter.removeAll(
+      {
         ...state,
-        isLoading: true,
-        loadError: null
-      };
-    }
+        fetchPostBoilerplateError: null,
+        fetchPostBoilerplateProcessing: false,
+        fetchSinglePostError: null,
+        fetchSinglePostProcessing: false,
 
-    case ActionTypes.ALL_POSTS_LOADED: {
-      return featureAdapter.setAll(
-        action.payload.posts, {
-          ...state,
-          isLoading: false,
-          loadError: null,
-          postsLoaded: true
-        }
-      );
-    }
+        postBoilerplateData: null,
+      }
+    );
+  }),
 
-    case ActionTypes.FEATURED_POSTS_REQUESTED: {
-      return {
-        ...state,
-        isLoadingFeaturedPosts: true,
-        featuredPostLoadError: null
-      };
-    }
+  // Purge Post State Errors
 
-    case ActionTypes.FEATURED_POSTS_LOADED: {
-      return featureAdapter.addMany(
-        action.payload.posts, {
-          ...state,
-          isLoadingFeaturedPosts: false,
-          featuredPostLoadError: null,
-        }
-      );
+  on(PostStoreActions.purgePostStateErrors, (state, action) => {
+    return {
+      ...state,
+      fetchPostBoilerplateError: null,
+      fetchSinglePostError: null,
     }
+  }),
 
-    case ActionTypes.BLOG_INDEX_REQUESTED: {
-      return {
-        ...state,
-        isLoadingBlogIndex: true,
-        blogIndexLoadError: null
-      };
-    }
 
-    case ActionTypes.BLOG_INDEX_LOADED: {
-      return featureAdapter.addMany(
-        action.payload.blogIndex, {
-          ...state,
-          isLoadingBlogIndex: false,
-          blogIndexLoadError: null,
-          blogIndexLoaded: true
-        }
-      );
-    }
-
-    case ActionTypes.NEXT_BLOG_INDEX_BATCH_REQUESTED: {
-      return {
-        ...state,
-        isLoadingNextBlogIndexBatch: true,
-        nextBlogIndexBatchLoadError: null
-      };
-    }
-
-    case ActionTypes.NEXT_BLOG_INDEX_BATCH_LOADED: {
-      return featureAdapter.addMany(
-        action.payload.nextBlogIndexBatch, {
-          ...state,
-          isLoadingNextBlogIndexBatch: false,
-          nextBlogIndexBatchLoadError: null,
-        }
-      );
-    }
-
-    case ActionTypes.LOAD_FAILED: {
-      return {
-        ...state,
-        isLoading: false,
-        loadError: action.payload.error
-      };
-    }
-
-    case ActionTypes.FEATURED_POSTS_LOAD_FAILED: {
-      return {
-        ...state,
-        isLoadingFeaturedPosts: false,
-        featuredPostLoadError: action.payload.error
-      };
-    }
-
-    case ActionTypes.BLOG_INDEX_LOAD_FAILED: {
-      return {
-        ...state,
-        isLoadingBlogIndex: false,
-        blogIndexLoadError: action.payload.error,
-      };
-    }
-
-    case ActionTypes.NEXT_BLOG_INDEX_BATCH_LOAD_FAILED: {
-      return {
-        ...state,
-        isLoadingNextBlogIndexBatch: false,
-        nextBlogIndexBatchLoadError: action.payload.error,
-      };
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
+);
 
 // Exporting a variety of selectors in the form of a object from the entity adapter
 export const {

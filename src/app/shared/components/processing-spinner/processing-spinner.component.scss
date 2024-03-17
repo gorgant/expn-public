@@ -1,0 +1,20 @@
+@import "../../../variables";
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  
+  width: 100%;
+}
+
+// Courtesy of https://stackoverflow.com/questions/52700871/change-color-of-mat-spinner
+.white-spinner::ng-deep circle{
+  stroke: #FFFFFF !important;
+}
+
+.spinner-message {
+  @include default-text-style();
+}

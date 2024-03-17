@@ -1,0 +1,116 @@
+@import '../../../../variables';
+
+.component-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  padding: 32px;
+
+  background-color: $primary;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    align-items: flex-start;
+  }
+
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  margin-bottom: 24px;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    align-items: flex-start;
+  }
+}
+
+.title {
+  font-size: 2.6em;
+  line-height: 1.1em;
+  text-align: center;
+  color: white;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    text-align: start;
+  }
+}
+
+.subtitle {
+  font-size: 1.6em;
+  line-height: 1.1em;
+  font-weight: $font-weight-light;
+  text-align: center;
+  color: white;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    text-align: start;
+  }
+}
+
+.subscribe-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    width: 300px;
+  }
+}
+
+.email-input, .first-name-input {
+  color: $accent;
+}
+
+.input-icon {
+  color: black;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.submit-button, .cancel-button {
+  // align-self: flex-start;
+
+  width: 100%;
+  height: 2.5em;
+
+  color: white;
+  font-size: 1.3em;
+  background-color: $acdmy-button-color;
+  
+
+  @media screen and (min-width: $mobile-cutoff-width) {
+    width: 608px;
+    font-size: 1.5em;
+  }
+}
+
+.cancel-button {
+  border-color: white;
+  background-color: $primary;
+}

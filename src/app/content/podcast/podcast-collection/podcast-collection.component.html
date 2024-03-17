@@ -1,0 +1,5 @@
+<div class="component-container">
+  @for (podcastEpisode of $podcastEpisodes(); track podcastEpisode.id) {
+    <app-podcast-episode-thumbnail [$podcastEpisode]="podcastEpisode"></app-podcast-episode-thumbnail>
+  }
+</div>
