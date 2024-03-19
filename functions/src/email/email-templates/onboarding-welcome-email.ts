@@ -78,7 +78,7 @@ export const sendOnboardingWelcomeEmail = async (userData: EmailUserData) => {
       blogUrl: WebsiteUrls.EXPN_BLOG,
       downloadableUrl: DownloadableUrls.EXPN_DOWNLOADABLE,
       firstName: toFirstName, // Will populate first name greeting if name exists
-      replyEmailAddress: EmailSenderAddresses.EXPN_NEWSLETTER, // TODO: Once production is live, change the Sendgrid website template variable name to newsletterEmailAddress and update this accordingly
+      newsletterEmailAddress: EmailSenderAddresses.EXPN_NEWSLETTER,
       youTubeChannelUrl: SocialUrls.EXPN_YOUTUBE
     },
     trackingSettings: {

@@ -13,10 +13,8 @@ import { Timestamp } from '@google-cloud/firestore';
 import { cloudSchedulerServiceAccountSecret } from '../config/api-key-config';
 import { SecretsManagerKeyNames } from '../../../shared-models/environments/env-vars.model';
 
-const publicDb = publicFirestore;
-
 const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
-  const postsCollectionRef = publicDb.collection(SharedCollectionPaths.POSTS);
+  const postsCollectionRef = publicFirestore.collection(SharedCollectionPaths.POSTS);
 
   // Check against the old Anchor URL first since there are more of these, ensures backwards compatibility with the old Anchor url RSS feed format (they may never change this, check from time to time)
   const oldAnchorUrlMatchingPostQuerySnapshot = await postsCollectionRef.where(`${[PostKeys.PODCAST_ANCHOR_RSS_FEED_URL]}`, '==', episodeUrl).get()
@@ -54,7 +52,7 @@ const fetchBlogPostIdAndHandle = async (episodeUrl: string) => {
 }
 
 // Convert a raw RSS Json object to usable objects
-const convertRawRssJsonToPodcastObjects = async (rawJson: any): Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}> => {
+const convertRawRssJsonToPodcastObjects = async (rawJson: any): Promise<{podcastContainer: PodcastContainer, podcastEpisodes: PodcastEpisode[]}> => {
   
   // Parse Podcast Container
   const podcastObject = rawJson.rss.channel[0];
@@ -136,11 +134,11 @@ const convertRawRssJsonToPodcastObjects = async (rawJson: any): Promise<{podcast
   // Only include episodes that are referenced in a blog post
   const filteredPodcastEpisodeArray = podcastEpisodeArray.filter((episode) => episode.blogPostUrlHandle.length > 0);
 
-  return {podcast: podcastContainer, episodes: filteredPodcastEpisodeArray}
+  return {podcastContainer, podcastEpisodes: filteredPodcastEpisodeArray}
 }
 
 // Fetch podcast feed data from Soundcloud
-const processPodcastFeed = async (): Promise<{podcast: PodcastContainer, episodes: PodcastEpisode[]}> => {
+const processPodcastFeed = async (): Promise<{podcastContainer: PodcastContainer, podcastEpisodes: PodcastEpisode[]}> => {
 
   const podcastRssUrl = PODCAST_PATHS.expn.rssFeedPath;
   logger.log(`Requesting data from this RSS feed`, podcastRssUrl);
@@ -165,81 +163,84 @@ const processPodcastFeed = async (): Promise<{podcast: PodcastContainer, episode
 
 }
 
-let itemsProcessedCount = 0; // Keeps track of episodes cached between loops
-let loopCount = 0; // Prevents infinite looping in case of error
-const batchCacheEpisodes = async (episodes: PodcastEpisode[], publicPodcastDocRef: FirebaseFirestore.DocumentReference, adminPodcastDocRef: FirebaseFirestore.DocumentReference) => {
-  const publicEpisodeCollectionRef = publicPodcastDocRef.collection(SharedCollectionPaths.PODCAST_EPISODES);
+const batchCommitPodcastEpisodesToDatabase = async (podcastEpisodes: PodcastEpisode[], publicPodcastDocRef: FirebaseFirestore.DocumentReference, adminPodcastDocRef: FirebaseFirestore.DocumentReference) => {
   const adminEpisodeCollectionRef = adminPodcastDocRef.collection(SharedCollectionPaths.PODCAST_EPISODES);
-  
-  const remainingEpisodesToCache = episodes.slice(itemsProcessedCount);
-  
-  const publicBatch = publicDb.batch();
-  const adminFirestoreWithPublicCreds = getAdminFirestoreWithPublicCreds();
-  const adminBatch = adminFirestoreWithPublicCreds.batch();
-  const maxBatchSize = 450; // Firebase limit is 500
-  let batchSize = 0;
-  // Loop through array until the max batch size is reached
-  for (let i = 0; i < maxBatchSize; i++) {
-    // Get the data to upload
-    const episode = remainingEpisodesToCache[i];
-    if (!episode) {
-      break; // Abort loop if end of array reached before batch limit is hit
+  const publicEpisodeCollectionRef = publicPodcastDocRef.collection(SharedCollectionPaths.PODCAST_EPISODES);
+
+  let adminWriteBatch = getAdminFirestoreWithPublicCreds().batch();
+  let publicWriteBatch = publicFirestore.batch();
+  let adminOperationCount = 0;
+  let publicOperationCount = 0;
+
+  for (const episode of podcastEpisodes) {
+    const adminPodcastEpisodeRef = adminEpisodeCollectionRef.doc(episode.id);
+    const publicPodcastEpisodeRef = publicEpisodeCollectionRef.doc(episode.id);
+
+    adminWriteBatch.set(adminPodcastEpisodeRef, episode);
+    adminOperationCount++;
+
+    publicWriteBatch.set(publicPodcastEpisodeRef, episode);
+    publicOperationCount++;
+
+    // Firestore batch limit is 500 operations per batch
+    // Commit the existing batch and create a new batch instance (the loop will continue with that new batch instance)
+    if (adminOperationCount === 490) {
+      await adminWriteBatch.commit()
+        .catch(err => {logger.log(`Error writing batch to admin database:`, err); throw new HttpsError('internal', err);});
+
+      adminWriteBatch = getAdminFirestoreWithPublicCreds().batch();
+      adminOperationCount = 0;
     }
-    // Create a reference to the new doc using the episode id
-    const publicDocRef = publicEpisodeCollectionRef.doc(episode.id);
-    const adminDocRef = adminEpisodeCollectionRef.doc(episode.id);
-    publicBatch.set(publicDocRef, episode);
-    adminBatch.set(adminDocRef, episode);
-    batchSize = i+1;
+
+    if (publicOperationCount === 490) {
+      await publicWriteBatch.commit()
+        .catch(err => {logger.log(`Error writing batch to public database:`, err); throw new HttpsError('internal', err);});
+
+      publicWriteBatch = publicFirestore.batch();
+      publicOperationCount = 0;
+    }
   }
 
-  const publicBatchCreate = await publicBatch.commit()
-    .catch(err => {logger.log(`Error with batch creation:`, err); throw new HttpsError('internal', err);});
-  const adminBatchCreate = await adminBatch.commit()
-    .catch(err => {logger.log(`Error with batch creation:`, err); throw new HttpsError('internal', err);});
+  if (adminOperationCount > 0) {
+    await adminWriteBatch.commit()
+      .catch(err => {logger.log(`Error writing batch to admin database:`, err); throw new HttpsError('internal', err);});
+  }
 
-  logger.log(`Batch created ${publicBatchCreate.length} items on public and ${adminBatchCreate.length} on admin`);
-  itemsProcessedCount += batchSize; // Update global variable to keep track of remaining episodes to cache
-  loopCount++;
+  if (publicOperationCount > 0) {
+    await publicWriteBatch.commit()
+      .catch(err => {logger.log(`Error writing batch to public database:`, err); throw new HttpsError('internal', err);});
+  }
+
+  logger.log(`Set ${podcastEpisodes.length} podcastEpisodes in public and admin databases`);
 }
 
+
 // Cache the podcast along with the episodes as a subcollection of the podcast
-const updatePodcastInDatabase = async (podcast: PodcastContainer, episodes: PodcastEpisode[]) => {
+const updatePodcastInDatabase = async (podcastContainer: PodcastContainer, podcastEpisodes: PodcastEpisode[]) => {
 
-  itemsProcessedCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
-  loopCount = 0; // Initialize at zero (prevents global variable remenant from last function execution)
-
-  
-  const publicPodcastDocRef = publicDb.collection(SharedCollectionPaths.PODCAST_CONTAINERS).doc(podcast.id);
+  const publicPodcastContainerRef = publicFirestore.collection(SharedCollectionPaths.PODCAST_CONTAINERS).doc(podcastContainer.id);
   const adminFirestoreWithPublicCreds = getAdminFirestoreWithPublicCreds();
-  const adminPodcastDocRef = adminFirestoreWithPublicCreds.collection(SharedCollectionPaths.PODCAST_CONTAINERS).doc(podcast.id);
+  const adminPodcastContainerRef = adminFirestoreWithPublicCreds.collection(SharedCollectionPaths.PODCAST_CONTAINERS).doc(podcastContainer.id);
 
-  // Cache the podcast
-  await publicPodcastDocRef.set(podcast)
+  // Cache the podcastContainer
+  await publicPodcastContainerRef.set(podcastContainer)
     .catch(err => {logger.log(`Error setting podcast in public database:`, err); throw new HttpsError('internal', err);});
-  logger.log('Podcast updated on public database');
-  await adminPodcastDocRef.set(podcast)
+  
+  await adminPodcastContainerRef.set(podcastContainer)
     .catch(err => {logger.log(`Error setting podcast in admin database:`, err); throw new HttpsError('internal', err);});
-  logger.log('Podcast updated on admin database');
 
-  // Cache each episode inside the podcast container
-  const totalItemCount = episodes.length;
-  while (itemsProcessedCount < totalItemCount && loopCount < 10) {
-    await batchCacheEpisodes(episodes, publicPodcastDocRef, adminPodcastDocRef);
-    if (itemsProcessedCount < totalItemCount) {
-      logger.log(`Repeating batch process: ${itemsProcessedCount} out of ${totalItemCount} items cached`);
-    }
-  }
+  // Cache the podcastEpisodes within the podcastContainers
+  await batchCommitPodcastEpisodesToDatabase(podcastEpisodes, publicPodcastContainerRef, adminPodcastContainerRef);
 }
 
 const executeActions = async (): Promise<PodcastContainer> => {
-  const {podcast, episodes}: {podcast: PodcastContainer, episodes: PodcastEpisode[]} = await processPodcastFeed();
-  logger.log(`Fetched podcast feed with ${episodes.length} episodes`);
+  const {podcastContainer, podcastEpisodes}: {podcastContainer: PodcastContainer, podcastEpisodes: PodcastEpisode[]} = await processPodcastFeed();
+  logger.log(`Fetched podcast feed with ${podcastEpisodes.length} podcastEpisodes`);
 
-  await updatePodcastInDatabase(podcast, episodes);
+  await updatePodcastInDatabase(podcastContainer, podcastEpisodes);
   logger.log('Podcast caching complete');
   
-  return podcast;
+  return podcastContainer;
 }
 
 /////// DEPLOYABLE FUNCTIONS ///////

@@ -4,7 +4,7 @@ import { EnvironmentTypes } from '../../../shared-models/environments/env-vars.m
 import { PublicCollectionPaths } from '../../../shared-models/routes-and-paths/fb-collection-paths.model';
 import { currentEnvironmentType } from '../config/environments-config';
 import { onDocumentDeleted } from 'firebase-functions/v2/firestore';
-import { PublicUser } from '../../../shared-models/user/public-user.model';
+import { PublicUser, PublicUserKeys } from '../../../shared-models/user/public-user.model';
 import { deleteSgContact } from '../email/helpers/delete-sg-contact';
 import { convertPublicUserDataToEmailUserData } from '../config/global-helpers';
 
@@ -13,9 +13,13 @@ const removeContactFromSg = async (deletedUser: PublicUser) => {
     logger.log('Sandbox environment detected, aborting deleteSgContact request');
     return;
   }
-  const userEmailData = convertPublicUserDataToEmailUserData(deletedUser);
-  await deleteSgContact(userEmailData)
-    .catch(err => {logger.log(`deleteSgContact failed":`, err); throw new HttpsError('internal', err);});
+
+  // Only attempt to delete the user from SG if the email has been verified (otherwise they are by definition not in SG)
+  if (deletedUser[PublicUserKeys.EMAIL_VERIFIED]) {
+    const userEmailData = convertPublicUserDataToEmailUserData(deletedUser);
+    await deleteSgContact(userEmailData)
+      .catch(err => {logger.log(`deleteSgContact failed":`, err); throw new HttpsError('internal', err);});
+  }
 }
 
 const executeActions = async(deletedUser: PublicUser) => {

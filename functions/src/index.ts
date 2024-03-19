@@ -8,6 +8,8 @@ export { onPubDeleteSgContact } from './email/on-pub-delete-sg-contact';
 export { onPubDispatchEmail } from './email/on-pub-dispatch-email';
 export { onPubRemoveUserFromSgContactList } from './email/on-pub-remove-user-from-sg-contact-list';
 export { onPubResetSgContactOptInStatus } from './email/on-pub-reset-sg-contact-opt-in-status';
+export { onReqPurgeAuthUsers } from './migration/on-req-purge-auth-users';
+export { onReqPurgeUnverifiedPublicUsers } from './user/on-req-purge-unverified-public-users';
 export { onReqSgEmailWebhookEndpoint } from './email/on-req-sg-email-webhook-endpoint';
 export { onReqUpdatePodcastFeedCache } from './podcast/on-req-update-podcast-feed-cache';
 export { onReqVerifyDbSgOptInParity } from './email/on-req-verify-db-sg-opt-in-parity';

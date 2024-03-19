@@ -66,9 +66,6 @@ export class PostService {
       );
   }
 
-  // TODO: Figure out how to get the server to wait for the post to load -- oddly with the current implementation the POST_KEY gets set but is missing the data (see console for info on that)
-  // TODO: This works on the first server load but none of the subsequent loads
-  // TODO: Consider adding an RXJS timer somewhere to give time to load
   fetchSinglePost(postId: string): Observable<Post> {
     const POST_KEY = makeStateKey<Post>('post-' + postId);
     if (this.transferState.hasKey(POST_KEY)) {
@@ -77,13 +74,6 @@ export class PostService {
       this.transferState.remove(POST_KEY); // Clean up cache
       return of(cachedPost!);
     } 
-    // if (!this.uiService.$isServerPlatform()) {
-    //   console.log('post found in transferState with this key', POST_KEY);
-    //   const cachedPost = this.transferState.get<Post | null>(POST_KEY, null);
-    //   console.log('Cached post', cachedPost);
-    //   this.transferState.remove(POST_KEY); // Clean up cache
-    //   return of(cachedPost!);
-    // } 
 
     const postDocRef = this.getPostDoc(postId);
     const postDoc = docData(postDocRef);

@@ -44,7 +44,7 @@ export function app(): express.Express {
 }
 
 function run(): void {
-  // TODO: Temporarily altering this, consider reverting after a new Angular version https://github.com/firebase/firebase-tools/issues/6651#issuecomment-1881647322
+  // FYI: Temporarily altering this, consider reverting after a new Angular version https://github.com/firebase/firebase-tools/issues/6651#issuecomment-1881647322
   // const port = process.env['PORT'] || 4000;
   const port = process.env['NG_SSR_PORT'] || 4000;
 
