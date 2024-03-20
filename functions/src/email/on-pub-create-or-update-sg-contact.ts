@@ -58,9 +58,9 @@ const createOrUpdateSendgridContact = async (sgCreateOrUpdateContactData: SgCrea
   const convertedOptInTimestamp = convertFirebaseTimestampToGoogleCloudTimestamp(optInTimestamp);
 
   const customData: SgContactCustomFieldData = {
-    [SgContactCustomFieldIds.APP_CREATED_TIMESTAMP]: convertedCreatedTimestamp.toDate().toISOString(),
-    [SgContactCustomFieldIds.APP_OPT_IN_TIMESTAMP]: convertedOptInTimestamp.toDate().toISOString(),
-    [SgContactCustomFieldIds.APP_UID]: userData.id,
+    [SgContactCustomFieldIds.EXPN_APP_CREATED_TIMESTAMP]: convertedCreatedTimestamp.toDate().toISOString(),
+    [SgContactCustomFieldIds.EXPN_APP_OPT_IN_TIMESTAMP]: convertedOptInTimestamp.toDate().toISOString(),
+    [SgContactCustomFieldIds.EXPN_APP_UID]: userData.id,
   };
 
   const listIds = userData[PublicUserKeys.EMAIL_SENDGRID_CONTACT_LIST_ARRAY] as SendgridContactListId[];

@@ -1,9 +1,11 @@
 <div class="component-container">
   <div class="footer-content-container">
     
-    <div class="subscribe-box-container">
-      <app-subscribe-box></app-subscribe-box>
-    </div>
+    @if (!uiService.$userAttemptedEmailVerification()) {
+      <div class="subscribe-box-container">
+        <app-subscribe-box></app-subscribe-box>
+      </div>
+    }
     
     <div class="site-map-and-social-links-container">
       <div class="site-map-container">
