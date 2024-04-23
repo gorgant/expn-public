@@ -68,14 +68,14 @@ const executeActions = async (userData: EmailUserData) => {
 
 /////// DEPLOYABLE FUNCTIONS ///////
 const pubSubOptions: PubSubOptions = {
-  topic: PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS,
+  topic: PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS_TOPIC,
   secrets: [sendgridApiSecret]
 };
 
 // Listen for pubsub message
 export const onPubResetSgContactOptInStatus = onMessagePublished(pubSubOptions, async (event: CloudEvent<MessagePublishedData<EmailUserData>>) =>  {
   const userData = event.data.message.json;
-  logger.log(`${PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS} requested with this data:`, userData);
+  logger.log(`${PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS_TOPIC} requested with this data:`, userData);
 
   await executeActions(userData);
 

@@ -8,10 +8,14 @@ import { publicFirestore } from "../config/db-config";
 import { Timestamp } from '@google-cloud/firestore';
 import { PublicUser, PublicUserKeys } from "../../../shared-models/user/public-user.model";
 import { Response } from "express";
+import { EmailOptInSource } from "../../../shared-models/email/email-opt-in-source.model";
 
 const purgeUnverifiedPublicUsers = async (res: Response) => {
   const expirationDate = new Date();
-  expirationDate.setDate(expirationDate.getDate() - 30);
+  expirationDate.setDate(expirationDate.getDate() - 30); // 30 days ago
+
+  const academyExpirationDate = new Date();
+  academyExpirationDate.setDate(academyExpirationDate.getDate() - 365); // a year ago
 
   const publicUserCollectionRef = publicFirestore.collection(PublicCollectionPaths.PUBLIC_USERS);
   const unverifiedPublicUserCollectionSnapshot = await publicUserCollectionRef
@@ -33,6 +37,15 @@ const purgeUnverifiedPublicUsers = async (res: Response) => {
       logger.log(errMsg);
       res.status(405).send();
       throw new HttpsError('aborted', errMsg);
+    }
+
+    // Exclude recent academy imports to avoid hitting expired academy members with sign-up requests each new upload
+    const isAcademyImport = publicUserData[PublicUserKeys.EMAIL_OPT_IN_SOURCE] === EmailOptInSource.ACADEMY_IMPORT;
+    const wasImportedWithinThisYear = publicUserData[PublicUserKeys.CREATED_TIMESTAMP] >= Timestamp.fromDate(academyExpirationDate);
+    const isRecentAcademyImport = isAcademyImport && wasImportedWithinThisYear;
+    if (isRecentAcademyImport) {
+      logger.log('Recent Academy Import detected, skipping deletion');
+      continue; // This prevents any further logic from running for this object and proceeds to the next object
     }
 
     writeBatch.delete(publicUserRef);

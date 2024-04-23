@@ -8,7 +8,7 @@ const pubSub = new PubSub();
 
 // Publish SG Contact Update
 export const resetSgContactOptInStatus = async(emailUserData: EmailUserData) => {
-  const topicName = PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS;
+  const topicName = PublicTopicNames.RESET_SG_CONTACT_OPT_IN_STATUS_TOPIC;
   const projectId = publicAppProjectId;
   const topic = pubSub.topic(`projects/${projectId}/topics/${topicName}`);
   const pubsubMsg: EmailUserData = {
