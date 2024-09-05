@@ -1,11 +1,11 @@
-import { APP_INITIALIZER, ApplicationConfig, InjectionToken, Injector, PLATFORM_ID, importProvidersFrom, inject, isDevMode } from '@angular/core';
+import { ApplicationConfig, PLATFORM_ID, inject, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { APP_ROUTES } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAnalytics, provideAnalytics, ScreenTrackingService } from '@angular/fire/analytics';
-import { initializeAppCheck, ReCaptchaEnterpriseProvider, provideAppCheck, CustomProvider, AppCheck } from '@angular/fire/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider, provideAppCheck, CustomProvider } from '@angular/fire/app-check';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getPerformance, providePerformance } from '@angular/fire/performance';
@@ -20,7 +20,7 @@ import { PodcastEpisodeStoreEffects } from './root-store/podcast-episode-store/e
 import { PostStoreEffects } from './root-store/post-store/effects';
 import { UserStoreEffects } from './root-store/user-store/effects';
 
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { isPlatformServer } from '@angular/common';
 import { BlogIndexRefStoreEffects } from './root-store/blog-index-ref-store/effects';
 
 export const appConfig: ApplicationConfig = {
