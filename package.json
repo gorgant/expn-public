@@ -30,13 +30,13 @@
     "@ngrx/router-store": "^18.0.2",
     "@ngrx/store": "^18.0.2",
     "@ngrx/store-devtools": "^18.0.2",
-    "express": "^4.18.3",
-    "firebase-admin": "^12.0.0",
-    "luxon": "^3.4.4",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.4.0",
+    "luxon": "^3.5.0",
     "rxjs": "~7.8.1",
-    "tslib": "^2.6.2",
-    "zone.js": "~0.14.10",
-    "@ngrx/operators": "^18.0.0"
+    "tslib": "^2.7.0",
+    "zone.js": "~0.15.0",
+    "@ngrx/operators": "^18.0.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.3",
@@ -53,6 +53,6 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.4.2"
+    "typescript": "~5.5.4"
   }
 }

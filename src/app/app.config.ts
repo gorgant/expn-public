@@ -20,86 +20,39 @@ import { PodcastEpisodeStoreEffects } from './root-store/podcast-episode-store/e
 import { PostStoreEffects } from './root-store/post-store/effects';
 import { UserStoreEffects } from './root-store/user-store/effects';
 
-// import type { app } from 'firebase-admin';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { BlogIndexRefStoreEffects } from './root-store/blog-index-ref-store/effects';
 
-// // Custom Appcheck Provider courtesy of https://github.com/angular/angularfire/issues/3128#issuecomment-1862983959 and https://github.com/angular/angularfire/blob/master/samples/advanced/src/app/app.module.ts#L47-L57
-// // Required to run appcheck in SSR
-// export const FIREBASE_ADMIN = new InjectionToken<app.App>('firebase-admin');
-// export function initializeAppCheckFactory(platformId: Object, injector: Injector) {
-//   if (isPlatformBrowser(platformId)) {
-//     console.log('Platform browser detected with this id', platformId);
-//     const admin = injector.get<app.App|null>(FIREBASE_ADMIN, null);
-//     if (admin) {
-//       const provider = new CustomProvider({ getToken: () =>
-//         admin.
-//           appCheck().
-//           createToken(environment.firebase.appId, { ttlMillis: 604_800_000, /* 1 week */ }).
-//           then(({ token, ttlMillis: expireTimeMillis }) => ({ token, expireTimeMillis } ))
-//       });
-//       return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: false });
-//     } else {
-//       const provider = new ReCaptchaEnterpriseProvider(environment.reCaptchaEnterpriseProviderKey);
-//       return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
-//     }
-//   } else {
-//     console.log('Server rendering detected, terminating appCheckFactory');
-//     return undefined;
-//   }
-// }
-
 export const appConfig: ApplicationConfig = {
   providers: [
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: (platformId: Object) => () => {
-    //     if (isPlatformBrowser(platformId)) {
-    //       // Initialize Firebase AppCheck here
-    //       // initializeAppCheck(undefined, {
-    //       //   provider: new ReCaptchaEnterpriseProvider(environment.reCaptchaEnterpriseProviderKey),
-    //       //   isTokenAutoRefreshEnabled: true
-    //       // });
-    //       importProvidersFrom(
-    //         provideAppCheck(() => {
-    //           const provider = new ReCaptchaEnterpriseProvider(environment.reCaptchaEnterpriseProviderKey);
-    //           return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
-    //         })
-    //       )
-    //     }
-    //   },
-    //   deps: [PLATFORM_ID],
-    //   multi: true,
-    // },
     provideRouter(APP_ROUTES),
     provideClientHydration(),
 
     // Angularfire Providers
-    importProvidersFrom(
-      provideFirebaseApp(() => initializeApp(environment.firebase)), 
-      provideAnalytics(() => getAnalytics()), 
-      provideFirestore(() => getFirestore()), 
-      provideFunctions(() => getFunctions()), 
-      providePerformance(() => getPerformance()),
-      provideAppCheck(() => {
-        // Don't initialise AppCheck if running in server
-        // Workaround for https://github.com/angular/angularfire/issues/3488
-        const platformId = inject(PLATFORM_ID);
-        if (isPlatformServer(platformId)) {
-          return '' as any;
-        }
-  
-        let provider: CustomProvider | ReCaptchaEnterpriseProvider;
-  
-        provider = new ReCaptchaEnterpriseProvider(environment.reCaptchaEnterpriseProviderKey);
-  
-        // Initialise AngularFire app check using provider
-        const appCheck = initializeAppCheck(getApp(), {
-          provider: provider
-        });
-        return appCheck;
-      }),
-    ),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAnalytics(() => getAnalytics()), 
+    provideFirestore(() => getFirestore()), 
+    provideFunctions(() => getFunctions()), 
+    providePerformance(() => getPerformance()),
+    provideAppCheck(() => {
+      // Don't initialise AppCheck if running in server
+      // Workaround for https://github.com/angular/angularfire/issues/3488
+      const platformId = inject(PLATFORM_ID);
+      if (isPlatformServer(platformId)) {
+        return '' as any;
+      }
+
+      let provider: CustomProvider | ReCaptchaEnterpriseProvider;
+
+      provider = new ReCaptchaEnterpriseProvider(environment.reCaptchaEnterpriseProviderKey);
+
+      // Initialise AngularFire app check using provider
+      const appCheck = initializeAppCheck(getApp(), {
+        provider: provider
+      });
+      return appCheck;
+    }),
+
 
     // NGRX Providers
     provideStore(reducers, {
