@@ -20,12 +20,13 @@ export function app(): express.Express {
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
-  server.get('*.*', express.static(browserDistFolder, {
-    maxAge: '1y'
+  server.get('**', express.static(browserDistFolder, {
+    maxAge: '1y',
+    index: 'index.html',
   }));
 
   // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
+  server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     commonEngine
@@ -44,9 +45,7 @@ export function app(): express.Express {
 }
 
 function run(): void {
-  // FYI: Temporarily altering this, consider reverting after a new Angular version https://github.com/firebase/firebase-tools/issues/6651#issuecomment-1881647322
-  // const port = process.env['PORT'] || 4000;
-  const port = process.env['NG_SSR_PORT'] || 4000;
+  const port = process.env['PORT'] || 4000;
 
   // Start up the Node server
   const server = app();

@@ -36,7 +36,7 @@ export class PostService {
     }
 
     const postBoilerplateDocRef = this.getPostBoilerplateDoc();
-    const postBoilerplateDoc = docData(postBoilerplateDocRef);
+    const postBoilerplateDoc = docData(postBoilerplateDocRef) as Observable<PostBoilerplate | undefined>;
 
     return postBoilerplateDoc
       .pipe(
@@ -76,7 +76,7 @@ export class PostService {
     } 
 
     const postDocRef = this.getPostDoc(postId);
-    const postDoc = docData(postDocRef);
+    const postDoc = docData(postDocRef) as Observable<Post | undefined>;
 
     return postDoc
       .pipe(

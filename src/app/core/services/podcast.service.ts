@@ -71,7 +71,7 @@ export class PodcastService {
     } 
 
     const podcastEpisodeRef = this.getPodcastEpisodeDoc(podcastContainerId, podcastEpisodeId);
-    const podcastEpisode = docData(podcastEpisodeRef);
+    const podcastEpisode = docData(podcastEpisodeRef) as Observable<PodcastEpisode | undefined>;
 
     return podcastEpisode
       .pipe(

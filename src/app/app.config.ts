@@ -1,4 +1,4 @@
-import { ApplicationConfig, PLATFORM_ID, inject, isDevMode } from '@angular/core';
+import { ApplicationConfig, PLATFORM_ID, inject, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { APP_ROUTES } from './app.routes';
@@ -25,6 +25,7 @@ import { BlogIndexRefStoreEffects } from './root-store/blog-index-ref-store/effe
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(APP_ROUTES),
     provideClientHydration(),
 
