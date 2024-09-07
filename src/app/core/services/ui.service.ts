@@ -15,7 +15,7 @@ import { DateTime } from 'luxon';
 })
 export class UiService {
 
-  private APP_VERSION = '3.0.7';
+  private APP_VERSION = '3.0.8';
 
   $isServerPlatform = signal(false);
 
