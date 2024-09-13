@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { LegalBusinessNames } from '../../../../../shared-models/meta/business-info.model';
 import { BlogDomains } from '../../../../../shared-models/posts/blog-domains.model';
 import { PublicAppRoutes } from '../../../../../shared-models/routes-and-paths/app-routes.model';
@@ -14,7 +14,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './terms-and-conditions.component.html',
   styleUrl: './terms-and-conditions.component.scss'
 })
-export class TermsAndConditionsComponent {
+export class TermsAndConditionsComponent implements OnInit {
 
   appRoutes = PublicAppRoutes;
   legalBusinessName = LegalBusinessNames.EXPN;

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { LegalBusinessNames, ShorthandBusinessNames } from '../../../../../shared-models/meta/business-info.model';
 import { BlogDomains } from '../../../../../shared-models/posts/blog-domains.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
@@ -13,7 +13,7 @@ import { PublicAppRoutes } from '../../../../../shared-models/routes-and-paths/a
   templateUrl: './privacy-policy.component.html',
   styleUrl: './privacy-policy.component.scss'
 })
-export class PrivacyPolicyComponent {
+export class PrivacyPolicyComponent implements OnInit {
   
   legalBusinessName = LegalBusinessNames.EXPN;
   shorthandBusinessName = ShorthandBusinessNames.EXPN;
