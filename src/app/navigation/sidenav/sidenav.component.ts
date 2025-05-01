@@ -26,7 +26,7 @@ export class SidenavComponent {
   CONTACT_LINK_VALUE = GlobalFieldValues.CONTACT;
   HOME_LINK_VALUE = GlobalFieldValues.HOME;
   JOIN_COMMUNITY_LINK_VALUE = GlobalFieldValues.JOIN_COMMUNITY.toLocaleUpperCase();
-  PODCAST_LINK_VALUE = GlobalFieldValues.PODCAST;
+  // PODCAST_LINK_VALUE = GlobalFieldValues.PODCAST;
 
   uiService = inject(UiService);
 

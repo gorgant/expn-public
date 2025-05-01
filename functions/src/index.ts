@@ -11,5 +11,4 @@ export { onPubResetSgContactOptInStatus } from './email/on-pub-reset-sg-contact-
 export { onReqPurgeAuthUsers } from './migration/on-req-purge-auth-users';
 export { onReqPurgeUnverifiedPublicUsers } from './user/on-req-purge-unverified-public-users';
 export { onReqSgEmailWebhookEndpoint } from './email/on-req-sg-email-webhook-endpoint';
-export { onReqUpdatePodcastFeedCache } from './podcast/on-req-update-podcast-feed-cache';
 export { onReqVerifyDbSgOptInParity } from './email/on-req-verify-db-sg-opt-in-parity';

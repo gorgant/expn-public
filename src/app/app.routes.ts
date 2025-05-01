@@ -22,10 +22,10 @@ export const APP_ROUTES: Routes = [
     path: PublicAppRoutes.HOME,
     loadChildren: () => import('./content/home/home.routes').then(m => m.HOME_ROUTES)
   },
-  {
-    path: PublicAppRoutes.PODCAST.slice(1),
-    loadChildren: () => import('./content/podcast/podcast.routes').then(m => m.PODCAST_ROUTES)
-  },
+  // {
+  //   path: PublicAppRoutes.PODCAST.slice(1),
+  //   loadChildren: () => import('./content/podcast/podcast.routes').then(m => m.PODCAST_ROUTES)
+  // },
   {
     path: PublicAppRoutes.PRIVACY_POLICY.slice(1),
     loadChildren: () => import('./content/legal/privacy-policy/privacy-policy.routes').then(m => m.PRIVACY_POLICY_ROUTES)
